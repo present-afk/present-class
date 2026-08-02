@@ -325,21 +325,12 @@
             </div>
         </div>
 
-        <!-- 전체 신용도 조회 뷰 -->
+        <!-- 전체 신용도 조회 뷰 (카드형 디자인) -->
         <div id="creditView" style="display:none;">
             <div style="background:white; padding:20px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03); margin-bottom:20px;">
-                <h3 style="font-size:18px; margin-bottom:12px; color:#1e293b;">💳 전체 학생 신용등급 및 점수 현황</h3>
-                <p style="font-size:13px; color:#6b7280; margin-bottom:15px;">모든 학급 구성원의 신용 점수와 등급을 조회할 수 있습니다.</p>
-                <div style="overflow-x:auto;">
-                    <table class="ref-table">
-                        <thead>
-                            <tr>
-                                <th>번호</th><th>이름</th><th>직업</th><th>시간 점수</th><th>과제 점수</th><th>총 신용점수</th><th>신용등급</th><th>세금율</th>
-                            </tr>
-                        </thead>
-                        <tbody id="allCreditTableBody"></tbody>
-                    </table>
-                </div>
+                <h3 style="font-size:18px; margin-bottom:6px; color:#1e293b;">💳 전체 학생 신용등급 및 점수 현황</h3>
+                <p style="font-size:13px; color:#6b7280; margin-bottom:20px;">모든 학급 구성원의 신용 점수와 등급, 세금율을 조회할 수 있습니다.</p>
+                <div class="student-grid" id="creditGrid"></div>
             </div>
         </div>
 
@@ -1102,23 +1093,35 @@
     }
 
     function renderCreditView() {
-        const tbody = document.getElementById('allCreditTableBody');
-        tbody.innerHTML = '';
+        const grid = document.getElementById('creditGrid');
+        grid.innerHTML = '';
         students.forEach(s => {
             const creditScore = 31 + (s.timeScore || 0) + (s.taskScore || 0);
             const info = getCreditInfo(creditScore);
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><b>${s.id}</b></td>
-                <td><b>${s.name}</b></td>
-                <td><span class="badge-job">${s.job || '일반'}</span></td>
-                <td>${s.timeScore || 0}</td>
-                <td>${s.taskScore || 0}</td>
-                <td><strong style="color:var(--primary-blue);">${creditScore}점</strong></td>
-                <td><span class="badge ${info.badgeClass}">${info.grade}</span></td>
-                <td>${info.tax}</td>
+            const card = document.createElement('div');
+            card.className = 'student-card';
+            card.innerHTML = `
+                <div class="card-top">
+                    <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}번</span>
+                    <span class="badge ${info.badgeClass}">${info.grade}</span>
+                </div>
+                <div class="card-middle">
+                    <div class="avatar">${s.avatar}</div>
+                    <div style="text-align:right;">
+                        <div style="font-size:11px; color:#6b7280;">총 신용점수</div>
+                        <div class="score-display ${creditScore < 31 ? 'negative' : ''}">${creditScore}점</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-box-row"><span>이름/직업:</span><span><b>${s.name}</b> (${s.job || '일반'})</span></div>
+                    <div class="info-box-row"><span>시간/과제 점수:</span><span>⏱️ ${s.timeScore || 0} | 📋 ${s.taskScore || 0}</span></div>
+                    <div class="info-box-row"><span>적용 세금율:</span><span style="color:var(--primary-red); font-weight:bold;">${info.tax}</span></div>
+                </div>
+                <div class="card-bottom-actions">
+                    <button class="action-btn btn-score-log" style="width:100%; padding:6px 0;" onclick="openScoreLogModal(${s.id})">📊 점수 증감 내역 보기</button>
+                </div>
             `;
-            tbody.appendChild(tr);
+            grid.appendChild(card);
         });
     }
 
