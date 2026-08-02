@@ -11,7 +11,7 @@
 
     <style>
         :root {
-            --bg-color: #f4f7fb;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --primary-blue: #3b82f6;
             --primary-red: #ef4444;
@@ -26,24 +26,18 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-dark); }
-        .container { max-width: 1380px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
         /* 세련된 화이트톤 스플래시(첫 화면) */
         #splashScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #ffffff;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 900; /* 모달(1000)보다 낮게 설정하여 뒤로 안 숨게 처리 */
-            color: #1e293b; text-align: center;
+            z-index: 900; color: #1e293b; text-align: center;
         }
-        .splash-icon {
-            font-size: 80px; margin-bottom: 15px;
-            animation: float 3s ease-in-out infinite;
-        }
+        .splash-icon { font-size: 80px; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
-            100% { transform: translateY(0px); }
+            0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); }
         }
         .splash-title { font-size: 46px; font-weight: 900; margin-bottom: 12px; letter-spacing: -1px; color: #0f172a; }
         .splash-subtitle { font-size: 18px; margin-bottom: 45px; color: #64748b; font-weight: 500; }
@@ -62,7 +56,7 @@
         .mode-student { background: #e0f2fe; color: #0369a1; }
         .mode-teacher { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
 
-        /* 통일된 탭 색상 */
+        /* 탭 네비게이션 스타일 */
         .nav-tabs { display: flex; gap: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn {
             padding: 10px 18px; font-size: 14px; font-weight: 600; border: none;
@@ -213,13 +207,16 @@
                 <option value="🦁">🦁 사자</option><option value="🐶">🐶 강아지</option>
                 <option value="🐈">🐈 고양이</option><option value="🐰">🐰 토끼</option>
             </select>
-            <!-- 데이터리스트를 활용한 직업 입력 -->
-            <input type="text" id="newStudentJob" list="jobList" placeholder="직업 입력" value="일반" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:140px;">
+            <!-- 직업 선택 및 직접 입력 지원 -->
+            <input type="text" id="newStudentJob" list="jobList" placeholder="직업 선택 또는 직접 입력" value="일반" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:180px;">
+            <label style="font-size:13px; font-weight:bold; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                <input type="checkbox" id="newStudentHasRealEstate"> 부동산 소유
+            </label>
             <button class="btn-control" style="background:var(--primary-blue); color:white; border:none; padding:9px 16px;" onclick="addStudent()">학생 등록하기</button>
         </div>
     </div>
 
-    <!-- 직업 데이터리스트 공통 사용 -->
+    <!-- 직업 전체 리스트 데이터리스트 -->
     <datalist id="jobList">
         <option value="일반"><option value="총리"><option value="부총리">
         <option value="한국전력"><option value="도매상"><option value="은행원">
@@ -304,11 +301,11 @@
                 <div style="background:white; padding:24px; border-radius:16px; border:2px solid #cbd5e1; text-align:center;">
                     <h2 style="font-size:20px; color:#334155; margin-bottom:10px;">🏛️ 국세청 금고 총액</h2>
                     <div style="font-size:42px; font-weight:900; color:var(--primary-gold);"><span id="ntsTotalBalance">0</span> PR</div>
-                    <p style="font-size:13px; color:#6b7280; margin-top:10px;">세금 징수액, 각종 공제금 및 경찰 벌금이 누적됩니다.</p>
+                    <p style="font-size:13px; color:#6b7280; margin-top:10px;">소득세 징수액 및 경찰 벌금이 누적됩니다.</p>
                 </div>
 
-                <!-- 국세청 지출 등록 -->
-                <div style="background:white; padding:24px; border-radius:16px; border:2px solid #bae6fd;">
+                <!-- 국세청 지출 등록 (교사/국세청장 전용) -->
+                <div id="ntsExpenseBox" style="background:white; padding:24px; border-radius:16px; border:2px solid #bae6fd; display:none;">
                     <h2 style="font-size:18px; color:#0369a1; margin-bottom:12px;">💸 국세청 예산 지출 (문화/체육 등)</h2>
                     <div class="input-group">
                         <label>지출 내용 및 목적</label>
@@ -322,9 +319,27 @@
                 </div>
             </div>
             
-            <h3 style="font-size:16px; margin-bottom:10px; color:#1e293b;">📜 최근 세금/공제 징수 및 지출 내역</h3>
+            <h3 style="font-size:16px; margin-bottom:10px; color:#1e293b;">📜 최근 소득세 징수 및 지출 내역</h3>
             <div style="background:white; padding:16px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
                 <div id="ntsLogsContainer" style="max-height:400px; overflow-y:auto;"></div>
+            </div>
+        </div>
+
+        <!-- 전체 신용도 조회 뷰 -->
+        <div id="creditView" style="display:none;">
+            <div style="background:white; padding:20px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03); margin-bottom:20px;">
+                <h3 style="font-size:18px; margin-bottom:12px; color:#1e293b;">💳 전체 학생 신용등급 및 점수 현황</h3>
+                <p style="font-size:13px; color:#6b7280; margin-bottom:15px;">모든 학급 구성원의 신용 점수와 등급을 조회할 수 있습니다.</p>
+                <div style="overflow-x:auto;">
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>번호</th><th>이름</th><th>직업</th><th>시간 점수</th><th>과제 점수</th><th>총 신용점수</th><th>신용등급</th><th>세금율</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allCreditTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -345,7 +360,7 @@
                     <thead>
                         <tr>
                             <th>학생</th>
-                            <th>직업 지정 (자동/입력)</th>
+                            <th>직업 지정 (직접 입력 가능)</th>
                             <th>기본 월급</th>
                             <th>1일</th><th>2일</th><th>3일</th><th>4일</th><th>5일</th>
                             <th>6일</th><th>7일</th><th>8일</th><th>9일</th><th>10일</th>
@@ -521,6 +536,26 @@
     </div>
 </div>
 
+<!-- 경찰청 법률 수정 모달 -->
+<div class="modal-overlay" id="editPoliceRuleModal">
+    <div class="modal-card" style="width:380px;">
+        <div class="modal-title" style="color:#3730a3;">⚖️ 법률(벌금 규칙) 수정</div>
+        <input type="hidden" id="editPoliceRuleId">
+        <div class="input-group">
+            <label>위반 내용</label>
+            <input type="text" id="editPoliceRuleName">
+        </div>
+        <div class="input-group">
+            <label>벌금 액수 (PR)</label>
+            <input type="number" id="editPoliceRuleAmt">
+        </div>
+        <div class="modal-btns">
+            <button class="modal-btn cancel" onclick="closeModal('editPoliceRuleModal')">취소</button>
+            <button class="modal-btn confirm" style="background:#4f46e5;" onclick="savePoliceRuleEdit()">수정 완료</button>
+        </div>
+    </div>
+</div>
+
 <!-- 은행원 개별 잔고 수정 모달 -->
 <div class="modal-overlay" id="individualBalanceModal">
     <div class="modal-card" style="width:380px;">
@@ -627,7 +662,7 @@
         <div class="modal-title">💵 일괄 월급 지급 (공제 자동계산)</div>
         
         <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid #cbd5e1;">
-            <div style="font-size:13px; font-weight:bold; margin-bottom:8px; color:#0369a1;">📊 글로벌 공제 설정 (입력 시 모든 학생에게 즉시 일괄 적용)</div>
+            <div style="font-size:13px; font-weight:bold; margin-bottom:8px; color:#0369a1;">📊 글로벌 공제 설정 (부동산 소유자는 자리임대료 자동 면제)</div>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
                 <label style="font-size:12px;">자리임대료 <input type="number" id="deductRent" value="0" style="width:50px; padding:4px;" onchange="recalcSalary()"></label>
                 <label style="font-size:12px;">전기요금 <input type="number" id="deductElec" value="0" style="width:50px; padding:4px;" onchange="recalcSalary()"></label>
@@ -635,7 +670,7 @@
                 <label style="font-size:12px;">고용보험료 <input type="number" id="deductEmp" value="0" style="width:50px; padding:4px;" onchange="recalcSalary()"></label>
                 <label style="font-size:12px;">급식비 <input type="number" id="deductMeal" value="0" style="width:50px; padding:4px;" onchange="recalcSalary()"></label>
             </div>
-            <div style="font-size:11px; color:#6b7280; margin-top:6px;">공제된 금액 및 신용등급별 소득세는 모두 국세청 금고로 자동 편입됩니다.</div>
+            <div style="font-size:11px; color:#6b7280; margin-top:6px;">소득세만 국세청 금고로 편입되며, 그 외 공제금은 휘발됩니다.</div>
         </div>
 
         <div class="input-group">
@@ -748,6 +783,7 @@
                     renderNavTabs();
                     if (currentTab === 'job_mgmt') renderJobMgmtView();
                     else if (currentTab === 'mypage') renderMyPage();
+                    else if (currentTab === 'credit') renderCreditView();
                     else renderGrid();
                 }
             }
@@ -901,7 +937,7 @@
             const studentRef = db.collection('students').doc(String(i));
             batch.set(studentRef, {
                 id: i, name: `학생 ${String.fromCharCode(64 + i)}`, avatar: avatars[(i - 1) % avatars.length],
-                job: i === 1 ? '총리' : (i === 2 ? '부총리' : '일반'), baseSalary: 100,
+                job: i === 1 ? '총리' : (i === 2 ? '부총리' : '일반'), baseSalary: 100, hasRealEstate: false,
                 password: '0000', timeScore: 0, taskScore: 0, balance: 0, savings: 0,
                 savingsTerm: '4주', savingsStartDate: '', notifications: [], jobPerformance: Array(10).fill('O')
             });
@@ -1000,6 +1036,7 @@
         }
 
         addTabButton(nav, 'job_mgmt', '👨‍💼 직업 & 수행도 현황');
+        addTabButton(nav, 'credit', '💳 신용도 조회');
 
         if (isTeacher || job === '은행원') {
             addTabButton(nav, 'salary', '💵 월급/잔고 관리');
@@ -1009,9 +1046,8 @@
         if (isTeacher || job === '과제통계청') addTabButton(nav, 'task', '📋 과제통계청');
         
         if (isTeacher || job === '경찰') addTabButton(nav, 'police', '🚓 경찰청');
-        if (isTeacher || job === '국세청장' || job === '국세청') addTabButton(nav, 'nts', '🏛️ 국세청');
+        addTabButton(nav, 'nts', '🏛️ 국세청');
 
-        if (isTeacher) addTabButton(nav, 'credit', '💳 신용도 조회');
         if (isTeacher || job === '매점관리자') addTabButton(nav, 'store_admin', '📦 매점 관리');
         if (isTeacher) addTabButton(nav, 'student_mgmt', '👨‍🎓 학생 관리', false, 'tab-btn-student');
 
@@ -1032,35 +1068,58 @@
         currentTab = tab;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
 
-        document.getElementById('creditRefTable').style.display = (tab === 'credit' || tab === 'savings') ? 'block' : 'none';
+        document.getElementById('creditRefTable').style.display = (tab === 'savings') ? 'block' : 'none';
         document.getElementById('studentMgmtBox').style.display = (tab === 'student_mgmt' && currentUser.role === 'teacher') ? 'block' : 'none';
         
         const isPoliceManager = currentUser.role === 'teacher' || (students.find(s => s.id === currentUser.id)?.job === '경찰');
         document.getElementById('policeMgmtBox').style.display = (tab === 'police' && isPoliceManager) ? 'block' : 'none';
 
-        document.getElementById('batchBar').style.display = (['salary','savings','time','task','credit','student_mgmt','police'].includes(tab)) ? 'flex' : 'none';
-        document.getElementById('studentGrid').style.display = (['salary','savings','time','task','credit','student_mgmt','police'].includes(tab)) ? 'grid' : 'none';
+        document.getElementById('batchBar').style.display = (['salary','savings','time','task','student_mgmt','police'].includes(tab)) ? 'flex' : 'none';
+        document.getElementById('studentGrid').style.display = (['salary','savings','time','task','student_mgmt','police'].includes(tab)) ? 'grid' : 'none';
         
         document.getElementById('jobMgmtView').style.display = (tab === 'job_mgmt') ? 'block' : 'none';
+        document.getElementById('creditView').style.display = (tab === 'credit') ? 'block' : 'none';
         document.getElementById('myPageView').style.display = (tab === 'mypage') ? 'block' : 'none';
         document.getElementById('storeView').style.display = (tab === 'store') ? 'block' : 'none';
         document.getElementById('storeAdminView').style.display = (tab === 'store_admin') ? 'block' : 'none';
         document.getElementById('ntsView').style.display = (tab === 'nts') ? 'block' : 'none';
 
         document.getElementById('btnSalaryModal').style.display = (tab === 'salary') ? 'inline-block' : 'none';
-        document.getElementById('btnScorePlus').style.display = (['time','task','credit'].includes(tab)) ? 'inline-block' : 'none';
-        document.getElementById('btnScoreMinus').style.display = (['time','task','credit'].includes(tab)) ? 'inline-block' : 'none';
+        document.getElementById('btnScorePlus').style.display = (['time','task'].includes(tab)) ? 'inline-block' : 'none';
+        document.getElementById('btnScoreMinus').style.display = (['time','task'].includes(tab)) ? 'inline-block' : 'none';
         document.getElementById('pendingBtn').style.display = (currentUser.role === 'teacher') ? 'inline-block' : 'none';
         document.getElementById('approvedBtn').style.display = (currentUser.role === 'teacher') ? 'inline-block' : 'none';
         document.getElementById('resetBtn').style.display = (currentUser.role === 'teacher') ? 'inline-block' : 'none';
 
         if (tab === 'job_mgmt') renderJobMgmtView();
+        else if (tab === 'credit') renderCreditView();
         else if (tab === 'mypage') renderMyPage();
         else if (tab === 'store') renderStore();
         else if (tab === 'store_admin') renderStoreAdmin();
         else if (tab === 'nts') renderNTS();
         else if (tab === 'police') renderPoliceRules();
         else renderGrid();
+    }
+
+    function renderCreditView() {
+        const tbody = document.getElementById('allCreditTableBody');
+        tbody.innerHTML = '';
+        students.forEach(s => {
+            const creditScore = 31 + (s.timeScore || 0) + (s.taskScore || 0);
+            const info = getCreditInfo(creditScore);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><b>${s.id}</b></td>
+                <td><b>${s.name}</b></td>
+                <td><span class="badge-job">${s.job || '일반'}</span></td>
+                <td>${s.timeScore || 0}</td>
+                <td>${s.taskScore || 0}</td>
+                <td><strong style="color:var(--primary-blue);">${creditScore}점</strong></td>
+                <td><span class="badge ${info.badgeClass}">${info.grade}</span></td>
+                <td>${info.tax}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 
     function renderJobMgmtView() {
@@ -1086,7 +1145,7 @@
             }
 
             let jobSelectHtml = canManage ? `
-                <input type="text" list="jobList" value="${s.job || '일반'}" onchange="updateStudentJob(${s.id}, this.value)" style="width:100px; padding:4px; font-size:12px; border-radius:6px; border:1px solid #cbd5e1; text-align:center;">
+                <input type="text" list="jobList" value="${s.job || '일반'}" onchange="updateStudentJob(${s.id}, this.value)" style="width:140px; padding:4px; font-size:12px; border-radius:6px; border:1px solid #cbd5e1; text-align:center;">
             ` : `<span class="badge-job">${s.job || '일반학생'}</span>`;
 
             let salaryHtml = canManage ? `
@@ -1146,7 +1205,7 @@
                             <span style="font-size:40px;">${student.avatar}</span>
                             <div>
                                 <h2 style="font-size:20px;">${student.id}번 ${student.name}</h2>
-                                <span class="badge-job">${student.job || '일반학생'}</span>
+                                <span class="badge-job">${student.job || '일반학생'}</span> ${student.hasRealEstate ? '<span class="badge grade-2" style="margin-left:4px;">🏠 부동산 소유</span>' : ''}
                             </div>
                         </div>
                         <button class="btn-control" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:6px 12px;" onclick="openChangePwModal()">🔑 비밀번호 변경</button>
@@ -1185,6 +1244,11 @@
         document.getElementById('ntsTotalBalance').textContent = ntsBalance;
         const container = document.getElementById('ntsLogsContainer');
         container.innerHTML = '';
+
+        const isTeacher = currentUser.role === 'teacher';
+        const student = students.find(s => s.id === currentUser.id);
+        const isNTSJob = student && (student.job === '국세청' || student.job === '국세청장');
+        document.getElementById('ntsExpenseBox').style.display = (isTeacher || isNTSJob) ? 'block' : 'none';
 
         if (ntsLogs.length === 0) {
             container.innerHTML = '<div style="color:#94a3b8; font-size:13px; text-align:center; padding:15px;">최근 징수 및 지출 내역이 없습니다.</div>';
@@ -1230,7 +1294,10 @@
             div.className = 'police-rule-item';
             div.innerHTML = `
                 <div><span style="font-weight:bold;">${rule.reason}</span> <span style="color:#dc2626;">(-${rule.amount} PR)</span></div>
-                <button class="action-btn btn-cancel" onclick="deletePoliceRule(${rule.id})">삭제</button>
+                <div style="display:flex; gap:4px;">
+                    <button class="action-btn btn-edit" onclick="openEditPoliceRuleModal(${rule.id}, '${rule.reason}', ${rule.amount})">수정</button>
+                    <button class="action-btn btn-cancel" onclick="deletePoliceRule(${rule.id})">삭제</button>
+                </div>
             `;
             list.appendChild(div);
         });
@@ -1247,6 +1314,26 @@
         }).then(() => {
             document.getElementById('newPoliceRuleName').value = '';
             document.getElementById('newPoliceRuleAmt').value = '';
+        });
+    }
+
+    function openEditPoliceRuleModal(id, reason, amount) {
+        document.getElementById('editPoliceRuleId').value = id;
+        document.getElementById('editPoliceRuleName').value = reason;
+        document.getElementById('editPoliceRuleAmt').value = amount;
+        document.getElementById('editPoliceRuleModal').style.display = 'flex';
+    }
+
+    function savePoliceRuleEdit() {
+        const id = parseInt(document.getElementById('editPoliceRuleId').value);
+        const newReason = document.getElementById('editPoliceRuleName').value.trim();
+        const newAmount = parseInt(document.getElementById('editPoliceRuleAmt').value);
+        if (!newReason || isNaN(newAmount) || newAmount <= 0) return alert("올바른 내용과 벌금을 입력하세요.");
+
+        const updatedRules = policeRules.map(r => r.id === id ? { id, reason: newReason, amount: newAmount } : r);
+        db.collection('system').doc('police').update({ rules: updatedRules }).then(() => {
+            alert("법률이 수정되었습니다.");
+            closeModal('editPoliceRuleModal');
         });
     }
 
@@ -1459,17 +1546,19 @@
         const id = parseInt(document.getElementById('newStudentId').value);
         const name = document.getElementById('newStudentName').value.trim();
         const avatar = document.getElementById('newStudentAvatar').value;
-        const job = document.getElementById('newStudentJob').value;
+        const job = document.getElementById('newStudentJob').value.trim() || '일반';
+        const hasRealEstate = document.getElementById('newStudentHasRealEstate').checked;
 
         if (!id || !name) return alert("번호와 이름을 입력해 주세요.");
         if (students.some(s => s.id === id)) return alert(`이미 ${id}번 학생이 존재합니다.`);
 
         db.collection('students').doc(String(id)).set({
-            id, name, avatar, job, baseSalary: 100, password: '0000', timeScore: 0, taskScore: 0, balance: 0, savings: 0,
+            id, name, avatar, job, baseSalary: 100, hasRealEstate, password: '0000', timeScore: 0, taskScore: 0, balance: 0, savings: 0,
             savingsTerm: '4주', savingsStartDate: '', notifications: [], jobPerformance: Array(10).fill('O')
         }).then(() => {
             alert(`[${id}번 ${name}] 등록 완료.`);
             document.getElementById('newStudentId').value = ''; document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentHasRealEstate').checked = false;
         });
     }
 
@@ -1481,6 +1570,10 @@
         if (newName && newName.trim() !== "" && newName !== currentName) {
             db.collection('students').doc(String(id)).update({ name: newName.trim() }).then(() => alert("이름이 수정되었습니다."));
         }
+    }
+
+    function toggleRealEstate(id, currentVal) {
+        db.collection('students').doc(String(id)).update({ hasRealEstate: !currentVal });
     }
 
     function renderGrid() {
@@ -1501,6 +1594,10 @@
                 card.innerHTML = `
                     <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}번</span> <span style="font-size:16px; font-weight:bold;">${s.name}</span></div>
                     <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><span class="badge-job">${s.job || '일반'}</span></div></div>
+                    <div style="font-size:12px; margin:4px 0; display:flex; align-items:center; justify-content:space-between;">
+                        <span>부동산 소유:</span>
+                        <input type="checkbox" ${s.hasRealEstate ? 'checked' : ''} onclick="event.stopPropagation(); toggleRealEstate(${s.id}, ${s.hasRealEstate});">
+                    </div>
                     <div class="card-bottom-actions" style="flex-direction:column; gap:4px;">
                         <button class="action-btn btn-passbook" style="width:100%; padding:6px 0;" onclick="event.stopPropagation(); openPassbookModal(${s.id});">📖 통장 조회</button>
                         <button class="action-btn btn-edit" style="width:100%; padding:6px 0;" onclick="event.stopPropagation(); editStudentName(${s.id}, '${s.name}');">✏️ 이름 수정</button>
@@ -1511,7 +1608,7 @@
             } else if (currentTab === 'salary') {
                 const calc = calculateSalaryPenalty(s, baseSal);
                 card.innerHTML = `
-                    <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span> <span style="font-size:16px; font-weight:bold;">${s.name}</span></div>
+                    <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span> <span style="font-size:16px; font-weight:bold;">${s.name}</span> ${s.hasRealEstate ? '<span class="badge grade-2">🏠</span>' : ''}</div>
                     <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><div style="font-size:11px; color:#6b7280;">지갑 잔고</div><div class="pr-display">${balance} PR</div></div></div>
                     <div class="info-box">
                         <div class="info-box-row"><span>직업/기본급:</span><span style="text-align:right;"><b>${s.job || '일반'}</b><br>(${baseSal}PR)</span></div>
@@ -1535,15 +1632,6 @@
                     </div>
                     <div class="card-bottom-actions">
                         ${savings > 0 ? `<button class="action-btn btn-cancel" onclick="event.stopPropagation(); cancelSavings(${s.id});">중도해지</button>` : `<button class="action-btn btn-plus" style="width:100%;" onclick="event.stopPropagation(); openSavingsModal(${s.id});">💰 저축하기</button>`}
-                    </div>
-                `;
-            } else if (currentTab === 'credit') {
-                card.innerHTML = `
-                    <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span> <span style="font-size:16px; font-weight:bold;">${s.name}</span> <span class="badge ${info.badgeClass}">${info.grade}</span></div>
-                    <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><div class="score-display ${creditScore < 31 ? 'negative' : ''}">${creditScore}점</div></div></div>
-                    <div class="info-box"><div class="info-box-row"><span>세금 <b>${info.tax}</b></span><span>우선 <b>${info.priority}</b></span></div><div class="info-box-row"><span>은행 이자율</span><span><b>${info.interest}</b></span></div></div>
-                    <div class="card-bottom-actions">
-                        <button class="action-btn btn-score-log" style="width:100%;" onclick="event.stopPropagation(); openScoreLogModal(${s.id});">📊 점수 증감 내역 보기</button>
                     </div>
                 `;
             } else if (currentTab === 'police') {
@@ -1643,7 +1731,7 @@
         const isTeacher = currentUser.role === 'teacher';
         document.getElementById('modalTitle').textContent = isTeacher ? "점수 직접 부여/차감" : "점수 승인 신청 전송";
         document.getElementById('submitBtn').textContent = isTeacher ? "즉시 반영" : "승인 신청 전송";
-        document.getElementById('categorySelectGroup').style.display = currentTab === 'credit' ? 'block' : 'none';
+        document.getElementById('categorySelectGroup').style.display = 'none';
 
         const container = document.getElementById('modalScoreOptions');
         container.innerHTML = '';
@@ -1661,7 +1749,7 @@
         const period = document.getElementById('scorePeriod').value;
         const reason = document.getElementById('scoreReason').value.trim() || '사유 미입력';
         const delta = currentActionType === 'plus' ? selectedPoints : -selectedPoints;
-        let category = currentTab === 'time' ? '시간통계' : (currentTab === 'task' ? '과제통계' : document.getElementById('scoreCategory').value);
+        let category = currentTab === 'time' ? '시간통계' : '과제통계';
         const nowStr = new Date().toLocaleString('ko-KR');
 
         const batch = db.batch();
@@ -1684,7 +1772,7 @@
         });
     }
 
-    // 일괄 월급 처리 및 글로벌 공제
+    // 일괄 월급 처리 및 공제 분리 (소득세만 국세청, 나머지는 휘발)
     function openSalaryModal() {
         document.getElementById('deductRent').value = 0;
         document.getElementById('deductElec').value = 0;
@@ -1709,12 +1797,12 @@
                 <div style="display:flex; align-items:center; gap:8px;">
                     <span style="font-size:20px;">${s.avatar}</span>
                     <div>
-                        <strong style="font-size:14px;">${s.id}. ${s.name}</strong> <span style="font-size:11px; color:#6b7280;">(${s.job || '일반'} | 기본급:${s.baseSalary||100})</span><br>
+                        <strong style="font-size:14px;">${s.id}. ${s.name}</strong> ${s.hasRealEstate ? '<span class="badge grade-2">🏠부동산보유</span>' : ''}<br>
                         <span class="perf-display" style="font-size:11px; font-weight:bold;"></span>
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:11px; color:#dc2626;">소득세: <span class="tax-display">0</span> | 공제: <span class="fixed-deduct-display">0</span></div>
+                    <div style="font-size:11px; color:#dc2626;">소득세: <span class="tax-display">0</span> | 공제(휘발): <span class="fixed-deduct-display">0</span></div>
                     <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
                         <input type="number" class="salary-input-item" data-id="${s.id}" min="0" style="width:80px; padding:4px; border:1px solid #cbd5e1; border-radius:6px; text-align:right; font-size:14px; font-weight:bold;">
                         <span style="font-size:12px; font-weight:bold; color:var(--primary-gold);">PR</span>
@@ -1724,21 +1812,24 @@
             container.appendChild(row);
         });
         
-        recalcSalary(); // 초기 계산
+        recalcSalary();
     }
 
     function recalcSalary() {
-        const rent = parseInt(document.getElementById('deductRent').value) || 0;
+        const baseRent = parseInt(document.getElementById('deductRent').value) || 0;
         const elec = parseInt(document.getElementById('deductElec').value) || 0;
         const health = parseInt(document.getElementById('deductHealth').value) || 0;
         const emp = parseInt(document.getElementById('deductEmp').value) || 0;
         const meal = parseInt(document.getElementById('deductMeal').value) || 0;
-        const fixedDeduction = rent + elec + health + emp + meal;
 
         document.querySelectorAll('.salary-row').forEach(row => {
             const sId = parseInt(row.getAttribute('data-id'));
             const student = students.find(s => s.id === sId);
             if(!student) return;
+
+            // 부동산 소유자는 자리임대료 면제
+            const rent = student.hasRealEstate ? 0 : baseRent;
+            const fixedDeduction = rent + elec + health + emp + meal;
 
             const calc = calculateSalaryPenalty(student, student.baseSalary || 100);
             const creditScore = 31 + (student.timeScore || 0) + (student.taskScore || 0);
@@ -1778,23 +1869,23 @@
             const netAmount = parseInt(input.value) || 0;
             const taxAmount = parseInt(input.getAttribute('data-tax')) || 0;
             const deductAmount = parseInt(input.getAttribute('data-deduct')) || 0;
-            const totalDeducted = taxAmount + deductAmount;
             const student = students.find(s => s.id === studentId);
 
-            if (student && (netAmount > 0 || totalDeducted > 0)) {
+            if (student && (netAmount > 0 || taxAmount > 0 || deductAmount > 0)) {
                 if (isTeacher) {
                     batch.update(db.collection('students').doc(String(studentId)), { balance: firebase.firestore.FieldValue.increment(netAmount) });
                     addTransaction(batch, student, `월급 지급: ${memo}`, netAmount);
-                    if(totalDeducted > 0) {
-                        addTransaction(batch, student, `소득세 및 각종 공제`, -totalDeducted);
-                    }
                     
-                    if (totalDeducted > 0) {
-                        totalTaxCollected += totalDeducted;
-                        taxLogEntries.push(`<span style="color:#059669; font-weight:bold;">[징수]</span> 세금/공제 (${student.name}): <b>+${totalDeducted} PR</b> <span style="font-size:11px; color:#9ca3af;">(${nowStr})</span>`);
+                    if(taxAmount > 0) {
+                        addTransaction(batch, student, `소득세 공제`, -taxAmount);
+                        totalTaxCollected += taxAmount;
+                        taxLogEntries.push(`<span style="color:#059669; font-weight:bold;">[징수]</span> 소득세 (${student.name}): <b>+${taxAmount} PR</b> <span style="font-size:11px; color:#9ca3af;">(${nowStr})</span>`);
+                    }
+                    if(deductAmount > 0) {
+                        addTransaction(batch, student, `기타 공제 (휘발)`, -deductAmount);
                     }
                 } else {
-                    batch.set(db.collection('requests').doc(), { type: 'salary', studentId: student.id, studentName: student.name, amount: netAmount, taxAmount: totalDeducted, reason: memo, timestamp: nowStr, status: 'pending' });
+                    batch.set(db.collection('requests').doc(), { type: 'salary', studentId: student.id, studentName: student.name, amount: netAmount, taxAmount, deductAmount, reason: memo, timestamp: nowStr, status: 'pending' });
                 }
             }
         });
@@ -1804,7 +1895,7 @@
         }
 
         batch.commit().then(() => {
-            if (isTeacher) alert(`월급 지급 및 세금/공제(${totalTaxCollected}PR) 징수가 완료되었습니다.`); else alert("선생님께 일괄 월급 지급 승인 요청이 전송되었습니다!");
+            if (isTeacher) alert(`월급 지급 및 소득세(${totalTaxCollected}PR) 국세청 징수가 완료되었습니다.`); else alert("선생님께 일괄 월급 지급 승인 요청이 전송되었습니다!");
             closeModal('salaryModal');
         });
     }
@@ -1871,7 +1962,7 @@
             
             if (req.type === 'salary') {
                 item.innerHTML = `
-                    <div><strong>${req.studentName}</strong> <span style="color:#d97706;">[월급 신청]</span><br><span style="color:var(--primary-gold); font-weight:bold;">실수령 +${req.amount} PR</span><span style="color:#dc2626; font-size:11px;"> (세금/공제 ${req.taxAmount}PR)</span><br><span style="color:#374151; font-size:11px;">${req.reason}</span></div>
+                    <div><strong>${req.studentName}</strong> <span style="color:#d97706;">[월급 신청]</span><br><span style="color:var(--primary-gold); font-weight:bold;">실수령 +${req.amount} PR</span><span style="color:#dc2626; font-size:11px;"> (소득세 ${req.taxAmount}PR)</span><br><span style="color:#374151; font-size:11px;">${req.reason}</span></div>
                     <div style="display:flex; gap:4px;"><button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button><button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button></div>
                 `;
             } else if (req.type === 'police_fine') {
@@ -1907,7 +1998,7 @@
             
             if (req.type === 'salary') {
                 item.innerHTML = `
-                    <div><strong>${req.studentName}</strong> <span style="color:#d97706;">[월급 승인완료]</span><br><span style="color:var(--primary-gold); font-weight:bold;">실수령 +${req.amount} PR</span><span style="color:#dc2626; font-size:11px;"> (세금/공제 ${req.taxAmount}PR)</span></div>
+                    <div><strong>${req.studentName}</strong> <span style="color:#d97706;">[월급 승인완료]</span><br><span style="color:var(--primary-gold); font-weight:bold;">실수령 +${req.amount} PR</span></div>
                     <button class="btn-reject" onclick="revokeRequest('${req.id}')">취소 (되돌리기)</button>
                 `;
             } else if (req.type === 'police_fine') {
@@ -1946,11 +2037,14 @@
             addTransaction(batch, student, `월급 지급 승인: ${req.reason}`, req.amount);
 
             if (req.taxAmount && req.taxAmount > 0) {
-                addTransaction(batch, student, `소득세 및 각종 공제`, -req.taxAmount);
+                addTransaction(batch, student, `소득세 공제`, -req.taxAmount);
                 batch.update(ntsRef, {
                     balance: firebase.firestore.FieldValue.increment(req.taxAmount),
-                    logs: firebase.firestore.FieldValue.arrayUnion(`<span style="color:#059669; font-weight:bold;">[징수]</span> 세금/공제 (${student.name}): <b>+${req.taxAmount} PR</b> <span style="font-size:11px; color:#9ca3af;">(${nowStr})</span>`)
+                    logs: firebase.firestore.FieldValue.arrayUnion(`<span style="color:#059669; font-weight:bold;">[징수]</span> 소득세 (${student.name}): <b>+${req.taxAmount} PR</b> <span style="font-size:11px; color:#9ca3af;">(${nowStr})</span>`)
                 });
+            }
+            if (req.deductAmount && req.deductAmount > 0) {
+                addTransaction(batch, student, `기타 공제 (휘발)`, -req.deductAmount);
             }
         } else if (req.type === 'police_fine') {
             batch.update(studentRef, { balance: firebase.firestore.FieldValue.increment(-req.amount) });
@@ -1976,14 +2070,12 @@
 
     function rejectRequest(reqId) { if (confirm("신청을 거절하시겠습니까?")) db.collection('requests').doc(reqId).update({ status: 'rejected' }); }
 
-    // 사후 승인 취소 로직 (되돌리기)
     function revokeRequest(reqId) {
         const req = approvedRequests.find(r => r.id === reqId);
         if (!req) return;
         if (!confirm("⚠️ 정말 이 승인 내역을 취소하고 수치를 원래대로 되돌리시겠습니까?")) return;
 
         const student = students.find(s => s.id === req.studentId);
-
         const batch = db.batch();
         const studentRef = db.collection('students').doc(String(req.studentId));
         const ntsRef = db.collection('system').doc('nts');
@@ -1996,7 +2088,7 @@
             if (req.taxAmount > 0) {
                 batch.update(ntsRef, {
                     balance: firebase.firestore.FieldValue.increment(-req.taxAmount),
-                    logs: firebase.firestore.FieldValue.arrayUnion(`<span style="color:#b91c1c; font-weight:bold;">[취소/반환]</span> 월급 세금/공제 징수 취소 (${req.studentName}): <b>-${req.taxAmount} PR</b> <span style="font-size:11px; color:#9ca3af;">(${nowStr})</span>`)
+                    logs: firebase.firestore.FieldValue.arrayUnion(`<span style="color:#b91c1c; font-weight:bold;">[취소/반환]</span> 소득세 징수 취소 (${req.studentName}): <b>-${req.taxAmount} PR</b> <span style="font-size:11px; color:#9ca3af;">(${nowStr})</span>`)
                 });
             }
         } else if (req.type === 'police_fine') {
@@ -2039,7 +2131,6 @@
     function executeReset() {
         const pw = document.getElementById('resetPwInput').value;
         if (pw === "4800") {
-            // 통장 및 점수 기록 지우기
             Promise.all([
                 db.collection('transactions').get(),
                 db.collection('score_logs').get()
@@ -2051,7 +2142,7 @@
                 students.forEach(s => {
                     batch.update(db.collection('students').doc(String(s.id)), { 
                         timeScore: 0, taskScore: 0, balance: 0, savings: 0, savingsStartDate: '', notifications: [],
-                        jobPerformance: Array(10).fill('O'), password: '0000', baseSalary: 100
+                        jobPerformance: Array(10).fill('O'), password: '0000', baseSalary: 100, hasRealEstate: false
                     });
                 });
                 batch.update(db.collection('system').doc('nts'), { balance: 0, logs: [] });
