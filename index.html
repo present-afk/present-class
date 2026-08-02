@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>선물나라 통계청 - 실시간 교사 승인 및 신용도 관리 시스템</title>
+    
+    <!-- Firebase SDK (Compat 모듈 사용으로 단일 파일 구동 가능) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7fb;
+            --card-bg: #ffffff;
+            --primary-blue: #3b82f6;
+            --primary-red: #ef4444;
+            --primary-orange: #f59e0b;
+            --primary-green: #10b981;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --border-radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); padding: 20px; }
+        .container { max-width: 1280px; margin: 0 auto; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;}
+        h1 { font-size: 24px; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+        
+        .mode-badge {
+            padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px;
+        }
+        .mode-student { background: #e0f2fe; color: #0369a1; }
+        .mode-teacher { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+
+        .nav-tabs { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;}
+        .tab-btn {
+            padding: 10px 20px; font-size: 15px; font-weight: 600; border: none;
+            background: #e2e8f0; color: var(--text-gray); border-radius: 10px; cursor: pointer; transition: all 0.2s;
+        }
+        .tab-btn.active { background: var(--primary-blue); color: white; }
+
+        .batch-bar {
+            background: white; padding: 12px 20px; border-radius: 12px; display: flex;
+            justify-content: space-between; align-items: center; margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03); flex-wrap: wrap; gap: 10px;
+        }
+
+        .btn-control {
+            padding: 8px 14px; font-size: 13px; font-weight: bold; border: 1px solid #cbd5e1;
+            border-radius: 8px; background: #f8fafc; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-control:hover { background: #e2e8f0; }
+        .btn-teacher-lock { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+        .btn-pending-count { background: #fee2e2; color: #dc2626; border-color: #fca5a5; position: relative; }
+
+        /* 그리드 카드 */
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .student-card {
+            background: var(--card-bg); border-radius: var(--border-radius); padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column;
+            justify-content: space-between; height: 160px; border: 2px solid transparent; cursor: pointer;
+        }
+        .student-card.credit-card { height: 195px; }
+        .student-card.selected { border-color: var(--primary-blue); background-color: #f0f7ff; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; }
+        .card-middle { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
+        .avatar { font-size: 36px; background: #ffffff; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .score-display { font-size: 26px; font-weight: 800; color: var(--primary-blue); }
+        .score-display.negative { color: var(--primary-red); }
+
+        /* 신용등급 배지 및 정보 스타일 */
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+        .grade-1 { background-color: #10b981; }
+        .grade-2 { background-color: #3b82f6; }
+        .grade-3 { background-color: #0284c7; }
+        .grade-4 { background-color: #0d9488; }
+        .grade-5 { background-color: #f59e0b; }
+        .grade-6 { background-color: #ea580c; }
+        .grade-7 { background-color: #ef4444; }
+        .grade-8 { background-color: #dc2626; }
+        .grade-9 { background-color: #991b1b; }
+        .grade-10 { background-color: #4b5563; }
+
+        .credit-info-bar {
+            display: flex; justify-content: space-between; background: #f1f5f9;
+            padding: 6px 10px; border-radius: 8px; font-size: 11px; color: #475569; margin-top: 6px;
+        }
+
+        /* 신용등급 기준 안내 표 */
+        .ref-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+        .ref-table th, .ref-table td { padding: 8px 10px; border: 1px solid #e2e8f0; }
+        .ref-table th { background-color: #f8fafc; font-weight: bold; color: #334155; }
+
+        .card-bottom-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
+        .action-btn { width: 30px; height: 30px; border-radius: 8px; border: none; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .btn-plus { background: #dbeafe; color: var(--primary-blue); }
+        .btn-minus { background: #fee2e2; color: var(--primary-red); }
+
+        /* 승인 대기 목록 전용 모달 */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-card { background: white; padding: 24px; border-radius: 16px; width: 680px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column; }
+        .modal-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center; }
+        
+        .pending-list { overflow-y: auto; max-height: 420px; margin-bottom: 15px; }
+        .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; gap: 10px; }
+        .btn-approve { background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-reject { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+        .score-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .score-opt-btn { padding: 10px; font-size: 15px; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: pointer; }
+        .score-opt-btn.selected { background: var(--primary-blue); color: white; }
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; }
+        .input-group select, .input-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+        .modal-btns { display: flex; gap: 8px; margin-top: 10px; }
+        .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .modal-btn.confirm { background: var(--primary-blue); color: white; }
+        .modal-btn.cancel { background: #94a3b8; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🎁 선물나라 학급 관리 시스템</h1>
+        <div>
+            <span id="modeBadge" class="mode-badge mode-student">💻 학생 접속 모드</span>
+            <button id="teacherToggleBtn" class="btn-control btn-teacher-lock" onclick="toggleTeacherMode()">🔑 교사 관리자 인증</button>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('time')">⏱️ 시간통계청</button>
+        <button class="tab-btn" onclick="switchTab('task')">📋 과제통계청</button>
+        <button class="tab-btn" onclick="switchTab('credit')">💳 신용도 조회</button>
+    </nav>
+
+    <!-- 신용도 안내 표 영역 (신용도 탭에서만 활성화) -->
+    <div id="creditRefTable" style="display:none; margin-bottom: 20px;">
+        <div style="background:white; padding:16px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+            <h3 style="font-size:15px; margin-bottom:10px; color:#1e293b;">📊 신용등급 안내 및 혜택표 (기본점수: 100점)</h3>
+            <div style="overflow-x:auto;">
+                <table class="ref-table">
+                    <thead>
+                        <tr>
+                            <th>신용등급</th>
+                            <th>신용점수</th>
+                            <th>세금</th>
+                            <th>4주 은행이자(2주)</th>
+                            <th>우선 순위</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge grade-1">1등급</span></td><td>100점 이상</td><td>10%</td><td>10%(5%)</td><td>1순위</td></tr>
+                        <tr><td><span class="badge grade-2">2등급</span></td><td>81 ~ 100점</td><td>12%</td><td>8%(4%)</td><td>2순위</td></tr>
+                        <tr><td><span class="badge grade-3">3등급</span></td><td>71 ~ 80점</td><td>14%</td><td>7%(3%)</td><td>3순위</td></tr>
+                        <tr><td><span class="badge grade-4">4등급</span></td><td>61 ~ 70점</td><td>16%</td><td>6%(3%)</td><td>3순위</td></tr>
+                        <tr><td><span class="badge grade-5">5등급</span></td><td>51 ~ 60점</td><td>15%</td><td>5%(2%)</td><td>4순위</td></tr>
+                        <tr><td><span class="badge grade-6">6등급</span></td><td>41 ~ 50점</td><td>17%</td><td>4%(2%)</td><td>4순위</td></tr>
+                        <tr><td><span class="badge grade-7">7등급</span></td><td>31 ~ 40점</td><td>18%</td><td>3%(1%)</td><td>4순위</td></tr>
+                        <tr><td><span class="badge grade-8">8등급</span></td><td>21 ~ 30점</td><td>19%</td><td>2%(1%)</td><td>5순위</td></tr>
+                        <tr><td><span class="badge grade-9">9등급</span></td><td>11 ~ 20점</td><td>20%</td><td>1%(무이자)</td><td>6순위</td></tr>
+                        <tr><td><span class="badge grade-10">10등급</span></td><td>10점 이하</td><td>25%</td><td>무이자</td><td>7순위</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div class="batch-bar">
+            <div>선택된 학생: <span id="selectedCount" style="color:var(--primary-blue); font-weight:bold;">0</span>명</div>
+            <div style="display:flex; gap:8px;">
+                <!-- 교사 관리자 모드 전용 알림 버튼 -->
+                <button id="pendingBtn" class="btn-control btn-pending-count" style="display:none;" onclick="openPendingModal()">
+                    🔔 승인 대기 목록 (<span id="pendingCount">0</span>건)
+                </button>
+                <button class="btn-control" onclick="selectAll()">전체 선택</button>
+                <button class="btn-control" onclick="deselectAll()">선택 해제</button>
+                <button class="btn-control primary-plus" onclick="openBatchModal('plus')">점수 신청 (+)</button>
+                <button class="btn-control primary-minus" onclick="openBatchModal('minus')">점수 신청 (-)</button>
+                <button id="resetBtn" class="btn-control" style="display:none; background:#fff1f2; color:#e11d48;" onclick="resetAllData()">🔒 데이터 초기화</button>
+            </div>
+        </div>
+        <div class="student-grid" id="studentGrid"></div>
+    </main>
+</div>
+
+<!-- 점수 신청/부여 모달 -->
+<div class="modal-overlay" id="scoreModal">
+    <div class="modal-card" style="width:420px;">
+        <div class="modal-title" id="modalTitle">점수 및 사유 입력</div>
+        <div class="score-options" id="modalScoreOptions"></div>
+        
+        <!-- 신용도 탭일 때 분류 선택 창 -->
+        <div class="input-group" id="categorySelectGroup" style="display:none;">
+            <label for="scoreCategory">📌 반영 통계청 선택</label>
+            <select id="scoreCategory">
+                <option value="시간통계">⏱️ 시간통계청</option>
+                <option value="과제통계">📋 과제통계청</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="scorePeriod">⏱️ 교시 선택</label>
+            <select id="scorePeriod">
+                <option value="1교시">1교시</option><option value="2교시">2교시</option>
+                <option value="3교시">3교시</option><option value="4교시">4교시</option>
+                <option value="5교시">5교시</option><option value="6교시">6교시</option>
+                <option value="아침활동">아침활동</option><option value="점심시간">점심시간</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="scoreReason">📝 사유 입력</label>
+            <input type="text" id="scoreReason" placeholder="예: 시간 준수, 과제 미제출 등">
+        </div>
+        <div class="modal-btns">
+            <button class="modal-btn cancel" onclick="closeModal('scoreModal')">취소</button>
+            <button class="modal-btn confirm" id="submitBtn" onclick="submitScoreRequest()">신청 완료</button>
+        </div>
+    </div>
+</div>
+
+<!-- 🔔 [교사 전용] 승인 대기 목록 모달 -->
+<div class="modal-overlay" id="pendingModal">
+    <div class="modal-card">
+        <div class="modal-title">🔔 학생 점수 신청 승인 대기함</div>
+        <div class="pending-list" id="pendingList"></div>
+        <div class="modal-btns">
+            <button class="modal-btn cancel" onclick="closeModal('pendingModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // -----------------------------------------------------------------
+    // 1. 파이어베이스 설정 (연동 키 적용 완료)
+    // -----------------------------------------------------------------
+    const firebaseConfig = {
+        apiKey: "AIzaSyAQm52wv-5lPH0mxJwZ75qlsPeAdAHZsBk",
+        authDomain: "present-7f146.firebaseapp.com",
+        projectId: "present-7f146",
+        storageBucket: "present-7f146.firebasestorage.app",
+        messagingSenderId: "336235045915",
+        appId: "1:336235045915:web:7580637c7b83437dff44be"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 기본 데이터 변수
+    const avatars = ['🐢', '🦝', '🐼', '🦊', '🦁', '🐶', '🐈', '🐱', '🐩', '🐑', '🐿️', '🐒', '🐥', '🐺', '🐻', '🐰', '🐹', '🐯', '🦛', '🦔'];
+    let students = [];
+    let pendingRequests = [];
+    let isTeacherMode = false;
+    let currentTab = 'time';
+    let targetStudentIds = [];
+    let currentActionType = 'plus';
+    let selectedPoints = 1;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initFirestoreListeners();
+    });
+
+    // -----------------------------------------------------------------
+    // 2. 실시간 Firestore 데이터 연동
+    // -----------------------------------------------------------------
+    function initFirestoreListeners() {
+        db.collection('students').orderBy('id', 'asc').onSnapshot(snapshot => {
+            if (snapshot.empty) {
+                seedInitialStudents();
+            } else {
+                students = snapshot.docs.map(doc => doc.data());
+                renderGrid();
+            }
+        });
+
+        db.collection('requests').where('status', '==', 'pending').onSnapshot(snapshot => {
+            pendingRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            document.getElementById('pendingCount').textContent = pendingRequests.length;
+            renderPendingList();
+        });
+    }
+
+    function seedInitialStudents() {
+        const batch = db.batch();
+        for (let i = 1; i <= 24; i++) {
+            const studentRef = db.collection('students').doc(String(i));
+            batch.set(studentRef, {
+                id: i,
+                name: `학생 ${String.fromCharCode(64 + i)}`,
+                avatar: avatars[(i - 1) % avatars.length],
+                timeScore: 0,
+                taskScore: 0
+            });
+        }
+        batch.commit();
+    }
+
+    // -----------------------------------------------------------------
+    // 3. 신용등급 계산 함수 (이미지 표 기준)
+    // -----------------------------------------------------------------
+    function getCreditInfo(score) {
+        if (score >= 100) return { grade: '1등급', tax: '10%', interest: '10%(5%)', priority: '1순위', badgeClass: 'grade-1' };
+        if (score >= 81)  return { grade: '2등급', tax: '12%', interest: '8%(4%)', priority: '2순위', badgeClass: 'grade-2' };
+        if (score >= 71)  return { grade: '3등급', tax: '14%', interest: '7%(3%)', priority: '3순위', badgeClass: 'grade-3' };
+        if (score >= 61)  return { grade: '4등급', tax: '16%', interest: '6%(3%)', priority: '3순위', badgeClass: 'grade-4' };
+        if (score >= 51)  return { grade: '5등급', tax: '15%', interest: '5%(2%)', priority: '4순위', badgeClass: 'grade-5' };
+        if (score >= 41)  return { grade: '6등급', tax: '17%', interest: '4%(2%)', priority: '4순위', badgeClass: 'grade-6' };
+        if (score >= 31)  return { grade: '7등급', tax: '18%', interest: '3%(1%)', priority: '4순위', badgeClass: 'grade-7' };
+        if (score >= 21)  return { grade: '8등급', tax: '19%', interest: '2%(1%)', priority: '5순위', badgeClass: 'grade-8' };
+        if (score >= 11)  return { grade: '9등급', tax: '20%', interest: '1%(무이자)', priority: '6순위', badgeClass: 'grade-9' };
+        return { grade: '10등급', tax: '25%', interest: '무이자', priority: '7순위', badgeClass: 'grade-10' };
+    }
+
+    // -----------------------------------------------------------------
+    // 4. 교사 관리자 인증 모드 (비밀번호: 4800)
+    // -----------------------------------------------------------------
+    function toggleTeacherMode() {
+        if (!isTeacherMode) {
+            const pw = prompt("🔑 교사 관리자 비밀번호를 입력하세요:");
+            if (pw === "4800") {
+                isTeacherMode = true;
+                document.getElementById('modeBadge').className = "mode-badge mode-teacher";
+                document.getElementById('modeBadge').textContent = "👑 교사 관리자 모드";
+                document.getElementById('teacherToggleBtn').textContent = "🔒 관리자 잠금";
+                document.getElementById('pendingBtn').style.display = "inline-block";
+                document.getElementById('resetBtn').style.display = "inline-block";
+                alert("교사 관리자 모드로 전환되었습니다.");
+            } else if (pw !== null) {
+                alert("❌ 비밀번호가 올바르지 않습니다.");
+            }
+        } else {
+            isTeacherMode = false;
+            document.getElementById('modeBadge').className = "mode-badge mode-student";
+            document.getElementById('modeBadge').textContent = "💻 학생 접속 모드";
+            document.getElementById('teacherToggleBtn').textContent = "🔑 교사 관리자 인증";
+            document.getElementById('pendingBtn').style.display = "none";
+            document.getElementById('resetBtn').style.display = "none";
+        }
+        renderGrid();
+    }
+
+    // -----------------------------------------------------------------
+    // 5. 학생 신청 및 교사 승인 로직
+    // -----------------------------------------------------------------
+    function submitScoreRequest() {
+        const period = document.getElementById('scorePeriod').value;
+        const reason = document.getElementById('scoreReason').value.trim() || '사유 미입력';
+        const delta = currentActionType === 'plus' ? selectedPoints : -selectedPoints;
+        
+        let category = currentTab === 'time' ? '시간통계' : (currentTab === 'task' ? '과제통계' : document.getElementById('scoreCategory').value);
+        const nowStr = new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+
+        const batch = db.batch();
+
+        targetStudentIds.forEach(studentId => {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            if (isTeacherMode) {
+                const studentRef = db.collection('students').doc(String(studentId));
+                const fieldToUpdate = category === '시간통계' ? 'timeScore' : 'taskScore';
+                const currentScore = category === '시간통계' ? student.timeScore : student.taskScore;
+
+                batch.update(studentRef, { [fieldToUpdate]: currentScore + delta });
+            } else {
+                const reqRef = db.collection('requests').doc();
+                batch.set(reqRef, {
+                    studentId: student.id,
+                    studentName: student.name,
+                    category: category,
+                    period: period,
+                    score: delta,
+                    reason: reason,
+                    timestamp: nowStr,
+                    status: 'pending'
+                });
+            }
+        });
+
+        batch.commit().then(() => {
+            if (isTeacherMode) alert("점수가 즉시 반영되었습니다.");
+            else alert(" 선생님께 승인 요청을 전달했습니다!");
+            
+            deselectAll();
+            closeModal('scoreModal');
+        });
+    }
+
+    function approveRequest(reqId, studentId, category, score) {
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
+
+        const fieldToUpdate = category === '시간통계' ? 'timeScore' : 'taskScore';
+        const currentScore = category === '시간통계' ? (student.timeScore || 0) : (student.taskScore || 0);
+
+        const batch = db.batch();
+        batch.update(db.collection('students').doc(String(studentId)), {
+            [fieldToUpdate]: currentScore + score
+        });
+        batch.update(db.collection('requests').doc(reqId), { status: 'approved' });
+        batch.commit();
+    }
+
+    function rejectRequest(reqId) {
+        if (confirm("이 신청을 거절하시겠습니까?")) {
+            db.collection('requests').doc(reqId).update({ status: 'rejected' });
+        }
+    }
+
+    // -----------------------------------------------------------------
+    // 6. 화면 렌더링 및 UI 조작
+    // -----------------------------------------------------------------
+    function renderGrid() {
+        const grid = document.getElementById('studentGrid');
+        grid.innerHTML = '';
+
+        students.forEach(s => {
+            const card = document.createElement('div');
+            
+            if (currentTab === 'credit') {
+                const creditScore = 100 + (s.timeScore || 0) + (s.taskScore || 0);
+                const info = getCreditInfo(creditScore);
+
+                card.className = `student-card credit-card ${s.selected ? 'selected' : ''}`;
+                card.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                        s.selected = !s.selected;
+                        renderGrid();
+                        updateSelectedCount();
+                    }
+                };
+
+                card.innerHTML = `
+                    <div class="card-top">
+                        <input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});">
+                        <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span>
+                        <span style="font-size:16px; font-weight:bold;">${s.name}</span>
+                        <span class="badge ${info.badgeClass}">${info.grade}</span>
+                    </div>
+                    <div class="card-middle">
+                        <div class="avatar">${s.avatar}</div>
+                        <div style="text-align:right;">
+                            <div class="score-display ${creditScore < 100 ? 'negative' : ''}">${creditScore}점</div>
+                            <div style="font-size:11px; color:#6b7280; margin-top:2px;">(시간:${s.timeScore >= 0 ? '+'+s.timeScore : s.timeScore} / 과제:${s.taskScore >= 0 ? '+'+s.taskScore : s.taskScore})</div>
+                        </div>
+                    </div>
+                    <div class="credit-info-bar">
+                        <span>세금 <b>${info.tax}</b></span>
+                        <span>이자 <b>${info.interest}</b></span>
+                        <span>우선 <b>${info.priority}</b></span>
+                    </div>
+                    <div class="card-bottom-actions">
+                        <button class="action-btn btn-minus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'minus');">-</button>
+                        <button class="action-btn btn-plus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'plus');">+</button>
+                    </div>
+                `;
+            } else {
+                const score = currentTab === 'time' ? s.timeScore : s.taskScore;
+                card.className = `student-card ${s.selected ? 'selected' : ''}`;
+                
+                card.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                        s.selected = !s.selected;
+                        renderGrid();
+                        updateSelectedCount();
+                    }
+                };
+
+                card.innerHTML = `
+                    <div class="card-top">
+                        <input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});">
+                        <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span>
+                        <span style="font-size:17px; font-weight:bold;">${s.name}</span>
+                    </div>
+                    <div class="card-middle">
+                        <div class="avatar">${s.avatar}</div>
+                        <div class="score-display ${score < 0 ? 'negative' : ''}">${score > 0 ? '+' + score : score}</div>
+                    </div>
+                    <div class="card-bottom-actions">
+                        <button class="action-btn btn-minus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'minus');">-</button>
+                        <button class="action-btn btn-plus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'plus');">+</button>
+                    </div>
+                `;
+            }
+            grid.appendChild(card);
+        });
+        updateSelectedCount();
+    }
+
+    function renderPendingList() {
+        const container = document.getElementById('pendingList');
+        container.innerHTML = '';
+
+        if (pendingRequests.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:30px;">대기 중인 승인 요청이 없습니다.</div>`;
+            return;
+        }
+
+        pendingRequests.forEach(req => {
+            const item = document.createElement('div');
+            item.className = 'pending-item';
+            const scoreColor = req.score > 0 ? '#3b82f6' : '#ef4444';
+
+            item.innerHTML = `
+                <div>
+                    <strong>${req.studentName}</strong>
+                    <span style="font-size:12px; color:#6b7280; margin-left:6px;">[${req.category} | ${req.period}]</span>
+                    <br>
+                    <span style="color:${scoreColor}; font-weight:bold;">${req.score > 0 ? '+' : ''}${req.score}점</span>
+                    <span style="font-size:13px; color:#374151;"> - 사유: ${req.reason}</span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-approve" onclick="approveRequest('${req.id}', ${req.studentId}, '${req.category}', ${req.score})">승인</button>
+                    <button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function openSingleModal(studentId, actionType) {
+        targetStudentIds = [studentId];
+        currentActionType = actionType;
+        showModal();
+    }
+
+    function openBatchModal(actionType) {
+        const selected = students.filter(s => s.selected);
+        if (selected.length === 0) { alert("학생 카드를 먼저 선택해 주세요."); return; }
+        targetStudentIds = selected.map(s => s.id);
+        currentActionType = actionType;
+        showModal();
+    }
+
+    function showModal() {
+        document.getElementById('modalTitle').textContent = isTeacherMode ? "점수 직접 부여/차감" : "선생님께 점수 승인 신청";
+        document.getElementById('submitBtn').textContent = isTeacherMode ? "즉시 반영" : "승인 신청 전송";
+        
+        // 신용도 탭일 때는 통계청 카테고리 선택창 노출
+        document.getElementById('categorySelectGroup').style.display = currentTab === 'credit' ? 'block' : 'none';
+
+        const container = document.getElementById('modalScoreOptions');
+        container.innerHTML = '';
+        [1, 2, 3, 5, 10].forEach((pts, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `score-opt-btn ${idx === 0 ? 'selected' : ''}`;
+            btn.textContent = `${currentActionType === 'plus' ? '+' : '-'}${pts}점`;
+            btn.onclick = () => {
+                document.querySelectorAll('.score-opt-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedPoints = pts;
+            };
+            container.appendChild(btn);
+        });
+
+        document.getElementById('scoreModal').style.display = 'flex';
+    }
+
+    function openPendingModal() { document.getElementById('pendingModal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        
+        if (tab === 'time') btns[0].classList.add('active');
+        else if (tab === 'task') btns[1].classList.add('active');
+        else if (tab === 'credit') btns[2].classList.add('active');
+
+        // 신용도 탭일 때만 안내표 표시
+        document.getElementById('creditRefTable').style.display = (tab === 'credit') ? 'block' : 'none';
+        
+        renderGrid();
+    }
+
+    function updateSelectedCount() { document.getElementById('selectedCount').textContent = students.filter(s => s.selected).length; }
+    function toggleSelect(id) { const s = students.find(s => s.id === id); if(s) s.selected = !s.selected; renderGrid(); }
+    function selectAll() { students.forEach(s => s.selected = true); renderGrid(); }
+    function deselectAll() { students.forEach(s => s.selected = false); renderGrid(); }
+
+    function resetAllData() {
+        const pw = prompt("🔒 모든 데이터를 초기화하시겠습니까? 비밀번호(4800)를 입력하세요:");
+        if (pw === "4800") {
+            const batch = db.batch();
+            students.forEach(s => {
+                batch.update(db.collection('students').doc(String(s.id)), { timeScore: 0, taskScore: 0 });
+            });
+            batch.commit().then(() => alert("모든 점수가 초기화되었습니다."));
+        }
+    }
+</script>
+</body>
+</html>
