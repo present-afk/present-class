@@ -40,6 +40,8 @@
             background: #e2e8f0; color: var(--text-gray); border-radius: 10px; cursor: pointer; transition: all 0.2s;
         }
         .tab-btn.active { background: var(--primary-blue); color: white; }
+        .tab-btn-mgmt { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .tab-btn-mgmt.active { background: #d97706; color: white; }
 
         .batch-bar {
             background: white; padding: 12px 20px; border-radius: 12px; display: flex;
@@ -101,7 +103,7 @@
 
         /* 모달 디자인 */
         .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-card { background: white; padding: 24px; border-radius: 16px; width: 500px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column; }
+        .modal-card { background: white; padding: 24px; border-radius: 16px; width: 520px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column; }
         .modal-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center; }
         
         .pending-list { overflow-y: auto; max-height: 420px; margin-bottom: 15px; }
@@ -132,13 +134,39 @@
         </div>
     </header>
 
+    <!-- 탭 순서: 관리자 모드 전용 학생 관리 탭 추가 -->
     <nav class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('time')">⏱️ 시간통계청</button>
+        <button class="tab-btn active" onclick="switchTab('salary')">💵 월급/잔고 관리</button>
+        <button class="tab-btn" onclick="switchTab('savings')">🏦 저축 통장</button>
+        <button class="tab-btn" onclick="switchTab('time')">⏱️ 시간통계청</button>
         <button class="tab-btn" onclick="switchTab('task')">📋 과제통계청</button>
         <button class="tab-btn" onclick="switchTab('credit')">💳 신용도 조회</button>
-        <button class="tab-btn" onclick="switchTab('salary')">💵 월급/잔고 관리</button>
-        <button class="tab-btn" onclick="switchTab('savings')">🏦 저축 통장</button>
+        <button id="tabStudentMgmt" class="tab-btn tab-btn-mgmt" style="display:none;" onclick="switchTab('student_mgmt')">👨‍🎓 학생 관리 (관리자)</button>
     </nav>
+
+    <!-- [관리자 전용] 학생 등록 (전입생 추가) 상단 박스 -->
+    <div id="studentMgmtBox" style="display:none; background:white; padding:18px 22px; border-radius:12px; margin-bottom:16px; box-shadow:0 2px 6px rgba(0,0,0,0.03); border:1px solid #fde68a;">
+        <h3 style="font-size:16px; margin-bottom:12px; color:#92400e;">➕ 새 학생 등록 (전입 / 명단 추가)</h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <input type="number" id="newStudentId" placeholder="번호 (예: 25)" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:120px; font-size:14px;">
+            <input type="text" id="newStudentName" placeholder="이름 (예: 홍길동)" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:160px; font-size:14px;">
+            <select id="newStudentAvatar" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px;">
+                <option value="🐢">🐢 거북이</option>
+                <option value="🦝">🦝 너구리</option>
+                <option value="🐼">🐼 판다</option>
+                <option value="🦊">🦊 여우</option>
+                <option value="🦁">🦁 사자</option>
+                <option value="🐶">🐶 강아지</option>
+                <option value="🐈">🐈 고양이</option>
+                <option value="🐰">🐰 토끼</option>
+                <option value="🐻">🐻 곰</option>
+                <option value="🐯">🐯 호랑이</option>
+                <option value="🐥">🐥 병아리</option>
+                <option value="🐿️">🐿️ 다람쥐</option>
+            </select>
+            <button class="btn-control" style="background:var(--primary-blue); color:white; border:none; padding:9px 16px;" onclick="addStudent()">학생 등록하기</button>
+        </div>
+    </div>
 
     <!-- 신용도 안내 표 영역 -->
     <div id="creditRefTable" style="display:none; margin-bottom: 20px;">
@@ -183,9 +211,9 @@
                 <button class="btn-control" onclick="deselectAll()">선택 해제</button>
                 
                 <!-- 탭별 가변 컨트롤 버튼 -->
-                <button id="btnSalaryModal" class="btn-control btn-salary" style="display:none;" onclick="openSalaryModal()">🏦 은행원: 월급 지급 신청</button>
-                <button id="btnScorePlus" class="btn-control primary-plus" onclick="openBatchModal('plus')">점수 신청 (+)</button>
-                <button id="btnScoreMinus" class="btn-control primary-minus" onclick="openBatchModal('minus')">점수 신청 (-)</button>
+                <button id="btnSalaryModal" class="btn-control btn-salary" onclick="openSalaryModal()">🏦 은행원: 일괄 월급 지급 신청</button>
+                <button id="btnScorePlus" class="btn-control primary-plus" style="display:none;" onclick="openBatchModal('plus')">점수 신청 (+)</button>
+                <button id="btnScoreMinus" class="btn-control primary-minus" style="display:none;" onclick="openBatchModal('minus')">점수 신청 (-)</button>
                 
                 <button id="resetBtn" class="btn-control" style="display:none; background:#fff1f2; color:#e11d48;" onclick="resetAllData()">🔒 데이터 초기화</button>
             </div>
@@ -228,21 +256,26 @@
     </div>
 </div>
 
-<!-- 2. 은행원 월급 지급 신청 모달 -->
+<!-- 2. 은행원 일괄 월급 지급 신청 모달 (학생별 개별 입력) -->
 <div class="modal-overlay" id="salaryModal">
-    <div class="modal-card" style="width:420px;">
-        <div class="modal-title">💵 은행원: 월급 지급 신청</div>
-        <div class="input-group">
-            <label for="salaryAmount">지급 월급 금액 (PR)</label>
-            <input type="number" id="salaryAmount" placeholder="예: 500" value="500">
-        </div>
+    <div class="modal-card">
+        <div class="modal-title">💵 은행원: 일괄 월급 지급 신청</div>
         <div class="input-group">
             <label for="salaryMemo">월급 명목 / 메모</label>
-            <input type="text" id="salaryMemo" placeholder="예: 8월 1차 주급 / 기본 월급">
+            <input type="text" id="salaryMemo" placeholder="예: 8월 기본 월급" value="8월 기본 월급">
         </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <label style="font-size:13px; font-weight:bold;">학생별 지급 월급 (기본 100 PR)</label>
+            <button type="button" class="btn-control" style="font-size:11px; padding:3px 8px;" onclick="resetAllSalaryInputs(100)">전체 100PR 채우기</button>
+        </div>
+        
+        <!-- 전체 학생 월급 입력 리스트 -->
+        <div id="salaryStudentList" style="max-height:280px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; padding:10px; margin-bottom:15px; background:#fafafa;">
+        </div>
+
         <div class="modal-btns">
             <button class="modal-btn cancel" onclick="closeModal('salaryModal')">취소</button>
-            <button class="modal-btn confirm" onclick="submitSalaryRequest()">월급 지급 신청 전송</button>
+            <button class="modal-btn confirm" onclick="submitSalaryRequest()">일괄 지급 신청 전송</button>
         </div>
     </div>
 </div>
@@ -282,7 +315,7 @@
 </div>
 
 <script>
-    // 1. 파이어베이스 설정
+    // 파이어베이스 설정
     const firebaseConfig = {
         apiKey: "AIzaSyAQm52wv-5lPH0mxJwZ75qlsPeAdAHZsBk",
         authDomain: "present-7f146.firebaseapp.com",
@@ -299,7 +332,7 @@
     let students = [];
     let pendingRequests = [];
     let isTeacherMode = false;
-    let currentTab = 'time';
+    let currentTab = 'salary'; // 기본 첫 탭: 월급/잔고 관리
     let targetStudentIds = [];
     let currentActionType = 'plus';
     let selectedPoints = 1;
@@ -345,6 +378,62 @@
         batch.commit();
     }
 
+    // [관리자 전용] 신규 학생 추가 (전입생 등록)
+    function addStudent() {
+        const idInput = document.getElementById('newStudentId');
+        const nameInput = document.getElementById('newStudentName');
+        const avatarInput = document.getElementById('newStudentAvatar');
+
+        const id = parseInt(idInput.value);
+        const name = nameInput.value.trim();
+        const avatar = avatarInput.value;
+
+        if (!id || isNaN(id) || id <= 0) {
+            alert("올바른 학생 번호를 입력해 주세요.");
+            return;
+        }
+        if (!name) {
+            alert("학생 이름을 입력해 주세요.");
+            return;
+        }
+
+        if (students.some(s => s.id === id)) {
+            alert(`이미 ${id}번 학생이 존재합니다. 다른 번호를 사용해 주세요.`);
+            return;
+        }
+
+        db.collection('students').doc(String(id)).set({
+            id: id,
+            name: name,
+            avatar: avatar,
+            timeScore: 0,
+            taskScore: 0,
+            balance: 0,
+            savings: 0,
+            savingsTerm: '4주',
+            savingsStartDate: ''
+        }).then(() => {
+            alert(`[${id}번 ${name}] 학생이 등록되었습니다.\n모든 탭에 자동으로 즉시 반영됩니다.`);
+            idInput.value = '';
+            nameInput.value = '';
+        }).catch(err => {
+            console.error("Error adding student: ", err);
+            alert("학생 등록 중 오류가 발생했습니다.");
+        });
+    }
+
+    // [관리자 전용] 학생 삭제 (전학 처리)
+    function deleteStudent(id, name) {
+        if (confirm(`정말 ${id}번 [${name}] 학생을 삭제(전학) 처리하시겠습니까?\n이 학생의 데이터가 모든 탭에서 제거됩니다.`)) {
+            db.collection('students').doc(String(id)).delete().then(() => {
+                alert(`${id}번 [${name}] 학생이 삭제되었습니다.`);
+            }).catch(err => {
+                console.error("Error deleting student: ", err);
+                alert("학생 삭제 중 오류가 발생했습니다.");
+            });
+        }
+    }
+
     // 신용등급 및 이자율 안내 함수
     function getCreditInfo(score) {
         if (score >= 100) return { grade: '1등급', tax: '10%', interest: '10%(5%)', rate4w: 10, rate2w: 5, priority: '1순위', badgeClass: 'grade-1' };
@@ -369,6 +458,7 @@
                 document.getElementById('teacherToggleBtn').textContent = "🔒 관리자 잠금";
                 document.getElementById('pendingBtn').style.display = "inline-block";
                 document.getElementById('resetBtn').style.display = "inline-block";
+                document.getElementById('tabStudentMgmt').style.display = "inline-block"; // 학생 관리 탭 표시
                 alert("교사 관리자 모드로 전환되었습니다.");
             } else if (pw !== null) {
                 alert("❌ 비밀번호가 올바르지 않습니다.");
@@ -380,6 +470,11 @@
             document.getElementById('teacherToggleBtn').textContent = "🔑 교사 관리자 인증";
             document.getElementById('pendingBtn').style.display = "none";
             document.getElementById('resetBtn').style.display = "none";
+            document.getElementById('tabStudentMgmt').style.display = "none"; // 학생 관리 탭 숨김
+
+            if (currentTab === 'student_mgmt') {
+                switchTab('salary');
+            }
         }
         renderGrid();
     }
@@ -427,49 +522,80 @@
         });
     }
 
-    // 은행원 월급 지급 신청
+    // 은행원 일괄 월급 지급 모달 열기
     function openSalaryModal() {
-        const selected = students.filter(s => s.selected);
-        if (selected.length === 0) { alert("월급을 지급할 학생을 선택해 주세요."); return; }
-        targetStudentIds = selected.map(s => s.id);
+        const container = document.getElementById('salaryStudentList');
+        container.innerHTML = '';
+
+        students.forEach(s => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 4px; border-bottom:1px solid #e2e8f0;';
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:20px;">${s.avatar}</span>
+                    <strong style="font-size:14px; color:#334155;">${s.id}. ${s.name}</strong>
+                </div>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <input type="number" class="salary-input-item" data-id="${s.id}" value="100" min="0" 
+                        style="width:90px; padding:6px; border:1px solid #cbd5e1; border-radius:6px; text-align:right; font-size:14px; font-weight:bold; color:#1e293b;">
+                    <span style="font-size:13px; font-weight:bold; color:var(--primary-gold);">PR</span>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+
         document.getElementById('salaryModal').style.display = 'flex';
     }
 
+    // 전체 입력값 변경 버튼
+    function resetAllSalaryInputs(val) {
+        document.querySelectorAll('.salary-input-item').forEach(input => {
+            input.value = val;
+        });
+    }
+
+    // 일괄 월급 지급 신청 전송
     function submitSalaryRequest() {
-        const amount = parseInt(document.getElementById('salaryAmount').value) || 0;
         const memo = document.getElementById('salaryMemo').value.trim() || '월급 지급';
         const nowStr = new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-
-        if (amount <= 0) { alert("올바른 월급 금액을 입력해 주세요."); return; }
+        const inputs = document.querySelectorAll('.salary-input-item');
 
         const batch = db.batch();
+        let hasValidItems = false;
 
-        targetStudentIds.forEach(studentId => {
+        inputs.forEach(input => {
+            const studentId = parseInt(input.getAttribute('data-id'));
+            const amount = parseInt(input.value) || 0;
             const student = students.find(s => s.id === studentId);
-            if (!student) return;
 
-            if (isTeacherMode) {
-                const studentRef = db.collection('students').doc(String(studentId));
-                const currentBalance = student.balance || 0;
-                batch.update(studentRef, { balance: currentBalance + amount });
-            } else {
-                const reqRef = db.collection('requests').doc();
-                batch.set(reqRef, {
-                    type: 'salary',
-                    studentId: student.id,
-                    studentName: student.name,
-                    amount: amount,
-                    reason: memo,
-                    timestamp: nowStr,
-                    status: 'pending'
-                });
+            if (student && amount > 0) {
+                hasValidItems = true;
+                if (isTeacherMode) {
+                    const studentRef = db.collection('students').doc(String(studentId));
+                    batch.update(studentRef, { balance: (student.balance || 0) + amount });
+                } else {
+                    const reqRef = db.collection('requests').doc();
+                    batch.set(reqRef, {
+                        type: 'salary',
+                        studentId: student.id,
+                        studentName: student.name,
+                        amount: amount,
+                        reason: memo,
+                        timestamp: nowStr,
+                        status: 'pending'
+                    });
+                }
             }
         });
 
+        if (!hasValidItems) {
+            alert("지급할 월급 금액을 1개 이상 입력해 주세요.");
+            return;
+        }
+
         batch.commit().then(() => {
-            if (isTeacherMode) alert("월급이 즉시 잔고에 채워졌습니다.");
-            else alert("선생님께 월급 지급 승인 요청이 전송되었습니다!");
-            deselectAll();
+            if (isTeacherMode) alert("모든 학생의 월급이 즉시 잔고에 채워졌습니다.");
+            else alert("선생님께 일괄 월급 지급 승인 요청이 전송되었습니다!");
             closeModal('salaryModal');
         });
     }
@@ -586,30 +712,24 @@
             const balance = s.balance || 0;
             const savings = s.savings || 0;
 
-            if (currentTab === 'credit') {
-                card.className = `student-card credit-card ${s.selected ? 'selected' : ''}`;
+            if (currentTab === 'student_mgmt') {
+                card.className = `student-card ${s.selected ? 'selected' : ''}`;
                 card.onclick = (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') toggleSelect(s.id); };
                 card.innerHTML = `
                     <div class="card-top">
                         <input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});">
                         <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span>
                         <span style="font-size:16px; font-weight:bold;">${s.name}</span>
-                        <span class="badge ${info.badgeClass}">${info.grade}</span>
                     </div>
                     <div class="card-middle">
                         <div class="avatar">${s.avatar}</div>
                         <div style="text-align:right;">
-                            <div class="score-display ${creditScore < 31 ? 'negative' : ''}">${creditScore}점</div>
-                            <div style="font-size:11px; color:#6b7280; margin-top:2px;">(시간:${s.timeScore >= 0 ? '+'+s.timeScore : s.timeScore} / 과제:${s.taskScore >= 0 ? '+'+s.taskScore : s.taskScore})</div>
+                            <div style="font-size:11px; color:#6b7280;">총 보유 자산</div>
+                            <div class="pr-display" style="font-size:16px;">${balance + savings} PR</div>
                         </div>
                     </div>
-                    <div class="info-box">
-                        <div class="info-box-row"><span>세금 <b>${info.tax}</b></span><span>우선 <b>${info.priority}</b></span></div>
-                        <div class="info-box-row"><span>은행 이자율</span><span><b>${info.interest}</b></span></div>
-                    </div>
                     <div class="card-bottom-actions">
-                        <button class="action-btn btn-minus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'minus');">-</button>
-                        <button class="action-btn btn-plus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'plus');">+</button>
+                        <button class="action-btn btn-cancel" style="width:100%; padding:6px 0;" onclick="event.stopPropagation(); deleteStudent(${s.id}, '${s.name}');">🗑️ 학생 삭제 (전학)</button>
                     </div>
                 `;
             } else if (currentTab === 'salary') {
@@ -633,7 +753,7 @@
                         <div class="info-box-row"><span>총 자산:</span><span><b>${balance + savings} PR</b></span></div>
                     </div>
                     <div class="card-bottom-actions">
-                        <button class="action-btn btn-bank" onclick="event.stopPropagation(); targetStudentIds=[${s.id}]; openSalaryModal();">월급 지급</button>
+                        <button class="action-btn btn-bank" onclick="event.stopPropagation(); openSalaryModal();">월급 지급</button>
                     </div>
                 `;
             } else if (currentTab === 'savings') {
@@ -666,6 +786,32 @@
                                <button class="action-btn btn-bank" onclick="event.stopPropagation(); completeSavings(${s.id}, ${expectedInterest});">만기해지</button>`
                             : `<button class="action-btn btn-plus" style="width:100%;" onclick="event.stopPropagation(); openSavingsModal(${s.id});">💰 저축하기</button>`
                         }
+                    </div>
+                `;
+            } else if (currentTab === 'credit') {
+                card.className = `student-card credit-card ${s.selected ? 'selected' : ''}`;
+                card.onclick = (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') toggleSelect(s.id); };
+                card.innerHTML = `
+                    <div class="card-top">
+                        <input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});">
+                        <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span>
+                        <span style="font-size:16px; font-weight:bold;">${s.name}</span>
+                        <span class="badge ${info.badgeClass}">${info.grade}</span>
+                    </div>
+                    <div class="card-middle">
+                        <div class="avatar">${s.avatar}</div>
+                        <div style="text-align:right;">
+                            <div class="score-display ${creditScore < 31 ? 'negative' : ''}">${creditScore}점</div>
+                            <div style="font-size:11px; color:#6b7280; margin-top:2px;">(시간:${s.timeScore >= 0 ? '+'+s.timeScore : s.timeScore} / 과제:${s.taskScore >= 0 ? '+'+s.taskScore : s.taskScore})</div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-row"><span>세금 <b>${info.tax}</b></span><span>우선 <b>${info.priority}</b></span></div>
+                        <div class="info-box-row"><span>은행 이자율</span><span><b>${info.interest}</b></span></div>
+                    </div>
+                    <div class="card-bottom-actions">
+                        <button class="action-btn btn-minus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'minus');">-</button>
+                        <button class="action-btn btn-plus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'plus');">+</button>
                     </div>
                 `;
             } else {
@@ -776,20 +922,29 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function switchTab(tab) {
+        if (tab === 'student_mgmt' && !isTeacherMode) {
+            alert("교사 관리자만 접근할 수 있는 탭입니다.");
+            switchTab('salary');
+            return;
+        }
+
         currentTab = tab;
         const btns = document.querySelectorAll('.tab-btn');
         btns.forEach(b => b.classList.remove('active'));
         
         document.getElementById('creditRefTable').style.display = (tab === 'credit' || tab === 'savings') ? 'block' : 'none';
+        document.getElementById('studentMgmtBox').style.display = (tab === 'student_mgmt' && isTeacherMode) ? 'block' : 'none';
+
         document.getElementById('btnSalaryModal').style.display = (tab === 'salary') ? 'inline-block' : 'none';
         document.getElementById('btnScorePlus').style.display = (tab === 'time' || tab === 'task' || tab === 'credit') ? 'inline-block' : 'none';
         document.getElementById('btnScoreMinus').style.display = (tab === 'time' || tab === 'task' || tab === 'credit') ? 'inline-block' : 'none';
 
-        if (tab === 'time') btns[0].classList.add('active');
-        else if (tab === 'task') btns[1].classList.add('active');
-        else if (tab === 'credit') btns[2].classList.add('active');
-        else if (tab === 'salary') btns[3].classList.add('active');
-        else if (tab === 'savings') btns[4].classList.add('active');
+        if (tab === 'salary') btns[0].classList.add('active');
+        else if (tab === 'savings') btns[1].classList.add('active');
+        else if (tab === 'time') btns[2].classList.add('active');
+        else if (tab === 'task') btns[3].classList.add('active');
+        else if (tab === 'credit') btns[4].classList.add('active');
+        else if (tab === 'student_mgmt') btns[5].classList.add('active');
 
         renderGrid();
     }
