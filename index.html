@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>선물나라 학급 경제 및 통계 관리 시스템</title>
+    <title>선물나라 학급 경제 및 종합 관리 시스템</title>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -25,12 +25,13 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-dark); padding: 20px; }
-        .container { max-width: 1280px; margin: 0 auto; }
+        .container { max-width: 1380px; margin: 0 auto; }
 
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;}
         h1 { font-size: 24px; color: #1e293b; display: flex; align-items: center; gap: 10px; }
         
-        .mode-badge { padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+        .user-bar { display: flex; align-items: center; gap: 10px; background: white; padding: 8px 16px; border-radius: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .mode-badge { padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; }
         .mode-student { background: #e0f2fe; color: #0369a1; }
         .mode-teacher { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
 
@@ -42,6 +43,8 @@
         .tab-btn.active { background: var(--primary-blue); color: white; }
         .tab-btn-mgmt { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .tab-btn-mgmt.active { background: #d97706; color: white; }
+        .tab-btn-store { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
+        .tab-btn-store.active { background: #db2777; color: white; }
 
         .batch-bar {
             background: white; padding: 12px 20px; border-radius: 12px; display: flex;
@@ -54,30 +57,29 @@
             border-radius: 8px; background: #f8fafc; cursor: pointer; transition: all 0.2s;
         }
         .btn-control:hover { background: #e2e8f0; }
-        .btn-teacher-lock { background: #fef3c7; color: #b45309; border-color: #fde68a; }
-        .btn-pending-count { background: #fee2e2; color: #dc2626; border-color: #fca5a5; position: relative; }
+        .btn-login { background: #3b82f6; color: white; border: none; }
+        .btn-pending-count { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
         .btn-salary { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
 
-        /* 그리드 카드 */
-        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        /* 그리드 및 카드 디자인 */
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 30px; }
         .student-card {
             background: var(--card-bg); border-radius: var(--border-radius); padding: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column;
-            justify-content: space-between; height: 160px; border: 2px solid transparent; cursor: pointer;
+            justify-content: space-between; min-height: 160px; border: 2px solid transparent; cursor: pointer;
         }
-        .student-card.credit-card { height: 195px; }
-        .student-card.financial-card { height: 215px; }
         .student-card.selected { border-color: var(--primary-blue); background-color: #f0f7ff; }
         
         .card-top { display: flex; justify-content: space-between; align-items: center; }
-        .card-middle { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
-        .avatar { font-size: 34px; background: #ffffff; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-middle { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+        .avatar { font-size: 36px; background: #ffffff; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
         .score-display { font-size: 24px; font-weight: 800; color: var(--primary-blue); }
         .score-display.negative { color: var(--primary-red); }
         .pr-display { font-size: 20px; font-weight: 800; color: var(--primary-gold); }
 
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; }
+        .badge-job { background: #6366f1; color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight:bold; }
         .grade-1 { background-color: #10b981; } .grade-2 { background-color: #3b82f6; }
         .grade-3 { background-color: #0284c7; } .grade-4 { background-color: #0d9488; }
         .grade-5 { background-color: #f59e0b; } .grade-6 { background-color: #ea580c; }
@@ -94,25 +96,43 @@
         .ref-table th, .ref-table td { padding: 8px 10px; border: 1px solid #e2e8f0; }
         .ref-table th { background-color: #f8fafc; font-weight: bold; color: #334155; }
 
-        .card-bottom-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
-        .action-btn { padding: 4px 10px; border-radius: 6px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .card-bottom-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 8px; }
+        .action-btn { padding: 5px 10px; border-radius: 6px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; }
         .btn-plus { background: #dbeafe; color: var(--primary-blue); }
         .btn-minus { background: #fee2e2; color: var(--primary-red); }
-        .btn-bank { background: #dcfce7; color: #15803d; }
         .btn-cancel { background: #fee2e2; color: #b91c1c; }
+
+        /* 수행도 관리 테이블 */
+        .job-table-container { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); overflow-x: auto; }
+        .job-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; white-space: nowrap; }
+        .job-table th, .job-table td { padding: 10px 8px; border: 1px solid #e2e8f0; }
+        .job-table th { background-color: #f8fafc; color: #334155; font-weight: bold; }
+
+        .eval-btn { padding: 4px 8px; font-weight: bold; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; font-size: 12px; }
+        .eval-O { background: #dcfce7; color: #15803d; border-color: #86efac; }
+        .eval-TRI { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+        .eval-X { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+
+        /* 매점 그리드 */
+        .store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .store-card { background: white; border-radius: 16px; padding: 16px; text-align: center; border: 1px solid #f1f5f9; box-shadow: 0 2px 6px rgba(0,0,0,0.03); display:flex; flex-direction:column; justify-content:space-between; }
+        .store-emoji { font-size: 48px; margin-bottom: 8px; }
+
+        /* 알림 리스트 */
+        .noti-item { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; }
 
         /* 모달 디자인 */
         .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-card { background: white; padding: 24px; border-radius: 16px; width: 520px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column; }
+        .modal-card { background: white; padding: 24px; border-radius: 16px; width: 550px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column; }
         .modal-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center; }
         
-        .pending-list { overflow-y: auto; max-height: 420px; margin-bottom: 15px; }
-        .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; gap: 10px; }
-        .btn-approve { background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .btn-reject { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .pending-list { overflow-y: auto; max-height: 400px; margin-bottom: 15px; }
+        .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; gap: 10px; }
+        .btn-approve { background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 5px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-reject { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 5px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
         .score-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .score-opt-btn { padding: 10px; font-size: 15px; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: pointer; }
+        .score-opt-btn { padding: 10px; font-size: 14px; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; cursor: pointer; }
         .score-opt-btn.selected { background: var(--primary-blue); color: white; }
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; }
@@ -128,41 +148,35 @@
 <div class="container">
     <header>
         <h1>🎁 선물나라 학급 종합 관리 시스템</h1>
-        <div>
-            <span id="modeBadge" class="mode-badge mode-student">💻 학생 접속 모드</span>
-            <button id="teacherToggleBtn" class="btn-control btn-teacher-lock" onclick="toggleTeacherMode()">🔑 교사 관리자 인증</button>
+        <div class="user-bar">
+            <span id="currentUserInfo" style="font-size:14px; font-weight:bold;">👤 로그인 필요</span>
+            <button class="btn-control btn-login" onclick="openLoginModal()">🔑 접속 모드 변경</button>
         </div>
     </header>
 
-    <!-- 탭 순서: 관리자 모드 전용 학생 관리 탭 추가 -->
-    <nav class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('salary')">💵 월급/잔고 관리</button>
-        <button class="tab-btn" onclick="switchTab('savings')">🏦 저축 통장</button>
-        <button class="tab-btn" onclick="switchTab('time')">⏱️ 시간통계청</button>
-        <button class="tab-btn" onclick="switchTab('task')">📋 과제통계청</button>
-        <button class="tab-btn" onclick="switchTab('credit')">💳 신용도 조회</button>
-        <button id="tabStudentMgmt" class="tab-btn tab-btn-mgmt" style="display:none;" onclick="switchTab('student_mgmt')">👨‍🎓 학생 관리 (관리자)</button>
-    </nav>
+    <!-- 동적 탭 네비게이션 -->
+    <nav class="nav-tabs" id="navTabs"></nav>
 
-    <!-- [관리자 전용] 학생 등록 (전입생 추가) 상단 박스 -->
+    <!-- [관리자 전용] 학생 신규 등록 박스 -->
     <div id="studentMgmtBox" style="display:none; background:white; padding:18px 22px; border-radius:12px; margin-bottom:16px; box-shadow:0 2px 6px rgba(0,0,0,0.03); border:1px solid #fde68a;">
         <h3 style="font-size:16px; margin-bottom:12px; color:#92400e;">➕ 새 학생 등록 (전입 / 명단 추가)</h3>
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <input type="number" id="newStudentId" placeholder="번호 (예: 25)" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:120px; font-size:14px;">
-            <input type="text" id="newStudentName" placeholder="이름 (예: 홍길동)" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:160px; font-size:14px;">
-            <select id="newStudentAvatar" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px;">
-                <option value="🐢">🐢 거북이</option>
-                <option value="🦝">🦝 너구리</option>
-                <option value="🐼">🐼 판다</option>
-                <option value="🦊">🦊 여우</option>
-                <option value="🦁">🦁 사자</option>
-                <option value="🐶">🐶 강아지</option>
-                <option value="🐈">🐈 고양이</option>
-                <option value="🐰">🐰 토끼</option>
-                <option value="🐻">🐻 곰</option>
-                <option value="🐯">🐯 호랑이</option>
-                <option value="🐥">🐥 병아리</option>
-                <option value="🐿️">🐿️ 다람쥐</option>
+            <input type="number" id="newStudentId" placeholder="번호 (예: 25)" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:110px;">
+            <input type="text" id="newStudentName" placeholder="이름 (예: 홍길동)" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; width:150px;">
+            <select id="newStudentAvatar" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px;">
+                <option value="🐢">🐢 거북이</option><option value="🦝">🦝 너구리</option>
+                <option value="🐼">🐼 판다</option><option value="🦊">🦊 여우</option>
+                <option value="🦁">🦁 사자</option><option value="🐶">🐶 강아지</option>
+                <option value="🐈">🐈 고양이</option><option value="🐰">🐰 토끼</option>
+            </select>
+            <select id="newStudentJob" style="padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px;">
+                <option value="일반">직업: 일반학생</option>
+                <option value="총리">직업: 👑 총리</option>
+                <option value="부총리">직업: 🤝 부총리</option>
+                <option value="은행원">직업: 🏦 은행원</option>
+                <option value="시간통계청">직업: ⏱️ 시간통계청</option>
+                <option value="과제통계청">직업: 📋 과제통계청</option>
+                <option value="매점관리자">직업: 📦 매점관리자</option>
             </select>
             <button class="btn-control" style="background:var(--primary-blue); color:white; border:none; padding:9px 16px;" onclick="addStudent()">학생 등록하기</button>
         </div>
@@ -176,11 +190,7 @@
                 <table class="ref-table">
                     <thead>
                         <tr>
-                            <th>신용등급</th>
-                            <th>신용점수</th>
-                            <th>세금</th>
-                            <th>4주 은행이자(2주)</th>
-                            <th>우선 순위</th>
+                            <th>신용등급</th><th>신용점수</th><th>세금</th><th>4주 이자(2주)</th><th>우선 순위</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -200,8 +210,10 @@
         </div>
     </div>
 
-    <main>
-        <div class="batch-bar">
+    <!-- 메인 컨텐츠 영역 -->
+    <main id="mainContent">
+        <!-- 상단 컨트롤 바 -->
+        <div class="batch-bar" id="batchBar">
             <div>선택된 학생: <span id="selectedCount" style="color:var(--primary-blue); font-weight:bold;">0</span>명</div>
             <div style="display:flex; gap:8px;">
                 <button id="pendingBtn" class="btn-control btn-pending-count" style="display:none;" onclick="openPendingModal()">
@@ -210,19 +222,111 @@
                 <button class="btn-control" onclick="selectAll()">전체 선택</button>
                 <button class="btn-control" onclick="deselectAll()">선택 해제</button>
                 
-                <!-- 탭별 가변 컨트롤 버튼 -->
-                <button id="btnSalaryModal" class="btn-control btn-salary" onclick="openSalaryModal()">🏦 은행원: 일괄 월급 지급 신청</button>
-                <button id="btnScorePlus" class="btn-control primary-plus" style="display:none;" onclick="openBatchModal('plus')">점수 신청 (+)</button>
-                <button id="btnScoreMinus" class="btn-control primary-minus" style="display:none;" onclick="openBatchModal('minus')">점수 신청 (-)</button>
-                
+                <button id="btnSalaryModal" class="btn-control btn-salary" style="display:none;" onclick="openSalaryModal()">🏦 은행원: 2주 월급 자동 계산 지급</button>
+                <button id="btnScorePlus" class="btn-control" style="display:none; background:#dbeafe; color:var(--primary-blue);" onclick="openBatchModal('plus')">점수 부여 (+)</button>
+                <button id="btnScoreMinus" class="btn-control" style="display:none; background:#fee2e2; color:var(--primary-red);" onclick="openBatchModal('minus')">점수 차감 (-)</button>
                 <button id="resetBtn" class="btn-control" style="display:none; background:#fff1f2; color:#e11d48;" onclick="resetAllData()">🔒 데이터 초기화</button>
             </div>
         </div>
+
+        <!-- 학생 카드 그리드 뷰 -->
         <div class="student-grid" id="studentGrid"></div>
+
+        <!-- 총리/부총리 전용: 직업 및 10일 수행도 관리 뷰 -->
+        <div id="jobMgmtView" style="display:none;">
+            <div style="background:white; padding:16px 20px; border-radius:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border:1px solid #fde68a;">
+                <div>
+                    <h3 style="font-size:16px; color:#92400e;">👨‍💼 총리/부총리: 직업 지정 및 2주(10일차) 수행도 관리</h3>
+                    <p style="font-size:12px; color:#6b7280; margin-top:4px;">
+                        📌 <b>O</b>: 월급 인정 | <b>△</b>: 경고 (2개 누적 시 미인정 1회) | <b>X</b>: 직업활동 안함 (1회당 월급 1/10 차감)
+                    </p>
+                </div>
+                <button class="btn-control" style="background:#fee2e2; color:#b91c1c; border-color:#fca5a5;" onclick="resetAllPerformances()">🔄 2주 차 수행도 전체 O로 리셋</button>
+            </div>
+
+            <div class="job-table-container">
+                <table class="job-table">
+                    <thead>
+                        <tr>
+                            <th>학생</th>
+                            <th>직업 지정 (총리/부총리 권한)</th>
+                            <th>1일</th><th>2일</th><th>3일</th><th>4일</th><th>5일</th>
+                            <th>6일</th><th>7일</th><th>8일</th><th>9일</th><th>10일</th>
+                            <th>수행 요약 (미인정)</th>
+                            <th>월급 차감율</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobMgmtTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 학생 마이페이지 (내 정보 전용 뷰) -->
+        <div id="myPageView" style="display:none;"></div>
+
+        <!-- 매점 구매 탭 뷰 -->
+        <div id="storeView" style="display:none;">
+            <div style="background:white; padding:16px; border-radius:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:16px; color:#be185d;">🍬 선물나라 행복 매점</h3>
+                <div style="font-size:15px; font-weight:bold;">내 현재 지갑 잔고: <span id="myStoreBalance" style="color:var(--primary-gold); font-size:18px;">0</span> PR</div>
+            </div>
+            <div class="store-grid" id="storeItemsGrid"></div>
+        </div>
+
+        <!-- 매점 재고 및 판매 관리 탭 뷰 -->
+        <div id="storeAdminView" style="display:none;">
+            <div style="background:white; padding:18px; border-radius:12px; margin-bottom:16px; border:1px solid #fbcfe8;">
+                <h3 style="font-size:16px; margin-bottom:12px; color:#be185d;">➕ 매점 상품 신규 등록</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <input type="text" id="newItemEmoji" placeholder="이모지 (예: 🍭)" style="padding:9px; border:1px solid #cbd5e1; border-radius:8px; width:100px;">
+                    <input type="text" id="newItemName" placeholder="상품명 (예: 마이쮸)" style="padding:9px; border:1px solid #cbd5e1; border-radius:8px; width:160px;">
+                    <input type="number" id="newItemPrice" placeholder="가격 (PR)" style="padding:9px; border:1px solid #cbd5e1; border-radius:8px; width:110px;">
+                    <input type="number" id="newItemStock" placeholder="초기 재고 (개)" style="padding:9px; border:1px solid #cbd5e1; border-radius:8px; width:120px;">
+                    <button class="btn-control" style="background:#db2777; color:white; border:none; padding:9px 16px;" onclick="addStoreItem()">상품 추가하기</button>
+                </div>
+            </div>
+
+            <h3 style="font-size:16px; margin-bottom:12px; color:#1e293b;">📦 현재 상품 재고 목록</h3>
+            <div class="store-grid" id="storeAdminGrid" style="margin-bottom:25px;"></div>
+
+            <h3 style="font-size:16px; margin-bottom:10px; color:#1e293b;">📜 매점 판매/결제 최근 내역</h3>
+            <div style="background:white; padding:16px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+                <div id="purchaseLogList" style="max-height:250px; overflow-y:auto;"></div>
+            </div>
+        </div>
     </main>
 </div>
 
-<!-- 1. 점수 신청/부여 모달 -->
+<!-- 로그인 / 접속 사용자 선택 모달 -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal-card" style="width:400px;">
+        <div class="modal-title">🔑 접속 모드 선택</div>
+        <div class="input-group">
+            <label for="userRoleSelect">접속 권한 선택</label>
+            <select id="userRoleSelect" onchange="toggleLoginInputs()">
+                <option value="student">👤 학생 로그인 (본인 모드)</option>
+                <option value="teacher">👑 교사 관리자 (전체 권한)</option>
+            </select>
+        </div>
+
+        <div class="input-group" id="studentSelectGroup">
+            <label for="loginStudentId">학생 선택</label>
+            <select id="loginStudentId"></select>
+        </div>
+
+        <div class="input-group" id="teacherPwGroup" style="display:none;">
+            <label for="teacherPw">교사 비밀번호</label>
+            <input type="password" id="teacherPw" placeholder="비밀번호 (4800)">
+        </div>
+
+        <div class="modal-btns">
+            <button class="modal-btn cancel" onclick="closeModal('loginModal')">취소</button>
+            <button class="modal-btn confirm" onclick="processLogin()">접속하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 점수 부여/신청 모달 -->
 <div class="modal-overlay" id="scoreModal">
     <div class="modal-card" style="width:420px;">
         <div class="modal-title" id="modalTitle">점수 및 사유 입력</div>
@@ -251,36 +355,33 @@
         </div>
         <div class="modal-btns">
             <button class="modal-btn cancel" onclick="closeModal('scoreModal')">취소</button>
-            <button class="modal-btn confirm" id="submitBtn" onclick="submitScoreRequest()">신청 완료</button>
+            <button class="modal-btn confirm" id="submitBtn" onclick="submitScoreRequest()">확인</button>
         </div>
     </div>
 </div>
 
-<!-- 2. 은행원 일괄 월급 지급 신청 모달 (학생별 개별 입력) -->
+<!-- 은행원 일괄 월급 지급 신청 모달 (수행도 감봉 자동 반영) -->
 <div class="modal-overlay" id="salaryModal">
     <div class="modal-card">
-        <div class="modal-title">💵 은행원: 일괄 월급 지급 신청</div>
+        <div class="modal-title">💵 2주 월급 지급 (수행도 자동 감봉 반영)</div>
         <div class="input-group">
             <label for="salaryMemo">월급 명목 / 메모</label>
-            <input type="text" id="salaryMemo" placeholder="예: 8월 기본 월급" value="8월 기본 월급">
+            <input type="text" id="salaryMemo" placeholder="예: 8월 1차 2주 월급" value="2주 정기 월급">
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label style="font-size:13px; font-weight:bold;">학생별 지급 월급 (기본 100 PR)</label>
-            <button type="button" class="btn-control" style="font-size:11px; padding:3px 8px;" onclick="resetAllSalaryInputs(100)">전체 100PR 채우기</button>
+        <div style="font-size:12px; color:#0369a1; background:#e0f2fe; padding:8px 12px; border-radius:8px; margin-bottom:12px;">
+            💡 <b>자동 감봉 안내</b>: 기본 월급 100 PR에서 2주간의 수행도 결과(X 1개당 -10%, △ 2개=X 1개)가 <b>자동 계산되어 차감 입력</b>되어 있습니다.
         </div>
         
-        <!-- 전체 학생 월급 입력 리스트 -->
-        <div id="salaryStudentList" style="max-height:280px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; padding:10px; margin-bottom:15px; background:#fafafa;">
-        </div>
+        <div id="salaryStudentList" style="max-height:280px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; padding:10px; margin-bottom:15px; background:#fafafa;"></div>
 
         <div class="modal-btns">
             <button class="modal-btn cancel" onclick="closeModal('salaryModal')">취소</button>
-            <button class="modal-btn confirm" onclick="submitSalaryRequest()">일괄 지급 신청 전송</button>
+            <button class="modal-btn confirm" onclick="submitSalaryRequest()">월급 지급 최종 승인 전송</button>
         </div>
     </div>
 </div>
 
-<!-- 3. 저축하기 모달 -->
+<!-- 저축 모달 -->
 <div class="modal-overlay" id="savingsModal">
     <div class="modal-card" style="width:420px;">
         <div class="modal-title" id="savingsModalTitle">🏦 선물은행 저축하기</div>
@@ -303,10 +404,10 @@
     </div>
 </div>
 
-<!-- 4. [교사 전용] 승인 대기 목록 모달 -->
+<!-- 승인 대기 목록 모달 -->
 <div class="modal-overlay" id="pendingModal">
     <div class="modal-card">
-        <div class="modal-title">🔔 학생 점수 및 월급 승인 대기함</div>
+        <div class="modal-title">🔔 승인 대기함</div>
         <div class="pending-list" id="pendingList"></div>
         <div class="modal-btns">
             <button class="modal-btn cancel" onclick="closeModal('pendingModal')">닫기</button>
@@ -315,7 +416,7 @@
 </div>
 
 <script>
-    // 파이어베이스 설정
+    // Firebase 설정
     const firebaseConfig = {
         apiKey: "AIzaSyAQm52wv-5lPH0mxJwZ75qlsPeAdAHZsBk",
         authDomain: "present-7f146.firebaseapp.com",
@@ -328,11 +429,14 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const avatars = ['🐢', '🦝', '🐼', '🦊', '🦁', '🐶', '🐈', '🐱', '🐩', '🐑', '🐿️', '🐒', '🐥', '🐺', '🐻', '🐰', '🐹', '🐯', '🦛', '🦔'];
+    const avatars = ['🐢', '🦝', '🐼', '🦊', '🦁', '🐶', '🐈', '🐱', '🐩', '🐑', '🐿️', '🐒', '🐥', '🐺', '🐻', '🐰', '🐹', '🐯'];
     let students = [];
+    let storeItems = [];
     let pendingRequests = [];
-    let isTeacherMode = false;
-    let currentTab = 'salary'; // 기본 첫 탭: 월급/잔고 관리
+    let purchaseLogs = [];
+
+    let currentUser = { role: 'student', id: 1 }; 
+    let currentTab = 'mypage';
     let targetStudentIds = [];
     let currentActionType = 'plus';
     let selectedPoints = 1;
@@ -343,19 +447,44 @@
     });
 
     function initFirestoreListeners() {
+        // 학생 데이터
         db.collection('students').orderBy('id', 'asc').onSnapshot(snapshot => {
             if (snapshot.empty) {
                 seedInitialStudents();
             } else {
                 students = snapshot.docs.map(doc => doc.data());
-                renderGrid();
+                populateStudentSelectModal();
+                checkSavingsMaturityAuto();
+                updateUserDisplay();
+                renderNavTabs();
+                if (currentTab === 'job_mgmt') renderJobMgmtView();
+                else if (currentTab === 'mypage') renderMyPage();
+                else renderGrid();
             }
         });
 
+        // 매점 상품 데이터
+        db.collection('items').onSnapshot(snapshot => {
+            if (snapshot.empty) {
+                seedInitialStoreItems();
+            } else {
+                storeItems = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
+                if (currentTab === 'store') renderStore();
+                if (currentTab === 'store_admin') renderStoreAdmin();
+            }
+        });
+
+        // 승인 요청 목록
         db.collection('requests').where('status', '==', 'pending').onSnapshot(snapshot => {
             pendingRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             document.getElementById('pendingCount').textContent = pendingRequests.length;
             renderPendingList();
+        });
+
+        // 매점 결제 내역
+        db.collection('purchases').orderBy('timestamp', 'desc').limit(20).onSnapshot(snapshot => {
+            purchaseLogs = snapshot.docs.map(doc => doc.data());
+            if (currentTab === 'store_admin') renderPurchaseLogs();
         });
     }
 
@@ -367,74 +496,37 @@
                 id: i,
                 name: `학생 ${String.fromCharCode(64 + i)}`,
                 avatar: avatars[(i - 1) % avatars.length],
+                job: i === 1 ? '총리' : (i === 2 ? '부총리' : '일반'),
                 timeScore: 0,
                 taskScore: 0,
-                balance: 0,          // 지갑 잔고 (PR)
-                savings: 0,          // 저축 금액 (PR)
-                savingsTerm: '4주',  // 저축 기간
-                savingsStartDate: '' // 저축 시작일
+                balance: 0,
+                savings: 0,
+                savingsTerm: '4주',
+                savingsStartDate: '',
+                notifications: [],
+                jobPerformance: Array(10).fill('O') // 10일 수행도 기본 O
             });
         }
         batch.commit();
     }
 
-    // [관리자 전용] 신규 학생 추가 (전입생 등록)
-    function addStudent() {
-        const idInput = document.getElementById('newStudentId');
-        const nameInput = document.getElementById('newStudentName');
-        const avatarInput = document.getElementById('newStudentAvatar');
-
-        const id = parseInt(idInput.value);
-        const name = nameInput.value.trim();
-        const avatar = avatarInput.value;
-
-        if (!id || isNaN(id) || id <= 0) {
-            alert("올바른 학생 번호를 입력해 주세요.");
-            return;
-        }
-        if (!name) {
-            alert("학생 이름을 입력해 주세요.");
-            return;
-        }
-
-        if (students.some(s => s.id === id)) {
-            alert(`이미 ${id}번 학생이 존재합니다. 다른 번호를 사용해 주세요.`);
-            return;
-        }
-
-        db.collection('students').doc(String(id)).set({
-            id: id,
-            name: name,
-            avatar: avatar,
-            timeScore: 0,
-            taskScore: 0,
-            balance: 0,
-            savings: 0,
-            savingsTerm: '4주',
-            savingsStartDate: ''
-        }).then(() => {
-            alert(`[${id}번 ${name}] 학생이 등록되었습니다.\n모든 탭에 자동으로 즉시 반영됩니다.`);
-            idInput.value = '';
-            nameInput.value = '';
-        }).catch(err => {
-            console.error("Error adding student: ", err);
-            alert("학생 등록 중 오류가 발생했습니다.");
+    function seedInitialStoreItems() {
+        const batch = db.batch();
+        const defaultItems = [
+            { name: '마이쮸', price: 10, stock: 50, emoji: '🍬' },
+            { name: '새콤달콤', price: 10, stock: 40, emoji: '🍭' },
+            { name: '초코바', price: 20, stock: 30, emoji: '🍫' },
+            { name: '과일 음료수', price: 15, stock: 25, emoji: '🧃' },
+            { name: '캐릭터 연필', price: 30, stock: 20, emoji: '✏️' }
+        ];
+        defaultItems.forEach(item => {
+            const ref = db.collection('items').doc();
+            batch.set(ref, item);
         });
+        batch.commit();
     }
 
-    // [관리자 전용] 학생 삭제 (전학 처리)
-    function deleteStudent(id, name) {
-        if (confirm(`정말 ${id}번 [${name}] 학생을 삭제(전학) 처리하시겠습니까?\n이 학생의 데이터가 모든 탭에서 제거됩니다.`)) {
-            db.collection('students').doc(String(id)).delete().then(() => {
-                alert(`${id}번 [${name}] 학생이 삭제되었습니다.`);
-            }).catch(err => {
-                console.error("Error deleting student: ", err);
-                alert("학생 삭제 중 오류가 발생했습니다.");
-            });
-        }
-    }
-
-    // 신용등급 및 이자율 안내 함수
+    // 신용등급 계산
     function getCreditInfo(score) {
         if (score >= 100) return { grade: '1등급', tax: '10%', interest: '10%(5%)', rate4w: 10, rate2w: 5, priority: '1순위', badgeClass: 'grade-1' };
         if (score >= 81)  return { grade: '2등급', tax: '12%', interest: '8%(4%)', rate4w: 8, rate2w: 4, priority: '2순위', badgeClass: 'grade-2' };
@@ -448,259 +540,475 @@
         return { grade: '10등급', tax: '25%', interest: '무이자', rate4w: 0, rate2w: 0, priority: '7순위', badgeClass: 'grade-10' };
     }
 
-    function toggleTeacherMode() {
-        if (!isTeacherMode) {
-            const pw = prompt("🔑 교사 관리자 비밀번호를 입력하세요:");
-            if (pw === "4800") {
-                isTeacherMode = true;
-                document.getElementById('modeBadge').className = "mode-badge mode-teacher";
-                document.getElementById('modeBadge').textContent = "👑 교사 관리자 모드";
-                document.getElementById('teacherToggleBtn').textContent = "🔒 관리자 잠금";
-                document.getElementById('pendingBtn').style.display = "inline-block";
-                document.getElementById('resetBtn').style.display = "inline-block";
-                document.getElementById('tabStudentMgmt').style.display = "inline-block"; // 학생 관리 탭 표시
-                alert("교사 관리자 모드로 전환되었습니다.");
-            } else if (pw !== null) {
-                alert("❌ 비밀번호가 올바르지 않습니다.");
-            }
-        } else {
-            isTeacherMode = false;
-            document.getElementById('modeBadge').className = "mode-badge mode-student";
-            document.getElementById('modeBadge').textContent = "💻 학생 접속 모드";
-            document.getElementById('teacherToggleBtn').textContent = "🔑 교사 관리자 인증";
-            document.getElementById('pendingBtn').style.display = "none";
-            document.getElementById('resetBtn').style.display = "none";
-            document.getElementById('tabStudentMgmt').style.display = "none"; // 학생 관리 탭 숨김
+    // 수행도에 따른 자동 월급 감봉 계산 함수
+    function calculateSalaryPenalty(student, baseSalary = 100) {
+        const perf = student.jobPerformance || Array(10).fill('O');
+        const countX = perf.filter(v => v === 'X').length;
+        const countTri = perf.filter(v => v === '△').length;
 
-            if (currentTab === 'student_mgmt') {
-                switchTab('salary');
-            }
-        }
-        renderGrid();
+        // 세모(△) 2개 = 미인정 1회(X)
+        const effectiveFailures = countX + Math.floor(countTri / 2);
+        
+        // 미인정 1회당 1/10 (10%) 차감
+        const penaltyRatio = Math.min(1, effectiveFailures * 0.1);
+        const finalSalary = Math.max(0, Math.round(baseSalary * (1 - penaltyRatio)));
+
+        return {
+            countX,
+            countTri,
+            effectiveFailures,
+            penaltyPercent: Math.round(penaltyRatio * 100),
+            finalSalary
+        };
     }
 
-    // 점수 신청 전송
-    function submitScoreRequest() {
-        const period = document.getElementById('scorePeriod').value;
-        const reason = document.getElementById('scoreReason').value.trim() || '사유 미입력';
-        const delta = currentActionType === 'plus' ? selectedPoints : -selectedPoints;
-        let category = currentTab === 'time' ? '시간통계' : (currentTab === 'task' ? '과제통계' : document.getElementById('scoreCategory').value);
-        const nowStr = new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-
-        const batch = db.batch();
-
-        targetStudentIds.forEach(studentId => {
-            const student = students.find(s => s.id === studentId);
-            if (!student) return;
-
-            if (isTeacherMode) {
-                const studentRef = db.collection('students').doc(String(studentId));
-                const fieldToUpdate = category === '시간통계' ? 'timeScore' : 'taskScore';
-                const currentScore = category === '시간통계' ? (student.timeScore || 0) : (student.taskScore || 0);
-                batch.update(studentRef, { [fieldToUpdate]: currentScore + delta });
-            } else {
-                const reqRef = db.collection('requests').doc();
-                batch.set(reqRef, {
-                    type: 'score',
-                    studentId: student.id,
-                    studentName: student.name,
-                    category: category,
-                    period: period,
-                    score: delta,
-                    reason: reason,
-                    timestamp: nowStr,
-                    status: 'pending'
-                });
-            }
-        });
-
-        batch.commit().then(() => {
-            if (isTeacherMode) alert("점수가 즉시 반영되었습니다.");
-            else alert("선생님께 승인 요청을 전달했습니다!");
-            deselectAll();
-            closeModal('scoreModal');
-        });
-    }
-
-    // 은행원 일괄 월급 지급 모달 열기
-    function openSalaryModal() {
-        const container = document.getElementById('salaryStudentList');
-        container.innerHTML = '';
-
+    // 저축 만기 자동 환급
+    function checkSavingsMaturityAuto() {
+        const today = new Date();
         students.forEach(s => {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 4px; border-bottom:1px solid #e2e8f0;';
-            row.innerHTML = `
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:20px;">${s.avatar}</span>
-                    <strong style="font-size:14px; color:#334155;">${s.id}. ${s.name}</strong>
-                </div>
-                <div style="display:flex; align-items:center; gap:4px;">
-                    <input type="number" class="salary-input-item" data-id="${s.id}" value="100" min="0" 
-                        style="width:90px; padding:6px; border:1px solid #cbd5e1; border-radius:6px; text-align:right; font-size:14px; font-weight:bold; color:#1e293b;">
-                    <span style="font-size:13px; font-weight:bold; color:var(--primary-gold);">PR</span>
-                </div>
-            `;
-            container.appendChild(row);
-        });
+            if (s.savings > 0 && s.savingsStartDate) {
+                const startDate = new Date(s.savingsStartDate);
+                const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+                const targetDays = s.savingsTerm === '2주' ? 14 : 28;
 
-        document.getElementById('salaryModal').style.display = 'flex';
-    }
+                if (diffDays >= targetDays) {
+                    const creditScore = 31 + (s.timeScore || 0) + (s.taskScore || 0);
+                    const info = getCreditInfo(creditScore);
+                    const rate = s.savingsTerm === '4주' ? info.rate4w : info.rate2w;
+                    const interest = Math.floor(s.savings * (rate / 100));
+                    const totalReturn = s.savings + interest;
 
-    // 전체 입력값 변경 버튼
-    function resetAllSalaryInputs(val) {
-        document.querySelectorAll('.salary-input-item').forEach(input => {
-            input.value = val;
-        });
-    }
-
-    // 일괄 월급 지급 신청 전송
-    function submitSalaryRequest() {
-        const memo = document.getElementById('salaryMemo').value.trim() || '월급 지급';
-        const nowStr = new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-        const inputs = document.querySelectorAll('.salary-input-item');
-
-        const batch = db.batch();
-        let hasValidItems = false;
-
-        inputs.forEach(input => {
-            const studentId = parseInt(input.getAttribute('data-id'));
-            const amount = parseInt(input.value) || 0;
-            const student = students.find(s => s.id === studentId);
-
-            if (student && amount > 0) {
-                hasValidItems = true;
-                if (isTeacherMode) {
-                    const studentRef = db.collection('students').doc(String(studentId));
-                    batch.update(studentRef, { balance: (student.balance || 0) + amount });
-                } else {
-                    const reqRef = db.collection('requests').doc();
-                    batch.set(reqRef, {
-                        type: 'salary',
-                        studentId: student.id,
-                        studentName: student.name,
-                        amount: amount,
-                        reason: memo,
-                        timestamp: nowStr,
-                        status: 'pending'
+                    const notiMsg = `🎉 [저축 만기 알림] ${s.savingsTerm} 저축이 만기되었습니다! 원금 ${s.savings}PR + 이자 ${interest}PR (총 ${totalReturn} PR)이 잔고로 자동 입금되었습니다.`;
+                    
+                    db.collection('students').doc(String(s.id)).update({
+                        balance: (s.balance || 0) + totalReturn,
+                        savings: 0,
+                        savingsStartDate: '',
+                        notifications: [notiMsg, ...(s.notifications || [])]
                     });
                 }
             }
         });
+    }
 
-        if (!hasValidItems) {
-            alert("지급할 월급 금액을 1개 이상 입력해 주세요.");
+    // 사용자 표기 업데이트
+    function updateUserDisplay() {
+        const infoEl = document.getElementById('currentUserInfo');
+        if (currentUser.role === 'teacher') {
+            infoEl.innerHTML = `<span class="mode-badge mode-teacher">👑 교사 관리자 모드</span>`;
+        } else {
+            const student = students.find(s => s.id === currentUser.id);
+            if (student) {
+                infoEl.innerHTML = `
+                    <span class="mode-badge mode-student">👤 ${student.id}번 ${student.name}</span>
+                    <span class="badge-job">${student.job || '일반'}</span>
+                `;
+            }
+        }
+    }
+
+    // 권한 기반 탭 렌더링
+    function renderNavTabs() {
+        const nav = document.getElementById('navTabs');
+        nav.innerHTML = '';
+
+        const currentStudent = students.find(s => s.id === currentUser.id);
+        const job = currentStudent ? currentStudent.job : '';
+
+        if (currentUser.role === 'student') {
+            addTabButton(nav, 'mypage', '👤 내 정보 / 통장', true);
+            addTabButton(nav, 'store', '🛒 매점', false, 'tab-btn-store');
+        }
+
+        // 총리, 부총리, 교사 관리자 -> 직업 & 수행도 관리 탭
+        if (currentUser.role === 'teacher' || job === '총리' || job === '부총리') {
+            addTabButton(nav, 'job_mgmt', '👨‍💼 직업 & 수행도 관리', false, 'tab-btn-mgmt');
+        }
+
+        if (currentUser.role === 'teacher' || job === '은행원') {
+            addTabButton(nav, 'salary', '💵 월급/잔고 관리');
+            addTabButton(nav, 'savings', '🏦 저축 통장');
+        }
+        if (currentUser.role === 'teacher' || job === '시간통계청') {
+            addTabButton(nav, 'time', '⏱️ 시간통계청');
+        }
+        if (currentUser.role === 'teacher' || job === '과제통계청') {
+            addTabButton(nav, 'task', '📋 과제통계청');
+        }
+        if (currentUser.role === 'teacher') {
+            addTabButton(nav, 'credit', '💳 신용도 조회');
+        }
+        if (currentUser.role === 'teacher' || job === '매점관리자') {
+            addTabButton(nav, 'store_admin', '📦 매점 재고/판매 관리', false, 'tab-btn-store');
+        }
+        if (currentUser.role === 'teacher') {
+            addTabButton(nav, 'student_mgmt', '👨‍🎓 학생 명단 관리', false, 'tab-btn-mgmt');
+        }
+
+        const firstTab = nav.querySelector('button');
+        if (firstTab && !nav.querySelector('.tab-btn.active')) {
+            switchTab(firstTab.getAttribute('data-tab'));
+        }
+    }
+
+    function addTabButton(container, tabKey, label, isActive = false, extraClass = '') {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${extraClass} ${isActive ? 'active' : ''}`;
+        btn.setAttribute('data-tab', tabKey);
+        btn.textContent = label;
+        btn.onclick = () => switchTab(tabKey);
+        container.appendChild(btn);
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+        });
+
+        document.getElementById('creditRefTable').style.display = (tab === 'credit' || tab === 'savings') ? 'block' : 'none';
+        document.getElementById('studentMgmtBox').style.display = (tab === 'student_mgmt' && currentUser.role === 'teacher') ? 'block' : 'none';
+
+        document.getElementById('batchBar').style.display = (['salary','savings','time','task','credit','student_mgmt'].includes(tab)) ? 'flex' : 'none';
+        document.getElementById('studentGrid').style.display = (['salary','savings','time','task','credit','student_mgmt'].includes(tab)) ? 'grid' : 'none';
+        document.getElementById('jobMgmtView').style.display = (tab === 'job_mgmt') ? 'block' : 'none';
+        document.getElementById('myPageView').style.display = (tab === 'mypage') ? 'block' : 'none';
+        document.getElementById('storeView').style.display = (tab === 'store') ? 'block' : 'none';
+        document.getElementById('storeAdminView').style.display = (tab === 'store_admin') ? 'block' : 'none';
+
+        document.getElementById('btnSalaryModal').style.display = (tab === 'salary') ? 'inline-block' : 'none';
+        document.getElementById('btnScorePlus').style.display = (['time','task','credit'].includes(tab)) ? 'inline-block' : 'none';
+        document.getElementById('btnScoreMinus').style.display = (['time','task','credit'].includes(tab)) ? 'inline-block' : 'none';
+        document.getElementById('pendingBtn').style.display = (currentUser.role === 'teacher') ? 'inline-block' : 'none';
+        document.getElementById('resetBtn').style.display = (currentUser.role === 'teacher') ? 'inline-block' : 'none';
+
+        if (tab === 'job_mgmt') renderJobMgmtView();
+        else if (tab === 'mypage') renderMyPage();
+        else if (tab === 'store') renderStore();
+        else if (tab === 'store_admin') renderStoreAdmin();
+        else renderGrid();
+    }
+
+    // 총리/부총리 전용: 직업 & 10일 수행도 관리 테이블 렌더링
+    function renderJobMgmtView() {
+        const tbody = document.getElementById('jobMgmtTableBody');
+        tbody.innerHTML = '';
+
+        students.forEach(s => {
+            const perf = s.jobPerformance || Array(10).fill('O');
+            const calc = calculateSalaryPenalty(s, 100);
+
+            const tr = document.createElement('tr');
+
+            // 10일차 수행도 버튼 생성
+            let daysHtml = '';
+            for (let day = 0; day < 10; day++) {
+                const status = perf[day] || 'O';
+                let btnClass = status === 'O' ? 'eval-O' : (status === '△' ? 'eval-TRI' : 'eval-X');
+                daysHtml += `
+                    <td>
+                        <button class="eval-btn ${btnClass}" onclick="togglePerformance(${s.id}, ${day})">${status}</button>
+                    </td>
+                `;
+            }
+
+            tr.innerHTML = `
+                <td><b>${s.id}. ${s.name}</b></td>
+                <td>
+                    <select onchange="updateStudentJob(${s.id}, this.value)" style="padding:4px; font-size:12px; border-radius:6px; border:1px solid #cbd5e1;">
+                        <option value="일반" ${s.job === '일반' ? 'selected' : ''}>일반학생</option>
+                        <option value="총리" ${s.job === '총리' ? 'selected' : ''}>👑 총리</option>
+                        <option value="부총리" ${s.job === '부총리' ? 'selected' : ''}>🤝 부총리</option>
+                        <option value="은행원" ${s.job === '은행원' ? 'selected' : ''}>🏦 은행원</option>
+                        <option value="시간통계청" ${s.job === '시간통계청' ? 'selected' : ''}>⏱️ 시간통계청</option>
+                        <option value="과제통계청" ${s.job === '과제통계청' ? 'selected' : ''}>📋 과제통계청</option>
+                        <option value="매점관리자" ${s.job === '매점관리자' ? 'selected' : ''}>📦 매점관리자</option>
+                    </select>
+                </td>
+                ${daysHtml}
+                <td>
+                    <span style="font-size:12px;">X: <b>${calc.countX}</b> / △: <b>${calc.countTri}</b></span><br>
+                    <b style="color:${calc.effectiveFailures > 0 ? '#dc2626' : '#15803d'}; font-size:12px;">(최종 미인정 ${calc.effectiveFailures}회)</b>
+                </td>
+                <td>
+                    <strong style="color:${calc.penaltyPercent > 0 ? '#dc2626' : '#059669'};">
+                        -${calc.penaltyPercent}% (${calc.finalSalary} PR)
+                    </strong>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // 수행도 상태 토글 (O -> △ -> X -> O)
+    function togglePerformance(studentId, dayIndex) {
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
+
+        let perf = student.jobPerformance || Array(10).fill('O');
+        const current = perf[dayIndex] || 'O';
+        const next = current === 'O' ? '△' : (current === '△' ? 'X' : 'O');
+        
+        perf[dayIndex] = next;
+
+        db.collection('students').doc(String(studentId)).update({
+            jobPerformance: perf
+        });
+    }
+
+    // 2주 차 전체 리셋
+    function resetAllPerformances() {
+        if (confirm("모든 학생의 2주 차 수행도를 'O'로 초기화하시겠습니까?")) {
+            const batch = db.batch();
+            students.forEach(s => {
+                batch.update(db.collection('students').doc(String(s.id)), {
+                    jobPerformance: Array(10).fill('O')
+                });
+            });
+            batch.commit().then(() => alert("모든 학생의 수행도가 초기화되었습니다."));
+        }
+    }
+
+    // 마이페이지
+    function renderMyPage() {
+        const view = document.getElementById('myPageView');
+        const student = students.find(s => s.id === currentUser.id);
+
+        if (!student) {
+            view.innerHTML = '<div style="padding:30px; text-align:center;">학생 정보를 찾을 수 없습니다.</div>';
             return;
         }
 
-        batch.commit().then(() => {
-            if (isTeacherMode) alert("모든 학생의 월급이 즉시 잔고에 채워졌습니다.");
-            else alert("선생님께 일괄 월급 지급 승인 요청이 전송되었습니다!");
-            closeModal('salaryModal');
+        const creditScore = 31 + (student.timeScore || 0) + (student.taskScore || 0);
+        const info = getCreditInfo(creditScore);
+        const notis = student.notifications || [];
+        const calc = calculateSalaryPenalty(student, 100);
+
+        view.innerHTML = `
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+                <!-- 지갑 및 저축 카드 -->
+                <div style="background:white; padding:20px; border-radius:16px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px;">
+                        <span style="font-size:40px;">${student.avatar}</span>
+                        <div>
+                            <h2 style="font-size:20px;">${student.id}번 ${student.name}</h2>
+                            <span class="badge-job">${student.job || '일반학생'}</span>
+                        </div>
+                    </div>
+                    <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:15px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span>💵 지갑 잔고:</span>
+                        <strong style="font-size:20px; color:var(--primary-gold);">${student.balance || 0} PR</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span>🏦 저축 금액:</span>
+                        <strong style="font-size:18px; color:var(--primary-blue);">${student.savings || 0} PR (${student.savingsTerm || '4주'})</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>💰 총 보유 자산:</span>
+                        <strong style="font-size:18px; color:var(--primary-green);">${(student.balance || 0) + (student.savings || 0)} PR</strong>
+                    </div>
+                </div>
+
+                <!-- 2주 직업 수행도 현황 카드 -->
+                <div style="background:white; padding:20px; border-radius:16px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+                    <h3 style="font-size:16px; margin-bottom:12px; color:#1e293b;">📋 나의 2주 직업 수행도 현황</h3>
+                    <div style="font-size:13px; margin-bottom:8px;">
+                        경고(△): <b>${calc.countTri}개</b> / 미인정(X): <b>${calc.countX}개</b>
+                    </div>
+                    <div style="font-size:14px; font-weight:bold; color:${calc.penaltyPercent > 0 ? '#dc2626' : '#059669'}; margin-bottom:12px;">
+                        예상 월급 차감율: -${calc.penaltyPercent}% (예상 수령: ${calc.finalSalary} PR)
+                    </div>
+                    <div class="info-box" style="font-size:11px;">
+                        💡 세모(△) 2개는 X 1개와 동일합니다. X 1개당 월급의 1/10(10%)이 차감됩니다.
+                    </div>
+                </div>
+
+                <!-- 알림함 카드 -->
+                <div style="background:white; padding:20px; border-radius:16px; box-shadow:0 2px 6px rgba(0,0,0,0.03); grid-column: 1 / -1;">
+                    <h3 style="font-size:16px; margin-bottom:12px; color:#1e293b;">🔔 받은 알림함 (${notis.length}건)</h3>
+                    <div style="max-height:200px; overflow-y:auto;">
+                        ${notis.length === 0 ? '<div style="color:#94a3b8; font-size:13px; text-align:center; padding:20px;">도착한 알림이 없습니다.</div>' : ''}
+                        ${notis.map(msg => `<div class="noti-item">${msg}</div>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 매점 구매 화면
+    function renderStore() {
+        const student = students.find(s => s.id === currentUser.id);
+        const myBal = student ? (student.balance || 0) : 0;
+        document.getElementById('myStoreBalance').textContent = myBal;
+
+        const grid = document.getElementById('storeItemsGrid');
+        grid.innerHTML = '';
+
+        storeItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'store-card';
+            card.innerHTML = `
+                <div>
+                    <div class="store-emoji">${item.emoji || '🍬'}</div>
+                    <div style="font-weight:bold; font-size:16px; margin-bottom:4px;">${item.name}</div>
+                    <div style="color:var(--primary-gold); font-weight:bold; font-size:15px; margin-bottom:6px;">${item.price} PR</div>
+                    <div style="font-size:12px; color:${item.stock > 0 ? '#059669' : '#dc2626'}; margin-bottom:12px;">
+                        ${item.stock > 0 ? `재고: ${item.stock}개` : '❌ 품절'}
+                    </div>
+                </div>
+                <button class="action-btn btn-plus" style="width:100%; padding:8px 0;" 
+                    ${item.stock <= 0 || myBal < item.price ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''} 
+                    onclick="buyStoreItem('${item.docId}', '${item.name}', ${item.price}, ${item.stock})">
+                    🛒 구매하기
+                </button>
+            `;
+            grid.appendChild(card);
         });
     }
 
-    // 저축하기 모달 및 로직
-    function openSavingsModal(studentId) {
-        activeSavingsStudentId = studentId;
-        const student = students.find(s => s.id === studentId);
+    // 매점 자동 구매
+    function buyStoreItem(docId, itemName, price, stock) {
+        const student = students.find(s => s.id === currentUser.id);
         if (!student) return;
 
-        document.getElementById('savingsModalTitle').textContent = `🏦 ${student.name}의 선물은행 저축`;
-        document.getElementById('currentBalanceDisplay').textContent = student.balance || 0;
-        document.getElementById('savingsAmount').value = student.balance || 0;
-        document.getElementById('savingsModal').style.display = 'flex';
+        if (stock <= 0) { alert("품절된 상품입니다."); return; }
+        if ((student.balance || 0) < price) { alert("지갑 잔고가 부족합니다."); return; }
+
+        if (confirm(`[${itemName}] 상품을 ${price} PR에 구매하시겠습니까?\n구매 즉시 잔고에서 자동 차감됩니다.`)) {
+            const batch = db.batch();
+
+            batch.update(db.collection('students').doc(String(student.id)), {
+                balance: (student.balance || 0) - price
+            });
+            batch.update(db.collection('items').doc(docId), {
+                stock: stock - 1
+            });
+            batch.set(db.collection('purchases').doc(), {
+                studentId: student.id,
+                studentName: student.name,
+                itemName: itemName,
+                price: price,
+                timestamp: new Date().toLocaleString('ko-KR')
+            });
+
+            batch.commit().then(() => alert(`🎉 [${itemName}] 구매가 완료되었습니다!`));
+        }
     }
 
-    function submitSavingsDeposit() {
-        const student = students.find(s => s.id === activeSavingsStudentId);
-        if (!student) return;
+    // 매점 재고 관리
+    function renderStoreAdmin() {
+        const grid = document.getElementById('storeAdminGrid');
+        grid.innerHTML = '';
 
-        const amount = parseInt(document.getElementById('savingsAmount').value) || 0;
-        const term = document.getElementById('savingsTerm').value;
-        const currentBalance = student.balance || 0;
-        const currentSavings = student.savings || 0;
+        storeItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'store-card';
+            card.innerHTML = `
+                <div>
+                    <div class="store-emoji">${item.emoji || '🍬'}</div>
+                    <div style="font-weight:bold; font-size:15px; margin-bottom:4px;">${item.name}</div>
+                    <div style="font-size:13px; color:#6b7280; margin-bottom:8px;">가격: <b>${item.price}</b> PR</div>
+                    <div style="font-size:14px; font-weight:bold; color:#0284c7; margin-bottom:10px;">현재 재고: ${item.stock}개</div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                    <button class="action-btn btn-plus" style="flex:1;" onclick="updateItemStock('${item.docId}', ${item.stock}, 10)">+10개 보충</button>
+                    <button class="action-btn btn-cancel" onclick="deleteStoreItem('${item.docId}', '${item.name}')">삭제</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
 
-        if (amount <= 0) { alert("저축할 금액을 입력해 주세요."); return; }
-        if (amount > currentBalance) { alert("지갑 잔고가 부족합니다."); return; }
+        renderPurchaseLogs();
+    }
 
-        const nowStr = new Date().toLocaleDateString('ko-KR');
+    function addStoreItem() {
+        const emoji = document.getElementById('newItemEmoji').value.trim() || '🍬';
+        const name = document.getElementById('newItemName').value.trim();
+        const price = parseInt(document.getElementById('newItemPrice').value);
+        const stock = parseInt(document.getElementById('newItemStock').value);
 
-        db.collection('students').doc(String(student.id)).update({
-            balance: currentBalance - amount,
-            savings: currentSavings + amount,
-            savingsTerm: term,
-            savingsStartDate: nowStr
+        if (!name || isNaN(price) || isNaN(stock)) {
+            alert("상품명, 가격, 재고를 올바르게 입력해 주세요.");
+            return;
+        }
+
+        db.collection('items').add({ emoji, name, price, stock }).then(() => {
+            alert(`[${name}] 상품이 추가되었습니다.`);
+            document.getElementById('newItemEmoji').value = '';
+            document.getElementById('newItemName').value = '';
+            document.getElementById('newItemPrice').value = '';
+            document.getElementById('newItemStock').value = '';
+        });
+    }
+
+    function updateItemStock(docId, currentStock, amount) {
+        db.collection('items').doc(docId).update({ stock: currentStock + amount });
+    }
+
+    function deleteStoreItem(docId, name) {
+        if (confirm(`정말 [${name}] 상품을 삭제하시겠습니까?`)) {
+            db.collection('items').doc(docId).delete();
+        }
+    }
+
+    function renderPurchaseLogs() {
+        const container = document.getElementById('purchaseLogList');
+        container.innerHTML = '';
+
+        if (purchaseLogs.length === 0) {
+            container.innerHTML = '<div style="color:#94a3b8; font-size:13px; text-align:center; padding:15px;">최근 결제 내역이 없습니다.</div>';
+            return;
+        }
+
+        purchaseLogs.forEach(log => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 4px; border-bottom:1px solid #f1f5f9; font-size:13px;';
+            row.innerHTML = `
+                <div>
+                    <strong>${log.studentId}번 ${log.studentName}</strong> - <span style="color:#db2777; font-weight:bold;">${log.itemName}</span> 구매
+                    <span style="font-size:11px; color:#94a3b8; margin-left:6px;">(${log.timestamp})</span>
+                </div>
+                <div style="font-weight:bold; color:var(--primary-gold);">${log.price} PR</div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function addStudent() {
+        const id = parseInt(document.getElementById('newStudentId').value);
+        const name = document.getElementById('newStudentName').value.trim();
+        const avatar = document.getElementById('newStudentAvatar').value;
+        const job = document.getElementById('newStudentJob').value;
+
+        if (!id || !name) { alert("번호와 이름을 입력해 주세요."); return; }
+        if (students.some(s => s.id === id)) { alert(`이미 ${id}번 학생이 존재합니다.`); return; }
+
+        db.collection('students').doc(String(id)).set({
+            id, name, avatar, job,
+            timeScore: 0, taskScore: 0, balance: 0, savings: 0,
+            savingsTerm: '4주', savingsStartDate: '', notifications: [],
+            jobPerformance: Array(10).fill('O')
         }).then(() => {
-            alert(`성공적으로 ${amount} PR을 저축 통장으로 이동했습니다!`);
-            closeModal('savingsModal');
+            alert(`[${id}번 ${name}] 학생이 등록되었습니다.`);
+            document.getElementById('newStudentId').value = '';
+            document.getElementById('newStudentName').value = '';
         });
     }
 
-    // 저축 중도 해지
-    function cancelSavings(studentId) {
-        const student = students.find(s => s.id === studentId);
-        if (!student || (student.savings || 0) <= 0) return;
+    function updateStudentJob(id, newJob) {
+        db.collection('students').doc(String(id)).update({ job: newJob }).then(() => {
+            alert(`${id}번 학생의 직업이 [${newJob}] (으)로 변경되었습니다.`);
+        });
+    }
 
-        if (confirm(`정말 저축을 중도 해지하시겠습니까?\n저축된 ${student.savings} PR이 이자 없이 원금만 지갑 잔고로 이동합니다.`)) {
-            db.collection('students').doc(String(student.id)).update({
-                balance: (student.balance || 0) + student.savings,
-                savings: 0,
-                savingsStartDate: ''
-            }).then(() => {
-                alert("저축이 해지되어 원금이 지갑 잔고로 복구되었습니다.");
-            });
+    function deleteStudent(id, name) {
+        if (confirm(`정말 ${id}번 [${name}] 학생을 삭제 처리하시겠습니까?`)) {
+            db.collection('students').doc(String(id)).delete();
         }
     }
 
-    // 저축 만기 해지 (이자 지급)
-    function completeSavings(studentId, interestPR) {
-        const student = students.find(s => s.id === studentId);
-        if (!student || (student.savings || 0) <= 0) return;
-
-        const totalReturn = student.savings + interestPR;
-
-        if (confirm(`[만기 해지] 원금 ${student.savings} PR + 이자 ${interestPR} PR = 총 ${totalReturn} PR을 지갑 잔고로 수령하시겠습니까?`)) {
-            db.collection('students').doc(String(student.id)).update({
-                balance: (student.balance || 0) + totalReturn,
-                savings: 0,
-                savingsStartDate: ''
-            }).then(() => {
-                alert(`축하합니다! 이자를 포함한 ${totalReturn} PR이 지갑 잔고로 수령되었습니다.`);
-            });
-        }
-    }
-
-    // 승인 대기 처리
-    function approveRequest(reqId) {
-        const req = pendingRequests.find(r => r.id === reqId);
-        if (!req) return;
-
-        const student = students.find(s => s.id === req.studentId);
-        if (!student) return;
-
-        const batch = db.batch();
-        const studentRef = db.collection('students').doc(String(req.studentId));
-
-        if (req.type === 'salary') {
-            batch.update(studentRef, { balance: (student.balance || 0) + req.amount });
-        } else {
-            const fieldToUpdate = req.category === '시간통계' ? 'timeScore' : 'taskScore';
-            const currentScore = req.category === '시간통계' ? (student.timeScore || 0) : (student.taskScore || 0);
-            batch.update(studentRef, { [fieldToUpdate]: currentScore + req.score });
-        }
-
-        batch.update(db.collection('requests').doc(reqId), { status: 'approved' });
-        batch.commit();
-    }
-
-    function rejectRequest(reqId) {
-        if (confirm("이 신청을 거절하시겠습니까?")) {
-            db.collection('requests').doc(reqId).update({ status: 'rejected' });
-        }
-    }
-
-    // 화면 렌더링
+    // 일반 그리드 카드 렌더링
     function renderGrid() {
         const grid = document.getElementById('studentGrid');
         grid.innerHTML = '';
@@ -714,18 +1022,17 @@
 
             if (currentTab === 'student_mgmt') {
                 card.className = `student-card ${s.selected ? 'selected' : ''}`;
-                card.onclick = (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') toggleSelect(s.id); };
+                card.onclick = (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') toggleSelect(s.id); };
                 card.innerHTML = `
                     <div class="card-top">
                         <input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});">
-                        <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}</span>
+                        <span style="font-size:13px; font-weight:bold; color:#9ca3af;">${s.id}번</span>
                         <span style="font-size:16px; font-weight:bold;">${s.name}</span>
                     </div>
                     <div class="card-middle">
                         <div class="avatar">${s.avatar}</div>
                         <div style="text-align:right;">
-                            <div style="font-size:11px; color:#6b7280;">총 보유 자산</div>
-                            <div class="pr-display" style="font-size:16px;">${balance + savings} PR</div>
+                            <span class="badge-job">${s.job || '일반'}</span>
                         </div>
                     </div>
                     <div class="card-bottom-actions">
@@ -733,7 +1040,8 @@
                     </div>
                 `;
             } else if (currentTab === 'salary') {
-                card.className = `student-card financial-card ${s.selected ? 'selected' : ''}`;
+                const calc = calculateSalaryPenalty(s, 100);
+                card.className = `student-card ${s.selected ? 'selected' : ''}`;
                 card.onclick = (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') toggleSelect(s.id); };
                 card.innerHTML = `
                     <div class="card-top">
@@ -744,16 +1052,13 @@
                     <div class="card-middle">
                         <div class="avatar">${s.avatar}</div>
                         <div style="text-align:right;">
-                            <div style="font-size:12px; color:#6b7280;">지갑 잔고</div>
+                            <div style="font-size:11px; color:#6b7280;">지갑 잔고</div>
                             <div class="pr-display">${balance} PR</div>
                         </div>
                     </div>
                     <div class="info-box">
-                        <div class="info-box-row"><span>저축 예금:</span><span><b>${savings} PR</b></span></div>
-                        <div class="info-box-row"><span>총 자산:</span><span><b>${balance + savings} PR</b></span></div>
-                    </div>
-                    <div class="card-bottom-actions">
-                        <button class="action-btn btn-bank" onclick="event.stopPropagation(); openSalaryModal();">월급 지급</button>
+                        <div class="info-box-row"><span>직업 / 수행도:</span><span><b>${s.job || '일반'}</b></span></div>
+                        <div class="info-box-row"><span>예상 2주 월급:</span><span style="color:${calc.penaltyPercent > 0 ? '#dc2626' : '#059669'};"><b>${calc.finalSalary} PR (-${calc.penaltyPercent}%)</b></span></div>
                     </div>
                 `;
             } else if (currentTab === 'savings') {
@@ -761,7 +1066,7 @@
                 const rate = term === '4주' ? info.rate4w : info.rate2w;
                 const expectedInterest = Math.floor(savings * (rate / 100));
 
-                card.className = `student-card financial-card ${s.selected ? 'selected' : ''}`;
+                card.className = `student-card ${s.selected ? 'selected' : ''}`;
                 card.onclick = (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') toggleSelect(s.id); };
                 card.innerHTML = `
                     <div class="card-top">
@@ -782,14 +1087,13 @@
                     </div>
                     <div class="card-bottom-actions">
                         ${savings > 0 
-                            ? `<button class="action-btn btn-cancel" onclick="event.stopPropagation(); cancelSavings(${s.id});">중도해지</button>
-                               <button class="action-btn btn-bank" onclick="event.stopPropagation(); completeSavings(${s.id}, ${expectedInterest});">만기해지</button>`
+                            ? `<button class="action-btn btn-cancel" onclick="event.stopPropagation(); cancelSavings(${s.id});">중도해지</button>`
                             : `<button class="action-btn btn-plus" style="width:100%;" onclick="event.stopPropagation(); openSavingsModal(${s.id});">💰 저축하기</button>`
                         }
                     </div>
                 `;
             } else if (currentTab === 'credit') {
-                card.className = `student-card credit-card ${s.selected ? 'selected' : ''}`;
+                card.className = `student-card ${s.selected ? 'selected' : ''}`;
                 card.onclick = (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') toggleSelect(s.id); };
                 card.innerHTML = `
                     <div class="card-top">
@@ -802,16 +1106,11 @@
                         <div class="avatar">${s.avatar}</div>
                         <div style="text-align:right;">
                             <div class="score-display ${creditScore < 31 ? 'negative' : ''}">${creditScore}점</div>
-                            <div style="font-size:11px; color:#6b7280; margin-top:2px;">(시간:${s.timeScore >= 0 ? '+'+s.timeScore : s.timeScore} / 과제:${s.taskScore >= 0 ? '+'+s.taskScore : s.taskScore})</div>
                         </div>
                     </div>
                     <div class="info-box">
                         <div class="info-box-row"><span>세금 <b>${info.tax}</b></span><span>우선 <b>${info.priority}</b></span></div>
                         <div class="info-box-row"><span>은행 이자율</span><span><b>${info.interest}</b></span></div>
-                    </div>
-                    <div class="card-bottom-actions">
-                        <button class="action-btn btn-minus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'minus');">-</button>
-                        <button class="action-btn btn-plus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'plus');">+</button>
                     </div>
                 `;
             } else {
@@ -839,47 +1138,52 @@
         updateSelectedCount();
     }
 
-    function renderPendingList() {
-        const container = document.getElementById('pendingList');
-        container.innerHTML = '';
+    // 모달 및 접속 제어
+    function openLoginModal() {
+        populateStudentSelectModal();
+        document.getElementById('loginModal').style.display = 'flex';
+    }
 
-        if (pendingRequests.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:30px;">대기 중인 승인 요청이 없습니다.</div>`;
-            return;
-        }
-
-        pendingRequests.forEach(req => {
-            const item = document.createElement('div');
-            item.className = 'pending-item';
-            
-            if (req.type === 'salary') {
-                item.innerHTML = `
-                    <div>
-                        <strong>${req.studentName}</strong> <span style="font-size:12px; color:#d97706;">[월급 지급 신청]</span><br>
-                        <span style="color:var(--primary-gold); font-weight:bold;">+${req.amount} PR</span>
-                        <span style="font-size:13px; color:#374151;"> - 사유: ${req.reason}</span>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button>
-                        <button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button>
-                    </div>
-                `;
-            } else {
-                const scoreColor = req.score > 0 ? '#3b82f6' : '#ef4444';
-                item.innerHTML = `
-                    <div>
-                        <strong>${req.studentName}</strong> <span style="font-size:12px; color:#6b7280;">[${req.category} | ${req.period}]</span><br>
-                        <span style="color:${scoreColor}; font-weight:bold;">${req.score > 0 ? '+' : ''}${req.score}점</span>
-                        <span style="font-size:13px; color:#374151;"> - 사유: ${req.reason}</span>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button>
-                        <button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button>
-                    </div>
-                `;
-            }
-            container.appendChild(item);
+    function populateStudentSelectModal() {
+        const sel = document.getElementById('loginStudentId');
+        sel.innerHTML = '';
+        students.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = `${s.id}번 ${s.name} (${s.job || '일반'})`;
+            if (s.id === currentUser.id) opt.selected = true;
+            sel.appendChild(opt);
         });
+    }
+
+    function toggleLoginInputs() {
+        const role = document.getElementById('userRoleSelect').value;
+        document.getElementById('studentSelectGroup').style.display = role === 'student' ? 'block' : 'none';
+        document.getElementById('teacherPwGroup').style.display = role === 'teacher' ? 'block' : 'none';
+    }
+
+    function processLogin() {
+        const role = document.getElementById('userRoleSelect').value;
+        if (role === 'teacher') {
+            if (document.getElementById('teacherPw').value === '4800') {
+                currentUser = { role: 'teacher', id: null };
+                alert("👑 교사 관리자로 접속되었습니다.");
+                closeModal('loginModal');
+                updateUserDisplay();
+                renderNavTabs();
+                switchTab('salary');
+            } else {
+                alert("❌ 비밀번호가 올바르지 않습니다.");
+            }
+        } else {
+            const sid = parseInt(document.getElementById('loginStudentId').value);
+            currentUser = { role: 'student', id: sid };
+            alert(`${sid}번 학생 본인 모드로 접속되었습니다.`);
+            closeModal('loginModal');
+            updateUserDisplay();
+            renderNavTabs();
+            switchTab('mypage');
+        }
     }
 
     function openSingleModal(studentId, actionType) {
@@ -897,8 +1201,9 @@
     }
 
     function showModal() {
-        document.getElementById('modalTitle').textContent = isTeacherMode ? "점수 직접 부여/차감" : "선생님께 점수 승인 신청";
-        document.getElementById('submitBtn').textContent = isTeacherMode ? "즉시 반영" : "승인 신청 전송";
+        const isTeacher = currentUser.role === 'teacher';
+        document.getElementById('modalTitle').textContent = isTeacher ? "점수 직접 부여/차감" : "점수 승인 신청 전송";
+        document.getElementById('submitBtn').textContent = isTeacher ? "즉시 반영" : "승인 신청 전송";
         document.getElementById('categorySelectGroup').style.display = currentTab === 'credit' ? 'block' : 'none';
 
         const container = document.getElementById('modalScoreOptions');
@@ -918,37 +1223,227 @@
         document.getElementById('scoreModal').style.display = 'flex';
     }
 
-    function openPendingModal() { document.getElementById('pendingModal').style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function submitScoreRequest() {
+        const period = document.getElementById('scorePeriod').value;
+        const reason = document.getElementById('scoreReason').value.trim() || '사유 미입력';
+        const delta = currentActionType === 'plus' ? selectedPoints : -selectedPoints;
+        let category = currentTab === 'time' ? '시간통계' : (currentTab === 'task' ? '과제통계' : document.getElementById('scoreCategory').value);
+        const nowStr = new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
 
-    function switchTab(tab) {
-        if (tab === 'student_mgmt' && !isTeacherMode) {
-            alert("교사 관리자만 접근할 수 있는 탭입니다.");
-            switchTab('salary');
+        const batch = db.batch();
+        const isTeacher = currentUser.role === 'teacher';
+
+        targetStudentIds.forEach(studentId => {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            if (isTeacher) {
+                const fieldToUpdate = category === '시간통계' ? 'timeScore' : 'taskScore';
+                const currentScore = category === '시간통계' ? (student.timeScore || 0) : (student.taskScore || 0);
+                batch.update(db.collection('students').doc(String(studentId)), { [fieldToUpdate]: currentScore + delta });
+            } else {
+                batch.set(db.collection('requests').doc(), {
+                    type: 'score', studentId: student.id, studentName: student.name,
+                    category, period, score: delta, reason, timestamp: nowStr, status: 'pending'
+                });
+            }
+        });
+
+        batch.commit().then(() => {
+            if (isTeacher) alert("점수가 반영되었습니다.");
+            else alert("선생님께 승인 요청을 전달했습니다!");
+            deselectAll();
+            closeModal('scoreModal');
+        });
+    }
+
+    // 은행원: 수행도 자동 감봉 계산 반영된 월급 모달
+    function openSalaryModal() {
+        const container = document.getElementById('salaryStudentList');
+        container.innerHTML = '';
+
+        students.forEach(s => {
+            const calc = calculateSalaryPenalty(s, 100);
+
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 4px; border-bottom:1px solid #e2e8f0;';
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:20px;">${s.avatar}</span>
+                    <div>
+                        <strong style="font-size:14px;">${s.id}. ${s.name}</strong>
+                        <span style="font-size:11px; color:#6b7280;">(${s.job || '일반'})</span><br>
+                        <span style="font-size:11px; color:${calc.penaltyPercent > 0 ? '#dc2626' : '#059669'}; font-weight:bold;">
+                            ${calc.penaltyPercent > 0 ? `미인정 ${calc.effectiveFailures}회 (-${calc.penaltyPercent}%)` : '정상 이행 (100%)'}
+                        </span>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <input type="number" class="salary-input-item" data-id="${s.id}" value="${calc.finalSalary}" min="0" 
+                        style="width:85px; padding:6px; border:1px solid #cbd5e1; border-radius:6px; text-align:right; font-size:14px; font-weight:bold;">
+                    <span style="font-size:13px; font-weight:bold; color:var(--primary-gold);">PR</span>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+
+        document.getElementById('salaryModal').style.display = 'flex';
+    }
+
+    function submitSalaryRequest() {
+        const memo = document.getElementById('salaryMemo').value.trim() || '월급 지급';
+        const nowStr = new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+        const inputs = document.querySelectorAll('.salary-input-item');
+
+        const batch = db.batch();
+        const isTeacher = currentUser.role === 'teacher';
+
+        inputs.forEach(input => {
+            const studentId = parseInt(input.getAttribute('data-id'));
+            const amount = parseInt(input.value) || 0;
+            const student = students.find(s => s.id === studentId);
+
+            if (student && amount >= 0) {
+                if (isTeacher) {
+                    batch.update(db.collection('students').doc(String(studentId)), { 
+                        balance: (student.balance || 0) + amount 
+                    });
+                } else {
+                    batch.set(db.collection('requests').doc(), {
+                        type: 'salary', studentId: student.id, studentName: student.name,
+                        amount, reason: memo, timestamp: nowStr, status: 'pending'
+                    });
+                }
+            }
+        });
+
+        batch.commit().then(() => {
+            if (isTeacher) alert("월급이 최종 지급되었습니다.");
+            else alert("선생님께 일괄 월급 지급 승인 요청이 전송되었습니다!");
+            closeModal('salaryModal');
+        });
+    }
+
+    // 저축
+    function openSavingsModal(studentId) {
+        activeSavingsStudentId = studentId;
+        const student = students.find(s => s.id === studentId);
+        if (!student) return;
+
+        document.getElementById('savingsModalTitle').textContent = `🏦 ${student.name}의 선물은행 저축`;
+        document.getElementById('currentBalanceDisplay').textContent = student.balance || 0;
+        document.getElementById('savingsAmount').value = student.balance || 0;
+        document.getElementById('savingsModal').style.display = 'flex';
+    }
+
+    function submitSavingsDeposit() {
+        const student = students.find(s => s.id === activeSavingsStudentId);
+        if (!student) return;
+
+        const amount = parseInt(document.getElementById('savingsAmount').value) || 0;
+        const term = document.getElementById('savingsTerm').value;
+        const currentBalance = student.balance || 0;
+
+        if (amount <= 0 || amount > currentBalance) { alert("올바른 저축 금액을 입력해 주세요."); return; }
+
+        db.collection('students').doc(String(student.id)).update({
+            balance: currentBalance - amount,
+            savings: (student.savings || 0) + amount,
+            savingsTerm: term,
+            savingsStartDate: new Date().toISOString()
+        }).then(() => {
+            alert(`성공적으로 ${amount} PR을 저축했습니다!`);
+            closeModal('savingsModal');
+        });
+    }
+
+    function cancelSavings(studentId) {
+        const student = students.find(s => s.id === studentId);
+        if (!student || (student.savings || 0) <= 0) return;
+
+        if (confirm(`정말 저축을 중도 해지하시겠습니까?\n원금 ${student.savings} PR이 지갑 잔고로 이동합니다.`)) {
+            db.collection('students').doc(String(student.id)).update({
+                balance: (student.balance || 0) + student.savings,
+                savings: 0,
+                savingsStartDate: ''
+            }).then(() => alert("저축이 해지되었습니다."));
+        }
+    }
+
+    // 승인 대기함
+    function openPendingModal() { document.getElementById('pendingModal').style.display = 'flex'; }
+    
+    function renderPendingList() {
+        const container = document.getElementById('pendingList');
+        container.innerHTML = '';
+
+        if (pendingRequests.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:30px;">대기 중인 승인 요청이 없습니다.</div>`;
             return;
         }
 
-        currentTab = tab;
-        const btns = document.querySelectorAll('.tab-btn');
-        btns.forEach(b => b.classList.remove('active'));
-        
-        document.getElementById('creditRefTable').style.display = (tab === 'credit' || tab === 'savings') ? 'block' : 'none';
-        document.getElementById('studentMgmtBox').style.display = (tab === 'student_mgmt' && isTeacherMode) ? 'block' : 'none';
-
-        document.getElementById('btnSalaryModal').style.display = (tab === 'salary') ? 'inline-block' : 'none';
-        document.getElementById('btnScorePlus').style.display = (tab === 'time' || tab === 'task' || tab === 'credit') ? 'inline-block' : 'none';
-        document.getElementById('btnScoreMinus').style.display = (tab === 'time' || tab === 'task' || tab === 'credit') ? 'inline-block' : 'none';
-
-        if (tab === 'salary') btns[0].classList.add('active');
-        else if (tab === 'savings') btns[1].classList.add('active');
-        else if (tab === 'time') btns[2].classList.add('active');
-        else if (tab === 'task') btns[3].classList.add('active');
-        else if (tab === 'credit') btns[4].classList.add('active');
-        else if (tab === 'student_mgmt') btns[5].classList.add('active');
-
-        renderGrid();
+        pendingRequests.forEach(req => {
+            const item = document.createElement('div');
+            item.className = 'pending-item';
+            
+            if (req.type === 'salary') {
+                item.innerHTML = `
+                    <div>
+                        <strong>${req.studentName}</strong> <span style="color:#d97706;">[2주 월급 신청]</span><br>
+                        <span style="color:var(--primary-gold); font-weight:bold;">+${req.amount} PR</span>
+                        <span style="color:#374151;"> (${req.reason})</span>
+                    </div>
+                    <div style="display:flex; gap:4px;">
+                        <button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button>
+                        <button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button>
+                    </div>
+                `;
+            } else {
+                const scoreColor = req.score > 0 ? '#3b82f6' : '#ef4444';
+                item.innerHTML = `
+                    <div>
+                        <strong>${req.studentName}</strong> <span style="color:#6b7280;">[${req.category} | ${req.period}]</span><br>
+                        <span style="color:${scoreColor}; font-weight:bold;">${req.score > 0 ? '+' : ''}${req.score}점</span>
+                        <span style="color:#374151;"> (${req.reason})</span>
+                    </div>
+                    <div style="display:flex; gap:4px;">
+                        <button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button>
+                        <button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button>
+                    </div>
+                `;
+            }
+            container.appendChild(item);
+        });
     }
 
+    function approveRequest(reqId) {
+        const req = pendingRequests.find(r => r.id === reqId);
+        if (!req) return;
+        const student = students.find(s => s.id === req.studentId);
+        if (!student) return;
+
+        const batch = db.batch();
+        const studentRef = db.collection('students').doc(String(req.studentId));
+
+        if (req.type === 'salary') {
+            batch.update(studentRef, { balance: (student.balance || 0) + req.amount });
+        } else {
+            const fieldToUpdate = req.category === '시간통계' ? 'timeScore' : 'taskScore';
+            const currentScore = req.category === '시간통계' ? (student.timeScore || 0) : (student.taskScore || 0);
+            batch.update(studentRef, { [fieldToUpdate]: currentScore + req.score });
+        }
+
+        batch.update(db.collection('requests').doc(reqId), { status: 'approved' });
+        batch.commit();
+    }
+
+    function rejectRequest(reqId) {
+        if (confirm("이 신청을 거절하시겠습니까?")) {
+            db.collection('requests').doc(reqId).update({ status: 'rejected' });
+        }
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function updateSelectedCount() { document.getElementById('selectedCount').textContent = students.filter(s => s.selected).length; }
     function toggleSelect(id) { const s = students.find(s => s.id === id); if(s) s.selected = !s.selected; renderGrid(); }
     function selectAll() { students.forEach(s => s.selected = true); renderGrid(); }
@@ -960,14 +1455,11 @@
             const batch = db.batch();
             students.forEach(s => {
                 batch.update(db.collection('students').doc(String(s.id)), { 
-                    timeScore: 0, 
-                    taskScore: 0,
-                    balance: 0,
-                    savings: 0,
-                    savingsStartDate: ''
+                    timeScore: 0, taskScore: 0, balance: 0, savings: 0, savingsStartDate: '', notifications: [],
+                    jobPerformance: Array(10).fill('O')
                 });
             });
-            batch.commit().then(() => alert("모든 점수 및 지갑/저축 잔고가 초기화되었습니다."));
+            batch.commit().then(() => alert("모든 점수 및 지갑/저축 잔고, 수행도가 초기화되었습니다."));
         }
     }
 </script>
