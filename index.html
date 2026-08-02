@@ -314,14 +314,42 @@
             <select id="loginStudentId"></select>
         </div>
 
+        <div class="input-group" id="studentPwGroup">
+            <label for="studentPw">학생 비밀번호</label>
+            <input type="password" id="studentPw" placeholder="비밀번호 입력 (초기: 0000)">
+        </div>
+
         <div class="input-group" id="teacherPwGroup" style="display:none;">
             <label for="teacherPw">교사 비밀번호</label>
-            <input type="password" id="teacherPw" placeholder="비밀번호 (4800)">
+            <input type="password" id="teacherPw" placeholder="비밀번호">
         </div>
 
         <div class="modal-btns">
             <button class="modal-btn cancel" onclick="closeModal('loginModal')">취소</button>
             <button class="modal-btn confirm" onclick="processLogin()">접속하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 학생 비밀번호 변경 모달 -->
+<div class="modal-overlay" id="changePwModal">
+    <div class="modal-card" style="width:380px;">
+        <div class="modal-title">🔑 학생 비밀번호 변경</div>
+        <div class="input-group">
+            <label for="currentPw">현재 비밀번호</label>
+            <input type="password" id="currentPw" placeholder="현재 비밀번호">
+        </div>
+        <div class="input-group">
+            <label for="newPw">새 비밀번호</label>
+            <input type="password" id="newPw" placeholder="새 비밀번호 입력">
+        </div>
+        <div class="input-group">
+            <label for="confirmPw">새 비밀번호 확인</label>
+            <input type="password" id="confirmPw" placeholder="새 비밀번호 재입력">
+        </div>
+        <div class="modal-btns">
+            <button class="modal-btn cancel" onclick="closeModal('changePwModal')">취소</button>
+            <button class="modal-btn confirm" onclick="submitChangePw()">변경 완료</button>
         </div>
     </div>
 </div>
@@ -497,6 +525,7 @@
                 name: `학생 ${String.fromCharCode(64 + i)}`,
                 avatar: avatars[(i - 1) % avatars.length],
                 job: i === 1 ? '총리' : (i === 2 ? '부총리' : '일반'),
+                password: '0000', // 학생 초기 비밀번호
                 timeScore: 0,
                 taskScore: 0,
                 balance: 0,
@@ -504,7 +533,7 @@
                 savingsTerm: '4주',
                 savingsStartDate: '',
                 notifications: [],
-                jobPerformance: Array(10).fill('O') // 10일 수행도 기본 O
+                jobPerformance: Array(10).fill('O')
             });
         }
         batch.commit();
@@ -546,10 +575,7 @@
         const countX = perf.filter(v => v === 'X').length;
         const countTri = perf.filter(v => v === '△').length;
 
-        // 세모(△) 2개 = 미인정 1회(X)
         const effectiveFailures = countX + Math.floor(countTri / 2);
-        
-        // 미인정 1회당 1/10 (10%) 차감
         const penaltyRatio = Math.min(1, effectiveFailures * 0.1);
         const finalSalary = Math.max(0, Math.round(baseSalary * (1 - penaltyRatio)));
 
@@ -620,7 +646,6 @@
             addTabButton(nav, 'store', '🛒 매점', false, 'tab-btn-store');
         }
 
-        // 총리, 부총리, 교사 관리자 -> 직업 & 수행도 관리 탭
         if (currentUser.role === 'teacher' || job === '총리' || job === '부총리') {
             addTabButton(nav, 'job_mgmt', '👨‍💼 직업 & 수행도 관리', false, 'tab-btn-mgmt');
         }
@@ -700,7 +725,6 @@
 
             const tr = document.createElement('tr');
 
-            // 10일차 수행도 버튼 생성
             let daysHtml = '';
             for (let day = 0; day < 10; day++) {
                 const status = perf[day] || 'O';
@@ -740,7 +764,6 @@
         });
     }
 
-    // 수행도 상태 토글 (O -> △ -> X -> O)
     function togglePerformance(studentId, dayIndex) {
         const student = students.find(s => s.id === studentId);
         if (!student) return;
@@ -756,7 +779,6 @@
         });
     }
 
-    // 2주 차 전체 리셋
     function resetAllPerformances() {
         if (confirm("모든 학생의 2주 차 수행도를 'O'로 초기화하시겠습니까?")) {
             const batch = db.batch();
@@ -769,7 +791,7 @@
         }
     }
 
-    // 마이페이지
+    // 마이페이지 (학생 비밀번호 변경 버튼 추가)
     function renderMyPage() {
         const view = document.getElementById('myPageView');
         const student = students.find(s => s.id === currentUser.id);
@@ -788,12 +810,15 @@
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
                 <!-- 지갑 및 저축 카드 -->
                 <div style="background:white; padding:20px; border-radius:16px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px;">
-                        <span style="font-size:40px;">${student.avatar}</span>
-                        <div>
-                            <h2 style="font-size:20px;">${student.id}번 ${student.name}</h2>
-                            <span class="badge-job">${student.job || '일반학생'}</span>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-size:40px;">${student.avatar}</span>
+                            <div>
+                                <h2 style="font-size:20px;">${student.id}번 ${student.name}</h2>
+                                <span class="badge-job">${student.job || '일반학생'}</span>
+                            </div>
                         </div>
+                        <button class="btn-control" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:6px 12px;" onclick="openChangePwModal()">🔑 비밀번호 변경</button>
                     </div>
                     <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom:15px;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -867,7 +892,6 @@
         });
     }
 
-    // 매점 자동 구매
     function buyStoreItem(docId, itemName, price, stock) {
         const student = students.find(s => s.id === currentUser.id);
         if (!student) return;
@@ -896,7 +920,6 @@
         }
     }
 
-    // 매점 재고 관리
     function renderStoreAdmin() {
         const grid = document.getElementById('storeAdminGrid');
         grid.innerHTML = '';
@@ -986,6 +1009,7 @@
 
         db.collection('students').doc(String(id)).set({
             id, name, avatar, job,
+            password: '0000',
             timeScore: 0, taskScore: 0, balance: 0, savings: 0,
             savingsTerm: '4주', savingsStartDate: '', notifications: [],
             jobPerformance: Array(10).fill('O')
@@ -1005,6 +1029,17 @@
     function deleteStudent(id, name) {
         if (confirm(`정말 ${id}번 [${name}] 학생을 삭제 처리하시겠습니까?`)) {
             db.collection('students').doc(String(id)).delete();
+        }
+    }
+
+    // 교사용 학생 비밀번호 초기화 함수
+    function resetStudentPw(id, name) {
+        if (confirm(`[${id}번 ${name}] 학생의 비밀번호를 초기 비밀번호('0000')로 리셋하시겠습니까?`)) {
+            db.collection('students').doc(String(id)).update({
+                password: '0000'
+            }).then(() => {
+                alert(`[${id}번 ${name}] 학생의 비밀번호가 '0000'으로 초기화되었습니다.`);
+            });
         }
     }
 
@@ -1035,7 +1070,8 @@
                             <span class="badge-job">${s.job || '일반'}</span>
                         </div>
                     </div>
-                    <div class="card-bottom-actions">
+                    <div class="card-bottom-actions" style="flex-direction:column; gap:4px;">
+                        <button class="action-btn" style="background:#e0f2fe; color:#0369a1; width:100%; padding:6px 0;" onclick="event.stopPropagation(); resetStudentPw(${s.id}, '${s.name}');">🔑 비밀번호 초기화 (0000)</button>
                         <button class="action-btn btn-cancel" style="width:100%; padding:6px 0;" onclick="event.stopPropagation(); deleteStudent(${s.id}, '${s.name}');">🗑️ 학생 삭제 (전학)</button>
                     </div>
                 `;
@@ -1141,6 +1177,7 @@
     // 모달 및 접속 제어
     function openLoginModal() {
         populateStudentSelectModal();
+        toggleLoginInputs();
         document.getElementById('loginModal').style.display = 'flex';
     }
 
@@ -1159,6 +1196,7 @@
     function toggleLoginInputs() {
         const role = document.getElementById('userRoleSelect').value;
         document.getElementById('studentSelectGroup').style.display = role === 'student' ? 'block' : 'none';
+        document.getElementById('studentPwGroup').style.display = role === 'student' ? 'block' : 'none';
         document.getElementById('teacherPwGroup').style.display = role === 'teacher' ? 'block' : 'none';
     }
 
@@ -1169,21 +1207,70 @@
                 currentUser = { role: 'teacher', id: null };
                 alert("👑 교사 관리자로 접속되었습니다.");
                 closeModal('loginModal');
+                document.getElementById('teacherPw').value = '';
                 updateUserDisplay();
                 renderNavTabs();
                 switchTab('salary');
             } else {
-                alert("❌ 비밀번호가 올바르지 않습니다.");
+                alert("❌ 교사 비밀번호가 올바르지 않습니다.");
             }
         } else {
             const sid = parseInt(document.getElementById('loginStudentId').value);
-            currentUser = { role: 'student', id: sid };
-            alert(`${sid}번 학생 본인 모드로 접속되었습니다.`);
-            closeModal('loginModal');
-            updateUserDisplay();
-            renderNavTabs();
-            switchTab('mypage');
+            const inputPw = document.getElementById('studentPw').value;
+            const student = students.find(s => s.id === sid);
+            const actualPw = (student && student.password) ? student.password : '0000';
+
+            if (inputPw === actualPw) {
+                currentUser = { role: 'student', id: sid };
+                alert(`${sid}번 학생 본인 모드로 접속되었습니다.`);
+                closeModal('loginModal');
+                document.getElementById('studentPw').value = '';
+                updateUserDisplay();
+                renderNavTabs();
+                switchTab('mypage');
+            } else {
+                alert("❌ 학생 비밀번호가 올바르지 않습니다.");
+            }
         }
+    }
+
+    // 학생 비밀번호 변경 모달 제어
+    function openChangePwModal() {
+        document.getElementById('currentPw').value = '';
+        document.getElementById('newPw').value = '';
+        document.getElementById('confirmPw').value = '';
+        document.getElementById('changePwModal').style.display = 'flex';
+    }
+
+    function submitChangePw() {
+        const student = students.find(s => s.id === currentUser.id);
+        if (!student) return;
+
+        const currentPw = document.getElementById('currentPw').value;
+        const newPw = document.getElementById('newPw').value.trim();
+        const confirmPw = document.getElementById('confirmPw').value.trim();
+
+        const actualPw = student.password || '0000';
+
+        if (currentPw !== actualPw) {
+            alert("❌ 현재 비밀번호가 일치하지 않습니다.");
+            return;
+        }
+        if (!newPw) {
+            alert("새 비밀번호를 입력해 주세요.");
+            return;
+        }
+        if (newPw !== confirmPw) {
+            alert("❌ 새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            return;
+        }
+
+        db.collection('students').doc(String(student.id)).update({
+            password: newPw
+        }).then(() => {
+            alert("🎉 비밀번호가 성공적으로 변경되었습니다!");
+            closeModal('changePwModal');
+        });
     }
 
     function openSingleModal(studentId, actionType) {
@@ -1456,10 +1543,10 @@
             students.forEach(s => {
                 batch.update(db.collection('students').doc(String(s.id)), { 
                     timeScore: 0, taskScore: 0, balance: 0, savings: 0, savingsStartDate: '', notifications: [],
-                    jobPerformance: Array(10).fill('O')
+                    jobPerformance: Array(10).fill('O'), password: '0000'
                 });
             });
-            batch.commit().then(() => alert("모든 점수 및 지갑/저축 잔고, 수행도가 초기화되었습니다."));
+            batch.commit().then(() => alert("모든 점수 및 지갑/저축 잔고, 수행도, 비밀번호가 초기화되었습니다."));
         }
     }
 </script>
