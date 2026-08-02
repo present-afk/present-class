@@ -138,10 +138,10 @@
         <button class="tab-btn" onclick="switchTab('credit')">💳 신용도 조회</button>
     </nav>
 
-    <!-- 신용도 안내 표 영역 (신용도 탭에서만 활성화) -->
+    <!-- 신용도 안내 표 영역 -->
     <div id="creditRefTable" style="display:none; margin-bottom: 20px;">
         <div style="background:white; padding:16px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
-            <h3 style="font-size:15px; margin-bottom:10px; color:#1e293b;">📊 신용등급 안내 및 혜택표 (기본점수: 100점)</h3>
+            <h3 style="font-size:15px; margin-bottom:10px; color:#1e293b;">📊 신용등급 안내 및 혜택표 (기본점수: 31점)</h3>
             <div style="overflow-x:auto;">
                 <table class="ref-table">
                     <thead>
@@ -174,7 +174,6 @@
         <div class="batch-bar">
             <div>선택된 학생: <span id="selectedCount" style="color:var(--primary-blue); font-weight:bold;">0</span>명</div>
             <div style="display:flex; gap:8px;">
-                <!-- 교사 관리자 모드 전용 알림 버튼 -->
                 <button id="pendingBtn" class="btn-control btn-pending-count" style="display:none;" onclick="openPendingModal()">
                     🔔 승인 대기 목록 (<span id="pendingCount">0</span>건)
                 </button>
@@ -195,7 +194,6 @@
         <div class="modal-title" id="modalTitle">점수 및 사유 입력</div>
         <div class="score-options" id="modalScoreOptions"></div>
         
-        <!-- 신용도 탭일 때 분류 선택 창 -->
         <div class="input-group" id="categorySelectGroup" style="display:none;">
             <label for="scoreCategory">📌 반영 통계청 선택</label>
             <select id="scoreCategory">
@@ -236,9 +234,7 @@
 </div>
 
 <script>
-    // -----------------------------------------------------------------
-    // 1. 파이어베이스 설정 (연동 키 적용 완료)
-    // -----------------------------------------------------------------
+    // 1. 파이어베이스 설정
     const firebaseConfig = {
         apiKey: "AIzaSyAQm52wv-5lPH0mxJwZ75qlsPeAdAHZsBk",
         authDomain: "present-7f146.firebaseapp.com",
@@ -248,11 +244,9 @@
         appId: "1:336235045915:web:7580637c7b83437dff44be"
     };
 
-    // Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 기본 데이터 변수
     const avatars = ['🐢', '🦝', '🐼', '🦊', '🦁', '🐶', '🐈', '🐱', '🐩', '🐑', '🐿️', '🐒', '🐥', '🐺', '🐻', '🐰', '🐹', '🐯', '🦛', '🦔'];
     let students = [];
     let pendingRequests = [];
@@ -266,9 +260,6 @@
         initFirestoreListeners();
     });
 
-    // -----------------------------------------------------------------
-    // 2. 실시간 Firestore 데이터 연동
-    // -----------------------------------------------------------------
     function initFirestoreListeners() {
         db.collection('students').orderBy('id', 'asc').onSnapshot(snapshot => {
             if (snapshot.empty) {
@@ -301,9 +292,7 @@
         batch.commit();
     }
 
-    // -----------------------------------------------------------------
-    // 3. 신용등급 계산 함수 (이미지 표 기준)
-    // -----------------------------------------------------------------
+    // 신용등급 계산 함수
     function getCreditInfo(score) {
         if (score >= 100) return { grade: '1등급', tax: '10%', interest: '10%(5%)', priority: '1순위', badgeClass: 'grade-1' };
         if (score >= 81)  return { grade: '2등급', tax: '12%', interest: '8%(4%)', priority: '2순위', badgeClass: 'grade-2' };
@@ -317,9 +306,6 @@
         return { grade: '10등급', tax: '25%', interest: '무이자', priority: '7순위', badgeClass: 'grade-10' };
     }
 
-    // -----------------------------------------------------------------
-    // 4. 교사 관리자 인증 모드 (비밀번호: 4800)
-    // -----------------------------------------------------------------
     function toggleTeacherMode() {
         if (!isTeacherMode) {
             const pw = prompt("🔑 교사 관리자 비밀번호를 입력하세요:");
@@ -345,9 +331,6 @@
         renderGrid();
     }
 
-    // -----------------------------------------------------------------
-    // 5. 학생 신청 및 교사 승인 로직
-    // -----------------------------------------------------------------
     function submitScoreRequest() {
         const period = document.getElementById('scorePeriod').value;
         const reason = document.getElementById('scoreReason').value.trim() || '사유 미입력';
@@ -413,9 +396,6 @@
         }
     }
 
-    // -----------------------------------------------------------------
-    // 6. 화면 렌더링 및 UI 조작
-    // -----------------------------------------------------------------
     function renderGrid() {
         const grid = document.getElementById('studentGrid');
         grid.innerHTML = '';
@@ -424,7 +404,8 @@
             const card = document.createElement('div');
             
             if (currentTab === 'credit') {
-                const creditScore = 100 + (s.timeScore || 0) + (s.taskScore || 0);
+                // 기본점수를 31점으로 설정하여 신용점수 산출
+                const creditScore = 31 + (s.timeScore || 0) + (s.taskScore || 0);
                 const info = getCreditInfo(creditScore);
 
                 card.className = `student-card credit-card ${s.selected ? 'selected' : ''}`;
@@ -446,7 +427,7 @@
                     <div class="card-middle">
                         <div class="avatar">${s.avatar}</div>
                         <div style="text-align:right;">
-                            <div class="score-display ${creditScore < 100 ? 'negative' : ''}">${creditScore}점</div>
+                            <div class="score-display ${creditScore < 31 ? 'negative' : ''}">${creditScore}점</div>
                             <div style="font-size:11px; color:#6b7280; margin-top:2px;">(시간:${s.timeScore >= 0 ? '+'+s.timeScore : s.timeScore} / 과제:${s.taskScore >= 0 ? '+'+s.taskScore : s.taskScore})</div>
                         </div>
                     </div>
@@ -542,7 +523,6 @@
         document.getElementById('modalTitle').textContent = isTeacherMode ? "점수 직접 부여/차감" : "선생님께 점수 승인 신청";
         document.getElementById('submitBtn').textContent = isTeacherMode ? "즉시 반영" : "승인 신청 전송";
         
-        // 신용도 탭일 때는 통계청 카테고리 선택창 노출
         document.getElementById('categorySelectGroup').style.display = currentTab === 'credit' ? 'block' : 'none';
 
         const container = document.getElementById('modalScoreOptions');
@@ -574,7 +554,6 @@
         else if (tab === 'task') btns[1].classList.add('active');
         else if (tab === 'credit') btns[2].classList.add('active');
 
-        // 신용도 탭일 때만 안내표 표시
         document.getElementById('creditRefTable').style.display = (tab === 'credit') ? 'block' : 'none';
         
         renderGrid();
