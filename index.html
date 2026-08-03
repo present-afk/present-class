@@ -355,7 +355,8 @@
                 <div>
                     <h3 style="font-size:16px;">👨‍💼 직업 배정 및 수행도 관할 현황</h3>
                     <p style="font-size:12px; color:#6b7280; margin-top:4px;">
-                        📌 <b>관할 지정:</b> 총리와 부총리가 각각 관리할 학생을 나눌 수 있습니다.<br>
+                        📌 <b>직업/관할 지정:</b> 교사, 총리, 부총리가 자유롭게 학생을 분배하고 직업을 배정할 수 있습니다.<br>
+                        📌 <b>기본급 설정:</b> 교사와 은행원이 수정할 수 있습니다.<br>
                         📌 <b>수행도(클릭):</b> <b>O</b>(인정) | <b>△</b>(경고, 2개=미인정 1회) | <b>X</b>(미인정, 월급 10% 차감)
                     </p>
                 </div>
@@ -930,6 +931,7 @@
         });
     }
 
+    // 🔥 권한 로직이 대폭 수정된 핵심 부분 🔥
     function renderJobMgmtView() {
         const tbody = document.getElementById('jobMgmtTableBody');
         tbody.innerHTML = '';
@@ -939,6 +941,7 @@
         const isTeacher = currentUser.role === 'teacher';
         const isPM = myJob === '총리';
         const isDPM = myJob === '부총리';
+        const isBanker = myJob === '은행원'; // 은행원 권한 추가
         
         document.getElementById('btnResetPerf').style.display = isTeacher || isPM || isDPM ? 'inline-block' : 'none';
 
@@ -948,8 +951,17 @@
             const manager = s.manager || 'Teacher';
             const calc = calculateSalaryPenalty(s, baseSal);
             
-            // 수행도 권한 확인 (선생님은 모두, 총리/부총리는 배정된 그룹만)
+            // 1. 수행도 권한 확인 (선생님은 모두, 총리/부총리는 배정된 그룹만)
             const canManagePerf = isTeacher || (isPM && manager === 'PM') || (isDPM && manager === 'DPM');
+            
+            // 2. 직업 배정 권한 (선생님, 총리, 부총리 모두 가능)
+            const canManageJob = isTeacher || isPM || isDPM;
+            
+            // 3. 기본급 수정 권한 (선생님, 은행원 가능)
+            const canManageSalary = isTeacher || isBanker;
+            
+            // 4. 관리 관할 지정 권한 (선생님, 총리, 부총리 모두 가능)
+            const canManageJurisdiction = isTeacher || isPM || isDPM;
 
             const tr = document.createElement('tr');
             
@@ -964,16 +976,18 @@
                 }
             }
 
-            // 직업 및 월급 조작은 선생님만 가능
-            let jobSelectHtml = isTeacher ? `
+            // 직업 배정 Select/Input
+            let jobSelectHtml = canManageJob ? `
                 <input type="text" list="jobList" value="${s.job || '일반'}" onchange="updateStudentJob(${s.id}, this.value)" style="width:110px; padding:6px; font-size:12px; border-radius:6px; border:1px solid #cbd5e1; text-align:center;">
             ` : `<span class="badge-job">${s.job || '일반학생'}</span>`;
 
-            let salaryHtml = isTeacher ? `
+            // 기본급 수정 Input
+            let salaryHtml = canManageSalary ? `
                 <input type="number" value="${baseSal}" onchange="updateStudentBaseSalary(${s.id}, this.value)" style="width:60px; padding:4px; font-size:12px; border-radius:6px; border:1px solid #cbd5e1; text-align:right;">
             ` : `<span>${baseSal}</span>`;
 
-            let managerHtml = isTeacher ? `
+            // 관리 관할 지정 Select
+            let managerHtml = canManageJurisdiction ? `
                 <select onchange="updateStudentManager(${s.id}, this.value)" style="padding:4px; font-size:11px; border-radius:4px; border:1px solid #cbd5e1;">
                     <option value="Teacher" ${manager === 'Teacher' ? 'selected' : ''}>직할</option>
                     <option value="PM" ${manager === 'PM' ? 'selected' : ''}>총리관할</option>
@@ -1254,7 +1268,6 @@
         }
     }
 
-    // 매점 기능 렌더링 (품절 UI 반영)
     function renderStore() {
         const student = students.find(s => s.id === currentUser.id);
         const myBal = student ? (student.balance || 0) : 0;
@@ -1611,7 +1624,6 @@
             row.setAttribute('data-id', s.id);
             row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 4px; border-bottom:1px solid #e2e8f0; flex-wrap:wrap; gap:8px;';
             
-            // 공무원 표시 로직 추가
             const isPublicServant = (s.job === '총리' || s.job === '부총리');
             const psBadge = isPublicServant ? '<span style="color:#0284c7; font-size:11px; font-weight:bold; background:#e0f2fe; padding:2px 6px; border-radius:4px; margin-left:4px;">🏛️ 공무원(세금지급)</span>' : '';
 
@@ -1670,7 +1682,6 @@
             inputEl.value = netPay;
             inputEl.setAttribute('data-tax', taxAmount);
             inputEl.setAttribute('data-deduct', fixedDeduction);
-            // 총리/부총리 국세청 출금을 위해 공제 전 금액(calc.finalSalary) 저장
             inputEl.setAttribute('data-final-salary', calc.finalSalary);
         });
     }
@@ -1683,7 +1694,7 @@
         const isTeacher = currentUser.role === 'teacher';
         
         let totalTaxCollected = 0;
-        let totalNTSDeduction = 0; // 공무원 월급 국세청 차감액 총합
+        let totalNTSDeduction = 0;
         let ntsLogEntries = [];
 
         inputs.forEach(input => {
@@ -1691,7 +1702,7 @@
             const netAmount = parseInt(input.value) || 0;
             const taxAmount = parseInt(input.getAttribute('data-tax')) || 0;
             const deductAmount = parseInt(input.getAttribute('data-deduct')) || 0;
-            const finalSalary = parseInt(input.getAttribute('data-final-salary')) || 0; // 공제 전 원래 받을 월급
+            const finalSalary = parseInt(input.getAttribute('data-final-salary')) || 0;
             const student = students.find(s => s.id === studentId);
 
             if (student && (netAmount > 0 || taxAmount > 0 || deductAmount > 0)) {
@@ -1706,9 +1717,8 @@
                     }
                     if(deductAmount > 0) { addTransaction(batch, student, `기타 공제 (휘발)`, -deductAmount); }
 
-                    // 공무원 (총리, 부총리) 국세청 차감 로직
                     if (student.job === '총리' || student.job === '부총리') {
-                        totalNTSDeduction += finalSalary; // 공제 전 전체 월급(finalSalary)을 차감
+                        totalNTSDeduction += finalSalary;
                         ntsLogEntries.push(`<span style="color:#dc2626; font-weight:bold;">[지출]</span> 공무원 급여 지급 (${student.name}): <b>-${finalSalary} PR</b> <span style="font-size:11px; color:#9ca3af;">(${nowStr})</span>`);
                     }
 
@@ -1719,9 +1729,8 @@
             }
         });
 
-        // 국세청 잔고 업데이트 (세금 징수액 + 공무원 월급 지출을 한 번에 계산)
         if (isTeacher && (totalTaxCollected > 0 || totalNTSDeduction > 0)) {
-            const netNTSChange = totalTaxCollected - totalNTSDeduction; // 플러스든 마이너스든 알아서 증감
+            const netNTSChange = totalTaxCollected - totalNTSDeduction;
             batch.update(db.collection('system').doc('nts'), { 
                 balance: firebase.firestore.FieldValue.increment(netNTSChange), 
                 logs: firebase.firestore.FieldValue.arrayUnion(...ntsLogEntries) 
@@ -1875,7 +1884,6 @@
             if (req.deductAmount && req.deductAmount > 0) {
                 addTransaction(batch, student, `기타 공제 (휘발)`, -req.deductAmount);
             }
-            // 공무원 국세청 차감 로직 추가
             if (student.job === '총리' || student.job === '부총리') {
                 const finalSal = req.finalSalary || 0;
                 ntsNetChange -= finalSal;
