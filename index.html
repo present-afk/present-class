@@ -78,17 +78,29 @@
         .mode-student { background: rgba(255,255,255,0.8); color: var(--text-main); border: 1px solid #d1d5db; }
         .mode-teacher { background: var(--primary-dark); color: white; border: 1px solid #000; }
 
-        .nav-tabs { display: flex; gap: 8px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn {
-            padding: 10px 18px; font-size: 14px; font-weight: 600; border: 1px solid transparent;
-            background: rgba(255,255,255,0.4); color: var(--text-muted); border-radius: 10px; cursor: pointer; transition: all 0.2s; white-space: nowrap; backdrop-filter: blur(5px);
+        /* 🔥 상단 메뉴 (세그먼트 컨트롤 스타일로 변경) */
+        .nav-tabs { 
+            display: flex; gap: 4px; padding: 6px; margin-bottom: 20px; flex-wrap: wrap; 
+            background: rgba(241, 245, 249, 0.7); /* 옅은 회색 배경 */
+            border-radius: 24px; 
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+            backdrop-filter: blur(12px);
         }
-        .tab-btn:hover { background: rgba(255,255,255,0.8); color: var(--text-main); border-color: rgba(255,255,255,0.5); }
-        .tab-btn.active { background: var(--primary-dark); color: white; border-color: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .tab-btn-student { background: rgba(254, 243, 199, 0.6); color: #92400e; border: 1px solid rgba(253, 230, 138, 0.5); }
-        .tab-btn-student.active { background: #d97706; color: white; border-color: #b45309; }
+        .tab-btn {
+            padding: 10px 22px; font-size: 14px; font-weight: 500; border: none;
+            background: transparent; color: #9ca3af; /* 선택 안 된 글씨는 회색/흐릿하게 */
+            border-radius: 18px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap;
+        }
+        .tab-btn:hover { color: #6b7280; }
+        .tab-btn.active { 
+            background: #ffffff; color: #111827; font-weight: 700; /* 흰 배경에 뚜렷한 검정 글씨 */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+        }
+        .tab-btn-student { color: #9ca3af; }
+        .tab-btn-student.active { background: #ffffff; color: #d97706; }
 
-        /* 컨트롤 및 배치 바 (글래스 모피즘 & 무채색/정돈된 톤) */
+        /* 컨트롤 및 배치 바 */
         .batch-bar {
             background: var(--glass-bg); padding: 12px 20px; border-radius: 12px; display: flex;
             justify-content: space-between; align-items: center; margin-bottom: 16px;
@@ -124,20 +136,21 @@
         .card-middle { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
         .avatar { font-size: 36px; background: rgba(255,255,255,0.8); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
-        .score-display { font-size: 24px; font-weight: 800; color: var(--text-main); }
+        /* 🔥 통계청, 신용도 폰트 두께 얇게 (font-weight: 400) 수정 */
+        .score-display { font-size: 26px; font-weight: 400; color: var(--text-main); letter-spacing: -0.5px; }
         .pr-display { font-size: 20px; font-weight: 800; color: var(--primary-gold); }
 
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
         .badge-job { background: #475569; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight:bold; display:inline-block; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:middle; }
         
-        /* 🔥 요청하신 다채로운 색상의 신용등급 뱃지 복구 */
+        /* 다채로운 색상의 신용등급 뱃지 */
         .grade-1 { background: linear-gradient(135deg, #ef4444, #b91c1c); } /* Red */
         .grade-2 { background: linear-gradient(135deg, #f97316, #c2410c); } /* Orange */
         .grade-3 { background: linear-gradient(135deg, #f59e0b, #b45309); } /* Amber */
         .grade-4 { background: linear-gradient(135deg, #84cc16, #4d7c0f); } /* Lime */
         .grade-5 { background: linear-gradient(135deg, #10b981, #047857); } /* Emerald */
         .grade-6 { background: linear-gradient(135deg, #14b8a6, #0f766e); } /* Teal */
-        .grade-7 { background: linear-gradient(135deg, #0ea5e9, #0369a1); } /* Sky (글씨는 무조건 흰색이므로 허용) */
+        .grade-7 { background: linear-gradient(135deg, #0ea5e9, #0369a1); } /* Sky */
         .grade-8 { background: linear-gradient(135deg, #6366f1, #4338ca); } /* Indigo */
         .grade-9 { background: linear-gradient(135deg, #a855f7, #7e22ce); } /* Purple */
         .grade-10 { background: linear-gradient(135deg, #64748b, #334155); } /* Slate */
@@ -165,7 +178,7 @@
         .job-table th, .job-table td { padding: 10px 8px; border: 1px solid rgba(0,0,0,0.05); }
         .job-table th { background: rgba(255,255,255,0.6); color: var(--text-main); font-weight: bold; }
 
-        /* 🔥 직업수행도 강렬한 빨간색 처리 */
+        /* 직업수행도 강렬한 빨간색 처리 */
         .eval-btn { padding: 4px 8px; font-weight: bold; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: 12px; }
         .eval-O { background: rgba(220, 252, 231, 0.7); color: #166534; border-color: #86efac; }
         .eval-TRI { background: rgba(255, 237, 213, 0.8); color: #ea580c; border-color: #fdba74; }
@@ -229,7 +242,7 @@
             header { flex-direction: column; align-items: stretch; gap: 10px; }
             .user-bar { justify-content: space-between; }
             
-            .nav-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+            .nav-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; border-radius: 16px; }
             .nav-tabs::-webkit-scrollbar { display: none; }
             
             .batch-bar { flex-direction: column; align-items: stretch; gap: 10px; }
@@ -1092,7 +1105,7 @@
                         </div>
                         <div style="background: rgba(255,255,255,0.5); padding: 18px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.6);">
                             <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight:bold;">총 신용 점수</div>
-                            <div style="font-size: 22px; font-weight: 900; color: var(--text-main);">${creditScore}점</div>
+                            <div style="font-size: 24px; font-weight: 400; color: var(--text-main); letter-spacing: -0.5px;">${creditScore}점</div>
                         </div>
                         <div style="background: rgba(255,255,255,0.5); padding: 18px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.6);">
                             <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight:bold;">적용 세금(이자율)</div>
