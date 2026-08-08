@@ -11,38 +11,39 @@
 
     <style>
         :root {
-            /* 세련된 다크/블랙 텍스트 중심 테마 */
-            --text-main: #111827; /* 완전 진한 흑회색 */
-            --text-muted: #4b5563; /* 부드러운 쥐색 */
-            --primary-dark: #000000; /* 강조 블랙 */
-            --primary-gold: #d97706; /* 포인트 골드 */
-            --alert-red: #dc2626; /* 강렬한 빨간색 (수행도 불량 등) */
+            /* 🌊 청량하고 세련된 하늘색~파란색 테마 */
+            --text-main: #1e293b; /* 짙은 슬레이트 (완전 검정보다 부드러움) */
+            --text-muted: #64748b; /* 부드러운 회색 */
+            --primary: #0ea5e9; /* 스카이 블루 */
+            --primary-dark: #0284c7; /* 오션 블루 */
+            --primary-gradient: linear-gradient(135deg, #38bdf8, #0284c7); /* 그라데이션 버튼용 */
+            --primary-gold: #d97706; 
+            --alert-red: #ef4444; 
             
             /* 글래스모피즘 효과 변수 */
-            --glass-bg: rgba(255, 255, 255, 0.55);
-            --glass-bg-hover: rgba(255, 255, 255, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.7);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-bg-hover: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.8);
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
-            --border-radius: 16px;
+            --border-radius: 20px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
         
-        /* 은은하고 따뜻한 파스텔 톤의 메쉬 그라데이션 배경 (글래스 효과를 극대화) */
+        /* 은은하고 맑은 파스텔톤 메쉬 배경 */
         body { 
-            background-color: #f3f4f6;
+            background-color: #f0f9ff;
             background-image: 
                 radial-gradient(at 0% 0%, #ffffff 0px, transparent 50%),
-                radial-gradient(at 100% 0%, #ffedd5 0px, transparent 50%),
-                radial-gradient(at 100% 100%, #f3e8ff 0px, transparent 50%),
-                radial-gradient(at 0% 100%, #e2e8f0 0px, transparent 50%);
+                radial-gradient(at 100% 0%, #e0f2fe 0px, transparent 50%),
+                radial-gradient(at 100% 100%, #eff6ff 0px, transparent 50%),
+                radial-gradient(at 0% 100%, #f8fafc 0px, transparent 50%);
             background-attachment: fixed;
             color: var(--text-main); 
         }
         
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
-        /* 글래스 공통 클래스 */
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
@@ -52,7 +53,46 @@
             border-radius: var(--border-radius);
         }
 
-        /* 스플래시(첫 화면) */
+        /* 💦 공통 세그먼트 컨트롤 컨테이너 (첨부해주신 이미지 스타일 적용) */
+        .segmented-container {
+            display: flex; gap: 4px; padding: 6px;
+            background: rgba(241, 245, 249, 0.6);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
+            backdrop-filter: blur(12px);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* 세그먼트 컨트롤 버튼 기본 */
+        .seg-btn {
+            padding: 10px 18px; font-size: 14px; font-weight: 500; border: none;
+            background: transparent; color: var(--text-muted);
+            border-radius: 18px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap; display: flex; align-items: center; gap: 6px;
+        }
+        .seg-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.4); }
+        
+        /* 세그먼트 컨트롤 선택(활성화) 상태 */
+        .seg-btn.active { 
+            background: #ffffff; color: var(--text-main); font-weight: 700; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08); 
+        }
+        
+        /* 포인트(Primary) 세그먼트 버튼 (ex. 시작하기, 점수 부여 등) */
+        .seg-btn.primary {
+            background: var(--primary-gradient); color: white; font-weight: 700;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+        .seg-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4); }
+        
+        /* 경고/위험 세그먼트 버튼 */
+        .seg-btn.danger { color: var(--alert-red); }
+        .seg-btn.danger:hover { background: #fee2e2; }
+        .seg-btn.danger.active { background: #fee2e2; color: #b91c1c; box-shadow: 0 2px 10px rgba(239, 68, 68, 0.15); }
+
+        /* 스플래시 화면 */
         #splashScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.85); backdrop-filter: blur(20px);
@@ -63,122 +103,64 @@
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
         .splash-title { font-size: 46px; font-weight: 900; margin-bottom: 12px; letter-spacing: -1px; color: var(--text-main); }
         .splash-subtitle { font-size: 18px; margin-bottom: 45px; color: var(--text-muted); font-weight: 500; }
-        .splash-btn {
-            background: var(--primary-dark); color: white; font-size: 18px; font-weight: bold;
-            padding: 16px 45px; border-radius: 50px; border: none; cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;
-        }
-        .splash-btn:hover { background: #374151; transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); }
 
-        /* 공통 헤더 및 탭 */
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;}
         h1 { font-size: 24px; color: var(--text-main); display: flex; align-items: center; gap: 10px; font-weight: 800; }
-        .user-bar { display: flex; align-items: center; gap: 10px; background: var(--glass-bg); padding: 8px 16px; border-radius: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
-        .mode-badge { padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; }
-        .mode-student { background: rgba(255,255,255,0.8); color: var(--text-main); border: 1px solid #d1d5db; }
-        .mode-teacher { background: var(--primary-dark); color: white; border: 1px solid #000; }
-
-        /* 🔥 상단 메뉴 (세그먼트 컨트롤 스타일로 변경) */
-        .nav-tabs { 
-            display: flex; gap: 4px; padding: 6px; margin-bottom: 20px; flex-wrap: wrap; 
-            background: rgba(241, 245, 249, 0.7); /* 옅은 회색 배경 */
-            border-radius: 24px; 
-            border: 1px solid rgba(0,0,0,0.04);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-            backdrop-filter: blur(12px);
-        }
-        .tab-btn {
-            padding: 10px 22px; font-size: 14px; font-weight: 500; border: none;
-            background: transparent; color: #9ca3af; /* 선택 안 된 글씨는 회색/흐릿하게 */
-            border-radius: 18px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap;
-        }
-        .tab-btn:hover { color: #6b7280; }
-        .tab-btn.active { 
-            background: #ffffff; color: #111827; font-weight: 700; /* 흰 배경에 뚜렷한 검정 글씨 */
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-        }
-        .tab-btn-student { color: #9ca3af; }
-        .tab-btn-student.active { background: #ffffff; color: #d97706; }
-
-        /* 컨트롤 및 배치 바 */
-        .batch-bar {
-            background: var(--glass-bg); padding: 12px 20px; border-radius: 12px; display: flex;
-            justify-content: space-between; align-items: center; margin-bottom: 16px;
-            box-shadow: var(--glass-shadow); border: 1px solid var(--glass-border); flex-wrap: wrap; gap: 10px; backdrop-filter: blur(12px);
-        }
-        .btn-control {
-            padding: 8px 14px; font-size: 13px; font-weight: bold; border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 8px; background: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s; color: var(--text-main); backdrop-filter: blur(4px);
-        }
-        .btn-control:hover { background: rgba(255,255,255,0.95); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-        .btn-login { background: var(--primary-dark); color: white; border: none; }
-        .btn-login:hover { background: #374151; color: white; }
         
-        .btn-pending-count { background: #111827; color: white; border: none; }
-        .btn-approved { background: rgba(255,255,255,0.8); color: var(--text-main); border: 1px solid #9ca3af; }
-        .btn-score-plus { background: rgba(255,255,255,0.8); color: var(--text-main); border: 1px solid #d1d5db; }
-        .btn-score-minus { background: rgba(243,244,246,0.6); color: var(--text-muted); border: 1px solid #e5e7eb; }
-        .btn-reset { background: rgba(254,226,226,0.6); color: var(--alert-red); border: 1px solid rgba(254,202,202,0.8); }
-        .btn-reset:hover { background: rgba(254,226,226,0.9); }
-        .btn-salary { background: rgba(255,255,255,0.8); color: var(--text-main); border-color: #d1d5db; }
+        /* 네비게이션 탭 (세그먼트 스타일 상속) */
+        .nav-tabs { margin-bottom: 20px; }
 
-        /* 카드 그리드 */
+        /* 컨트롤 바 (Batch Bar) */
+        .batch-bar { margin-bottom: 16px; justify-content: space-between; }
+        
+        /* 학생 카드 그리드 */
         .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 30px; }
         .student-card {
             background: var(--glass-bg); border-radius: var(--border-radius); padding: 16px;
             box-shadow: var(--glass-shadow); border: 1px solid var(--glass-border); display: flex; flex-direction: column;
-            justify-content: space-between; min-height: 160px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: all 0.2s;
+            justify-content: space-between; min-height: 160px; cursor: pointer; backdrop-filter: blur(12px); transition: all 0.2s;
         }
         .student-card:hover { background: var(--glass-bg-hover); transform: translateY(-2px); }
-        .student-card.selected { border-color: var(--primary-dark); background-color: rgba(255,255,255,0.95); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .student-card.selected { border-color: var(--primary); background-color: #ffffff; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.15); }
         
         .card-top { display: flex; justify-content: space-between; align-items: center; }
         .card-middle { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-        .avatar { font-size: 36px; background: rgba(255,255,255,0.8); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .avatar { font-size: 36px; background: rgba(255,255,255,0.8); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.6); }
         
-        /* 🔥 통계청, 신용도 폰트 두께 얇게 (font-weight: 400) 수정 */
-        .score-display { font-size: 26px; font-weight: 400; color: var(--text-main); letter-spacing: -0.5px; }
-        .pr-display { font-size: 20px; font-weight: 800; color: var(--primary-gold); }
+        /* 🔥 통계청, 신용도 폰트 두께 얇게, 색상 세련되게 수정 */
+        .stat-title { font-size: 12px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 2px; }
+        .score-display { font-size: 28px; font-weight: 300; color: var(--primary-dark); letter-spacing: -1px; line-height: 1.1; }
+        .pr-display { font-size: 22px; font-weight: 300; color: var(--primary); letter-spacing: -0.5px; line-height: 1.1;}
 
-        .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        .badge-job { background: #475569; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight:bold; display:inline-block; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:middle; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .badge-job { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight:bold; display:inline-block; border: 1px solid #bae6fd; }
         
         /* 다채로운 색상의 신용등급 뱃지 */
-        .grade-1 { background: linear-gradient(135deg, #ef4444, #b91c1c); } /* Red */
-        .grade-2 { background: linear-gradient(135deg, #f97316, #c2410c); } /* Orange */
-        .grade-3 { background: linear-gradient(135deg, #f59e0b, #b45309); } /* Amber */
-        .grade-4 { background: linear-gradient(135deg, #84cc16, #4d7c0f); } /* Lime */
-        .grade-5 { background: linear-gradient(135deg, #10b981, #047857); } /* Emerald */
-        .grade-6 { background: linear-gradient(135deg, #14b8a6, #0f766e); } /* Teal */
-        .grade-7 { background: linear-gradient(135deg, #0ea5e9, #0369a1); } /* Sky */
-        .grade-8 { background: linear-gradient(135deg, #6366f1, #4338ca); } /* Indigo */
-        .grade-9 { background: linear-gradient(135deg, #a855f7, #7e22ce); } /* Purple */
-        .grade-10 { background: linear-gradient(135deg, #64748b, #334155); } /* Slate */
+        .grade-1 { background: linear-gradient(135deg, #ef4444, #b91c1c); } 
+        .grade-2 { background: linear-gradient(135deg, #f97316, #c2410c); } 
+        .grade-3 { background: linear-gradient(135deg, #f59e0b, #b45309); } 
+        .grade-4 { background: linear-gradient(135deg, #84cc16, #4d7c0f); } 
+        .grade-5 { background: linear-gradient(135deg, #10b981, #047857); } 
+        .grade-6 { background: linear-gradient(135deg, #14b8a6, #0f766e); } 
+        .grade-7 { background: linear-gradient(135deg, #0ea5e9, #0369a1); } 
+        .grade-8 { background: linear-gradient(135deg, #6366f1, #4338ca); } 
+        .grade-9 { background: linear-gradient(135deg, #a855f7, #7e22ce); } 
+        .grade-10 { background: linear-gradient(135deg, #64748b, #334155); } 
 
-        .info-box { background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6); padding: 6px 10px; border-radius: 8px; font-size: 11px; color: var(--text-muted); margin-top: 6px; }
-        .info-box-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .info-box { background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.7); padding: 8px 12px; border-radius: 12px; font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+        .info-box-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
 
         .ref-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .ref-table th, .ref-table td { padding: 8px 10px; border: 1px solid rgba(0,0,0,0.1); }
+        .ref-table th, .ref-table td { padding: 8px 10px; border: 1px solid rgba(0,0,0,0.05); }
         .ref-table th { background: rgba(255,255,255,0.7); font-weight: bold; color: var(--text-main); }
 
-        .card-bottom-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .action-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.2s; color: var(--text-main); }
-        .btn-plus { background: rgba(255,255,255,0.8); }
-        .btn-plus:hover { background: #fff; }
-        .btn-minus { background: rgba(243,244,246,0.6); color: var(--text-muted); }
-        .btn-police { background: rgba(255,255,255,0.8); }
-        .btn-edit { background: rgba(254,243,199,0.7); color: #92400e; border-color: rgba(253,230,138,0.8); }
-        .btn-cancel { background: rgba(243,244,246,0.6); }
-        .btn-passbook { background: rgba(255,255,255,0.9); font-weight: 800; border: 1px solid #d1d5db; }
-        .btn-score-log { background: rgba(255,255,255,0.6); }
-
-        .job-table-container { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px; box-shadow: var(--glass-shadow); overflow-x: auto; }
+        .card-bottom-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        
+        .job-table-container { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; box-shadow: var(--glass-shadow); overflow-x: auto; }
         .job-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; white-space: nowrap; }
-        .job-table th, .job-table td { padding: 10px 8px; border: 1px solid rgba(0,0,0,0.05); }
+        .job-table th, .job-table td { padding: 10px 8px; border: 1px solid rgba(0,0,0,0.03); }
         .job-table th { background: rgba(255,255,255,0.6); color: var(--text-main); font-weight: bold; }
 
-        /* 직업수행도 강렬한 빨간색 처리 */
         .eval-btn { padding: 4px 8px; font-weight: bold; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: 12px; }
         .eval-O { background: rgba(220, 252, 231, 0.7); color: #166534; border-color: #86efac; }
         .eval-TRI { background: rgba(255, 237, 213, 0.8); color: #ea580c; border-color: #fdba74; }
@@ -193,81 +175,56 @@
             display:flex; flex-direction:column; justify-content:space-between; 
             position: relative; overflow: hidden;
         }
-        .store-emoji { font-size: 48px; margin-bottom: 8px; transition: all 0.3s; }
-        
+        .store-emoji { font-size: 48px; margin-bottom: 8px; }
         .sold-out-badge {
             position: absolute; top: 22px; left: -35px; width: 140px;
-            background: #9ca3af; color: white; font-weight: 900; font-size: 13px;
+            background: #94a3b8; color: white; font-weight: 900; font-size: 13px;
             text-align: center; padding: 6px 0; transform: rotate(-45deg);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); letter-spacing: 1px; z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); letter-spacing: 1px; z-index: 10;
         }
         .store-card.sold-out .store-emoji { filter: grayscale(100%) opacity(0.5); }
-        .store-card.sold-out { background: rgba(243,244,246,0.6); }
+        .store-card.sold-out { background: rgba(241,245,249,0.7); }
 
-        .noti-item { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; color: var(--text-main); font-weight:bold; }
-
-        /* 모달 글래스 처리 */
-        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; padding: 10px; }
-        .modal-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 24px; border-radius: 16px; width: 100%; max-width: 550px; max-height: 90vh; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,1); box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-        .modal-title { font-size: 18px; font-weight: 900; margin-bottom: 15px; text-align: center; color: var(--text-main); }
+        /* 모달 (세그먼트 스타일 버튼 적용) */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000; padding: 10px; }
+        .modal-card { background: rgba(255, 255, 255, 0.95); padding: 24px; border-radius: 24px; width: 100%; max-width: 550px; max-height: 90vh; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,1); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+        .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 18px; text-align: center; color: var(--text-main); }
         
         .pending-list { overflow-y: auto; max-height: 400px; margin-bottom: 15px; }
-        .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 13px; gap: 10px; }
-        .btn-approve { background: var(--primary-dark); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .btn-reject { background: rgba(243,244,246,0.8); color: var(--text-muted); border: 1px solid rgba(0,0,0,0.1); padding: 5px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-        .score-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .score-opt-btn { padding: 10px; font-size: 14px; font-weight: bold; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.6); cursor: pointer; color: var(--text-main);}
-        .score-opt-btn.selected { background: var(--primary-dark); color: white; border-color: #000; }
+        .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 13px; gap: 10px; }
+        
         .input-group { margin-bottom: 14px; width: 100%; }
-        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: var(--text-muted);}
-        .input-group select, .input-group input { width: 100%; padding: 10px; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; font-size: 14px; outline-color: var(--primary-dark); background: rgba(255,255,255,0.7); color: var(--text-main); font-weight: 500;}
-        .modal-btns { display: flex; gap: 8px; margin-top: 10px; }
-        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
-        .modal-btn.confirm { background: var(--primary-dark); color: white; }
-        .modal-btn.cancel { background: #9ca3af; color: white; }
-
-        .police-rule-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 13px; align-items: center; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted);}
+        .input-group select, .input-group input, .input-group textarea { 
+            width: 100%; padding: 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; font-size: 14px; 
+            background: rgba(248, 250, 252, 0.8); color: var(--text-main); transition: all 0.2s;
+        }
+        .input-group select:focus, .input-group input:focus, .input-group textarea:focus {
+            outline: none; border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
 
         .log-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .log-table th { background: rgba(243,244,246,0.8); padding: 10px; border-bottom: 2px solid rgba(0,0,0,0.1); color: var(--text-main); position: sticky; top: 0; backdrop-filter: blur(5px); }
-        .log-table td { padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .log-in { color: var(--text-main); font-weight: 900; }
-        .log-out { color: var(--text-muted); font-weight: bold; }
-
+        .log-table th { background: rgba(241,245,249,0.8); padding: 10px; border-bottom: 2px solid rgba(0,0,0,0.05); color: var(--text-main); position: sticky; top: 0; backdrop-filter: blur(5px); }
+        .log-table td { padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+        
         /* 모바일 반응형 UI 최적화 */
         @media (max-width: 768px) {
-            .container { padding: 10px; }
-            h1 { font-size: 18px; text-align: center; justify-content: center; width: 100%; margin-bottom: 10px; }
-            header { flex-direction: column; align-items: stretch; gap: 10px; }
-            .user-bar { justify-content: space-between; }
-            
-            .nav-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; border-radius: 16px; }
-            .nav-tabs::-webkit-scrollbar { display: none; }
-            
-            .batch-bar { flex-direction: column; align-items: stretch; gap: 10px; }
-            .batch-bar > div { flex-wrap: wrap; justify-content: center; gap: 8px; }
-            .batch-bar button { flex: 1; min-width: 45%; }
-            
+            .segmented-container { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+            .segmented-container::-webkit-scrollbar { display: none; }
+            .batch-bar { flex-direction: column; align-items: stretch; }
             .student-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-            .profile-header { flex-direction: column; text-align: center; }
-            .profile-header-info { display: flex; flex-direction: column; align-items: center; }
-            .profile-stats { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
 <body>
 
-<!-- 전체 공용 직업 Datalist -->
 <datalist id="jobList">
     <option value="일반"></option><option value="총리"></option><option value="부총리"></option>
     <option value="한국전력"></option><option value="도매상"></option><option value="은행원"></option>
     <option value="국세청"></option><option value="신용평가위원"></option><option value="투자회사"></option>
     <option value="과제통계청"></option><option value="시간통계청"></option><option value="기상청"></option>
     <option value="신문기자"></option><option value="우체국"></option><option value="환경미화원"></option>
-    <option value="칠판관리인"></option><option value="쓰레기수거업체"></option><option value="창틀 전문 청소업체"></option>
-    <option value="선반 전문 청소업체"></option><option value="인테리어 디자이너"></option><option value="대한체육회"></option>
-    <option value="경비원"></option><option value="경찰"></option>
+    <option value="경찰"></option>
 </datalist>
 
 <!-- 스플래시(첫 화면) -->
@@ -275,55 +232,68 @@
     <div class="splash-icon">🎁</div>
     <h1 class="splash-title">선물나라</h1>
     <p class="splash-subtitle">학급 경제 및 종합 관리 시스템</p>
-    <button class="splash-btn" onclick="openLoginModal()">🔑 시작하기</button>
+    <div class="segmented-container" style="padding: 8px; border-radius: 30px;">
+        <button class="seg-btn primary" style="font-size: 18px; padding: 12px 30px; border-radius: 22px;" onclick="openLoginModal()">🔑 시작하기</button>
+    </div>
 </div>
 
 <!-- 메인 앱 컨테이너 -->
 <div class="container" id="mainAppContainer" style="display:none;">
     <header>
-        <h1>🎁 선물나라 학급 종합 관리 시스템</h1>
-        <div class="user-bar">
-            <span id="currentUserInfo" style="font-size:14px; font-weight:bold;">👤 로그인 필요</span>
-            <button class="btn-control btn-login" onclick="openLoginModal()">🔑 접속 변경</button>
+        <h1>🎁 선물나라</h1>
+        
+        <!-- 🔥 상단 유저 모드 바 (세그먼트 스타일) -->
+        <div class="segmented-container user-bar">
+            <span id="currentUserInfo" class="seg-btn active" style="pointer-events: none;">👤 로그인 필요</span>
+            <button class="seg-btn" onclick="openLoginModal()">🔑 접속 변경</button>
         </div>
     </header>
 
     <!-- 동적 탭 네비게이션 -->
-    <nav class="nav-tabs" id="navTabs"></nav>
+    <nav class="segmented-container nav-tabs" id="navTabs"></nav>
 
     <!-- [관리자 전용] 학생 신규 등록 박스 -->
-    <div id="studentMgmtBox" class="glass-panel" style="display:none; padding:18px 22px; margin-bottom:16px;">
-        <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">➕ 새 학생 등록 (전입 / 명단 추가)</h3>
-        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <input type="number" id="newStudentId" placeholder="번호 (예: 25)" style="padding:9px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; width:100px; background:rgba(255,255,255,0.7);">
-            <input type="text" id="newStudentName" placeholder="이름 (예: 홍길동)" style="padding:9px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; width:130px; background:rgba(255,255,255,0.7);">
-            <select id="newStudentAvatar" style="padding:9px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; background:rgba(255,255,255,0.7);">
+    <div id="studentMgmtBox" class="glass-panel" style="display:none; padding:22px; margin-bottom:20px;">
+        <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">➕ 새 학생 개별 등록</h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom: 20px;">
+            <input type="number" id="newStudentId" placeholder="번호 (예: 25)" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); width:100px;">
+            <input type="text" id="newStudentName" placeholder="이름 (예: 홍길동)" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); width:130px;">
+            <select id="newStudentAvatar" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1);">
                 <option value="🐢">🐢 거북이</option><option value="🦝">🦝 너구리</option><option value="🐼">🐼 판다</option><option value="🦊">🦊 여우</option>
                 <option value="🦁">🦁 사자</option><option value="🐶">🐶 강아지</option><option value="🐈">🐈 고양이</option><option value="🐰">🐰 토끼</option>
             </select>
-            <input type="text" id="newStudentJob" list="jobList" placeholder="직업 선택/직접입력" style="padding:9px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; min-width: 150px; background:rgba(255,255,255,0.7);">
-            
+            <input type="text" id="newStudentJob" list="jobList" placeholder="직업입력" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); width: 120px;">
             <label style="font-size:13px; font-weight:bold; display:flex; align-items:center; gap:4px; cursor:pointer;">
                 <input type="checkbox" id="newStudentHasRealEstate"> 부동산 소유
             </label>
-            <button class="btn-control" style="background:var(--primary-dark); color:white; border:none; padding:9px 16px;" onclick="addStudent()">학생 추가</button>
+            <button class="seg-btn active" onclick="addStudent()">개별 추가</button>
+        </div>
+
+        <!-- 🔥 학생 일괄 등록 기능 (새로 추가됨) -->
+        <div style="border-top: 1px dashed rgba(0,0,0,0.15); padding-top: 20px;">
+            <h3 style="font-size:16px; margin-bottom:8px; color:var(--text-main);">📋 여러 명 한 번에 등록하기 (일괄 등록)</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">이름을 쉼표(,) 또는 줄바꿈으로 구분해서 입력하세요. 뒷 번호부터 자동으로 이어서 등록됩니다.</p>
+            <textarea id="batchStudentNames" placeholder="예시)&#13;&#10;김철수&#13;&#10;이영희, 박지성" style="width:100%; height:80px; padding:12px; border-radius:12px; border:1px solid rgba(0,0,0,0.1); background:rgba(255,255,255,0.7); resize:vertical; font-size:14px;"></textarea>
+            <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                <button class="seg-btn primary" onclick="addStudentsBatch()">🚀 일괄 등록 실행</button>
+            </div>
         </div>
     </div>
 
     <!-- 경찰청 관리 박스 -->
-    <div id="policeMgmtBox" class="glass-panel" style="display:none; padding:18px 22px; margin-bottom:16px;">
+    <div id="policeMgmtBox" class="glass-panel" style="display:none; padding:22px; margin-bottom:20px;">
         <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">⚖️ 경찰청 위반 법률(벌금) 신설 및 관리</h3>
-        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom: 15px;">
-            <input type="text" id="newPoliceRuleName" placeholder="위반 내용 (예: 수업시간 지각)" style="padding:9px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; flex:1; min-width:180px; background:rgba(255,255,255,0.7);">
-            <input type="number" id="newPoliceRuleAmt" placeholder="벌금 액수 (PR)" style="padding:9px 12px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; width:120px; background:rgba(255,255,255,0.7);">
-            <button class="btn-control" style="background:var(--primary-dark); color:white; border:none; padding:9px 16px;" onclick="addPoliceRule()">법률 신설</button>
+        <div class="segmented-container" style="background:transparent; border:none; box-shadow:none; padding:0; margin-bottom: 15px;">
+            <input type="text" id="newPoliceRuleName" placeholder="위반 내용 (예: 수업 지각)" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); flex:1; min-width:150px;">
+            <input type="number" id="newPoliceRuleAmt" placeholder="벌금(PR)" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); width:100px;">
+            <button class="seg-btn active" onclick="addPoliceRule()">법률 신설</button>
         </div>
-        <div style="max-height:150px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05); border-radius:8px; background:rgba(255,255,255,0.4);" id="policeRulesList"></div>
+        <div style="max-height:150px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05); border-radius:12px; background:rgba(255,255,255,0.5);" id="policeRulesList"></div>
     </div>
 
     <!-- 신용도 표 -->
     <div id="creditRefTable" style="display:none; margin-bottom: 20px;">
-        <div class="glass-panel" style="padding:16px;">
+        <div class="glass-panel" style="padding:20px;">
             <h3 style="font-size:15px; margin-bottom:10px; color:var(--text-main);">📊 신용등급 및 은행 이자율 안내 표 (기본점수: 31점)</h3>
             <div style="overflow-x:auto;">
                 <table class="ref-table">
@@ -347,81 +317,76 @@
 
     <!-- 메인 컨텐츠 영역 -->
     <main id="mainContent">
-        <!-- 상단 컨트롤 바 -->
-        <div class="batch-bar" id="batchBar">
-            <div style="flex:1; color:var(--text-main);">선택된 학생: <span id="selectedCount" style="color:var(--text-main); font-weight:900;">0</span>명</div>
-            <div style="display:flex; gap:8px; flex-wrap: wrap;">
-                <button id="pendingBtn" class="btn-control btn-pending-count" style="display:none;" onclick="openPendingModal(false)">🔔 승인 대기 목록 (<span id="pendingCount">0</span>건)</button>
-                <button id="approvedBtn" class="btn-control btn-approved" style="display:none;" onclick="openPendingModal(true)">✅ 최근 승인(사후 취소)</button>
-                <button class="btn-control" onclick="selectAll()">전체 선택</button>
-                <button class="btn-control" onclick="deselectAll()">선택 해제</button>
-                <button id="btnSalaryModal" class="btn-control btn-salary" style="display:none;" onclick="openSalaryModal()">🏦 일괄 월급 지급(자동)</button>
-                <button id="btnScorePlus" class="btn-control btn-score-plus" style="display:none; font-weight:900;" onclick="openBatchModal('plus')">점수 부여 (+)</button>
-                <button id="btnScoreMinus" class="btn-control btn-score-minus" style="display:none; font-weight:900;" onclick="openBatchModal('minus')">점수 차감 (-)</button>
-                <button id="resetBtn" class="btn-control btn-reset" style="display:none;" onclick="openResetModal()">🔒 데이터 초기화</button>
+        <!-- 🔥 상단 일괄 제어 바 (세그먼트 스타일 적용) -->
+        <div class="segmented-container batch-bar" id="batchBar">
+            <div style="color:var(--text-main); font-size:14px; padding: 0 10px;">선택: <span id="selectedCount" style="font-weight:900; color:var(--primary-dark);">0</span>명</div>
+            <div style="display:flex; gap:4px; flex-wrap: wrap;">
+                <button id="pendingBtn" class="seg-btn" style="display:none; background:#1e293b; color:#fff;" onclick="openPendingModal(false)">🔔 대기 (<span id="pendingCount">0</span>)</button>
+                <button id="approvedBtn" class="seg-btn" style="display:none;" onclick="openPendingModal(true)">✅ 최근 승인</button>
+                <button class="seg-btn" onclick="selectAll()">전체 선택</button>
+                <button class="seg-btn" onclick="deselectAll()">선택 해제</button>
+                <button id="btnSalaryModal" class="seg-btn" style="display:none;" onclick="openSalaryModal()">🏦 일괄 월급(자동)</button>
+                <button id="btnScorePlus" class="seg-btn primary" style="display:none;" onclick="openBatchModal('plus')">점수 부여 (+)</button>
+                <button id="btnScoreMinus" class="seg-btn danger" style="display:none;" onclick="openBatchModal('minus')">점수 차감 (-)</button>
+                <button id="resetBtn" class="seg-btn danger" style="display:none;" onclick="openResetModal()">🔒 초기화</button>
             </div>
         </div>
 
         <!-- 학생 카드 그리드 뷰 -->
         <div class="student-grid" id="studentGrid"></div>
 
-        <!-- 국세청 전용 뷰 -->
+        <!-- 이하 각 뷰 화면들 (생략 없이 원본 유지, 스타일만 상속됨) -->
         <div id="ntsView" style="display:none;">
+            <!-- 국세청 뷰 내용... -->
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px; margin-bottom:16px;">
                 <div class="glass-panel" style="padding:24px; text-align:center;">
-                    <h2 style="font-size:20px; color:var(--text-main); margin-bottom:10px;">🏛️ 국세청 금고 총액</h2>
-                    <div style="font-size:42px; font-weight:900; color:var(--text-main);"><span id="ntsTotalBalance">0</span> PR</div>
-                    <p style="font-size:13px; color:var(--text-muted); margin-top:10px;">소득세 징수액, 공무원 월급 지출 및 경찰 벌금이 누적됩니다.</p>
+                    <h2 style="font-size:16px; color:var(--text-muted); margin-bottom:8px;">🏛️ 국세청 금고 총액</h2>
+                    <div class="score-display"><span id="ntsTotalBalance">0</span> PR</div>
                 </div>
-
                 <div id="ntsExpenseBox" class="glass-panel" style="padding:24px; display:none;">
-                    <h2 style="font-size:18px; color:var(--text-main); margin-bottom:12px;">💸 국세청 예산 지출 (문화/체육 등)</h2>
-                    <div class="input-group"><label>지출 내용 및 목적</label><input type="text" id="ntsExpenseReason" placeholder="예: 자율체육활동 물품 구입"></div>
-                    <div class="input-group"><label>지출 금액 (PR)</label><input type="number" id="ntsExpenseAmount" placeholder="지출액 입력"></div>
-                    <button class="btn-control" style="width:100%; background:var(--primary-dark); color:white; border:none; padding:10px;" onclick="submitNTSExpense()">예산 지출 등록 (즉시 차감)</button>
+                    <h2 style="font-size:16px; color:var(--text-main); margin-bottom:12px;">💸 국세청 예산 지출 (문화/체육 등)</h2>
+                    <div class="input-group"><input type="text" id="ntsExpenseReason" placeholder="지출 내용 (예: 체육물품)"></div>
+                    <div class="input-group"><input type="number" id="ntsExpenseAmount" placeholder="지출 금액 (PR)"></div>
+                    <div class="segmented-container" style="padding:0; background:none; border:none; box-shadow:none;">
+                        <button class="seg-btn primary" style="width:100%; justify-content:center;" onclick="submitNTSExpense()">예산 지출 등록 (차감)</button>
+                    </div>
                 </div>
             </div>
             
-            <div class="glass-panel" style="padding:16px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-                    <h3 style="font-size:16px; color:var(--text-main); margin:0;">📜 국세청 징수/지출 최근 내역</h3>
-                    <input type="month" id="ntsMonthFilter" class="btn-control" style="padding:6px; min-width: 140px; background:rgba(255,255,255,0.7);" onchange="renderNTS()">
+            <div class="glass-panel" style="padding:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="font-size:16px; color:var(--text-main);">📜 징수/지출 내역</h3>
+                    <input type="month" id="ntsMonthFilter" class="seg-btn" style="background:rgba(255,255,255,0.8); border:1px solid rgba(0,0,0,0.1);" onchange="renderNTS()">
                 </div>
                 <div id="ntsLogsContainer" style="max-height:400px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <!-- 전체 신용도 조회 뷰 -->
         <div id="creditView" style="display:none;">
-            <div class="glass-panel" style="padding:20px; margin-bottom:20px;">
-                <h3 style="font-size:18px; margin-bottom:6px; color:var(--text-main);">💳 전체 학생 신용등급 및 점수 현황</h3>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">모든 학급 구성원의 신용 점수와 등급, 세금율을 조회할 수 있습니다.</p>
-                <div class="student-grid" id="creditGrid"></div>
+            <div class="glass-panel" style="padding:24px; margin-bottom:20px;">
+                <h3 style="font-size:18px; margin-bottom:6px; color:var(--text-main);">💳 전체 학생 신용등급 조회</h3>
+                <div class="student-grid" id="creditGrid" style="margin-top:20px;"></div>
             </div>
         </div>
 
-        <!-- 직업 & 수행도 관리 뷰 -->
         <div id="jobMgmtView" style="display:none;">
-            <div class="glass-panel" style="padding:16px 20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div class="glass-panel" style="padding:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h3 style="font-size:16px; color:var(--text-main);">👨‍💼 직업 배정 및 수행도 관할 현황</h3>
-                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">
-                        📌 <b>직업/관할 지정:</b> 교사, 총리, 부총리가 자유롭게 학생을 분배하고 직업을 배정할 수 있습니다.<br>
-                        📌 <b>기본급 설정:</b> 교사와 은행원이 수정할 수 있습니다.<br>
-                        📌 <b>수행도(클릭):</b> <b>O</b>(인정) | <b>△</b>(경고, 2개=미인정 1회) | <b style="color:var(--alert-red);">X</b>(미인정, 월급 10% 차감)
-                    </p>
+                    <h3 style="font-size:16px; color:var(--text-main);">👨‍💼 직업 및 2주차 수행도 현황</h3>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">수행도(클릭): <b>O</b>(인정) | <b>△</b>(경고) | <b style="color:var(--alert-red);">X</b>(미인정, 월급 10% 차감)</p>
                 </div>
-                <button id="btnResetPerf" class="btn-control" style="display:none;" onclick="resetAllPerformances()">🔄 2주 차 수행도 전체 O로 리셋</button>
+                <div class="segmented-container" style="padding:0; border:none; background:none; box-shadow:none;">
+                    <button id="btnResetPerf" class="seg-btn" style="display:none; background:#fff; border:1px solid rgba(0,0,0,0.1);" onclick="resetAllPerformances()">🔄 전체 O 리셋</button>
+                </div>
             </div>
-
             <div class="job-table-container">
                 <table class="job-table">
                     <thead>
                         <tr>
-                            <th>학생</th><th>직업 (직접입력)</th><th>기본급</th><th>관리 관할</th>
+                            <th>학생</th><th>직업</th><th>기본급</th><th>관할</th>
                             <th>1일</th><th>2일</th><th>3일</th><th>4일</th><th>5일</th>
                             <th>6일</th><th>7일</th><th>8일</th><th>9일</th><th>10일</th>
-                            <th>수행 요약 (미인정)</th><th>월급 차감율</th>
+                            <th>미인정</th><th>차감율</th>
                         </tr>
                     </thead>
                     <tbody id="jobMgmtTableBody"></tbody>
@@ -429,39 +394,35 @@
             </div>
         </div>
 
-        <!-- 학생 마이페이지 (내 정보 전용 뷰) -->
         <div id="myPageView" style="display:none;"></div>
-
-        <!-- 매점 구매 탭 뷰 -->
         <div id="storeView" style="display:none;">
-            <div class="glass-panel" style="padding:16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+            <div class="glass-panel" style="padding:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="font-size:16px; color:var(--text-main);">🍬 선물나라 행복 매점</h3>
-                <div style="font-size:15px; font-weight:bold;">내 잔고: <span id="myStoreBalance" style="color:var(--text-main); font-size:18px;">0</span> PR</div>
+                <div style="font-size:15px; font-weight:bold;">내 잔고: <span id="myStoreBalance" class="pr-display" style="font-size: 20px;">0</span> PR</div>
             </div>
             <div class="store-grid" id="storeItemsGrid"></div>
         </div>
 
-        <!-- 매점 재고 및 판매 관리 탭 뷰 -->
         <div id="storeAdminView" style="display:none;">
-            <div class="glass-panel" style="padding:18px; margin-bottom:16px;">
-                <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">➕ 매점 상품 신규 등록</h3>
-                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                    <input type="text" id="newItemEmoji" list="emojiList" placeholder="이모지(선택)" style="padding:9px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; width:100px; background:rgba(255,255,255,0.7);">
+            <div class="glass-panel" style="padding:20px; margin-bottom:20px;">
+                <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">➕ 상품 신규 등록</h3>
+                <div class="segmented-container" style="background:transparent; border:none; box-shadow:none; padding:0;">
+                    <input type="text" id="newItemEmoji" list="emojiList" placeholder="이모지" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); width:80px;">
                     <datalist id="emojiList"><option value="🍬"><option value="🍭"><option value="🍫"><option value="🧃"><option value="🍪"><option value="🍩"><option value="🍿"><option value="✏️"><option value="📓"><option value="🧸"><option value="🎁"></datalist>
-                    <input type="text" id="newItemName" placeholder="상품명 (예: 마이쮸)" style="padding:9px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; flex:1; min-width:140px; background:rgba(255,255,255,0.7);">
-                    <input type="number" id="newItemPrice" placeholder="가격(PR)" style="padding:9px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; width:100px; background:rgba(255,255,255,0.7);">
-                    <input type="number" id="newItemStock" placeholder="초기 재고" style="padding:9px; border:1px solid rgba(0,0,0,0.1); border-radius:8px; width:100px; background:rgba(255,255,255,0.7);">
-                    <button class="btn-control" style="background:var(--primary-dark); color:white; border:none; padding:9px 16px;" onclick="addStoreItem()">상품 추가</button>
+                    <input type="text" id="newItemName" placeholder="상품명" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); flex:1; min-width:120px;">
+                    <input type="number" id="newItemPrice" placeholder="가격" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); width:90px;">
+                    <input type="number" id="newItemStock" placeholder="초기재고" class="seg-btn" style="background:#fff; border:1px solid rgba(0,0,0,0.1); width:90px;">
+                    <button class="seg-btn active" onclick="addStoreItem()">추가</button>
                 </div>
             </div>
 
-            <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">📦 현재 상품 재고 목록</h3>
+            <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main); padding-left:4px;">📦 현재 재고 목록</h3>
             <div class="store-grid" id="storeAdminGrid" style="margin-bottom:25px;"></div>
 
-            <div class="glass-panel" style="padding:16px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-                    <h3 style="font-size:16px; color:var(--text-main); margin:0;">📜 매점 판매/결제 최근 내역</h3>
-                    <input type="month" id="purchaseMonthFilter" class="btn-control" style="padding:6px; min-width: 140px; background:rgba(255,255,255,0.7);" onchange="renderPurchaseLogs()">
+            <div class="glass-panel" style="padding:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="font-size:16px; color:var(--text-main);">📜 판매 내역</h3>
+                    <input type="month" id="purchaseMonthFilter" class="seg-btn" style="background:rgba(255,255,255,0.8); border:1px solid rgba(0,0,0,0.1);" onchange="renderPurchaseLogs()">
                 </div>
                 <div id="purchaseLogList" style="max-height:250px; overflow-y:auto;"></div>
             </div>
@@ -469,40 +430,8 @@
     </main>
 </div>
 
-<!-- 모달 공통 영역 -->
-<div class="modal-overlay" id="passbookModal">
-    <div class="modal-card">
-        <div class="modal-title" id="passbookModalTitle">📖 통장 거래 내역</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-            <input type="month" id="passbookMonthFilter" class="btn-control" style="padding:6px;" onchange="openPassbookModal(activePassbookStudentId)">
-            <div style="font-weight:bold; color:var(--text-main);">현재 잔고: <span id="passbookCurrentBalance">0</span> PR</div>
-        </div>
-        <div style="overflow-y:auto; flex:1; border:1px solid rgba(0,0,0,0.1); border-radius:8px; max-height:40vh; background:rgba(255,255,255,0.4);">
-            <table class="log-table">
-                <thead><tr><th>일시</th><th>내용</th><th>입금(+)</th><th>출금(-)</th></tr></thead>
-                <tbody id="passbookTableBody"></tbody>
-            </table>
-        </div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('passbookModal')">닫기</button></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="scoreLogModal">
-    <div class="modal-card">
-        <div class="modal-title" id="scoreLogModalTitle">📊 신용 점수 증감 내역</div>
-        <div style="display:flex; justify-content:flex-start; margin-bottom:10px;">
-            <input type="month" id="scoreLogMonthFilter" class="btn-control" style="padding:6px;" onchange="openScoreLogModal(activeScoreLogStudentId)">
-        </div>
-        <div style="overflow-y:auto; flex:1; border:1px solid rgba(0,0,0,0.1); border-radius:8px; max-height:40vh; background:rgba(255,255,255,0.4);">
-            <table class="log-table">
-                <thead><tr><th>일시</th><th>구분</th><th>상세 사유</th><th>증감</th></tr></thead>
-                <tbody id="scoreLogTableBody"></tbody>
-            </table>
-        </div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('scoreLogModal')">닫기</button></div>
-    </div>
-</div>
-
+<!-- 🔥 모달 공통 영역 (세그먼트 스타일 버튼 적용) -->
+<!-- 로그인 모달 -->
 <div class="modal-overlay" id="loginModal">
     <div class="modal-card" style="max-width: 400px;">
         <div class="modal-title">🔑 접속 모드 선택</div>
@@ -510,48 +439,143 @@
         <div class="input-group" id="studentSelectGroup"><label>학생 선택</label><select id="loginStudentId"></select></div>
         <div class="input-group" id="studentPwGroup"><label>학생 비밀번호</label><input type="password" id="studentPw" placeholder="비밀번호 입력 (초기: 0000)"></div>
         <div class="input-group" id="teacherPwGroup" style="display:none;"><label>교사 비밀번호</label><input type="password" id="teacherPw" placeholder="비밀번호"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('loginModal')">취소</button><button class="modal-btn confirm" onclick="processLogin()">접속하기</button></div>
+        
+        <div class="segmented-container" style="margin-top: 15px; width:100%; display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('loginModal')">취소</button>
+            <button class="seg-btn primary" style="flex:1; justify-content:center;" onclick="processLogin()">접속하기</button>
+        </div>
     </div>
 </div>
 
+<!-- 점수 모달 -->
+<div class="modal-overlay" id="scoreModal">
+    <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-title" id="modalTitle">점수 및 사유 입력</div>
+        <div class="segmented-container" id="modalScoreOptions" style="margin-bottom:15px; justify-content:space-between;"></div>
+        <div class="input-group" id="categorySelectGroup" style="display:none;"><label>📌 반영 통계청</label><select id="scoreCategory"><option value="시간통계">⏱️ 시간통계청</option><option value="과제통계">📋 과제통계청</option></select></div>
+        <div class="input-group"><label>⏱️ 교시 선택</label><select id="scorePeriod"><option value="1교시">1교시</option><option value="2교시">2교시</option><option value="3교시">3교시</option><option value="4교시">4교시</option><option value="5교시">5교시</option><option value="6교시">6교시</option><option value="아침활동">아침활동</option><option value="점심시간">점심시간</option></select></div>
+        <div class="input-group"><label>📝 사유 입력</label><input type="text" id="scoreReason" placeholder="예: 시간 준수, 과제 미제출 등"></div>
+        <div class="segmented-container" style="margin-top: 10px; display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('scoreModal')">취소</button>
+            <button class="seg-btn primary" id="submitBtn" style="flex:1; justify-content:center;" onclick="submitScoreRequest()">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- 통장 모달 -->
+<div class="modal-overlay" id="passbookModal">
+    <div class="modal-card">
+        <div class="modal-title" id="passbookModalTitle">📖 통장 거래 내역</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <input type="month" id="passbookMonthFilter" class="seg-btn" style="background:#f8fafc; border:1px solid rgba(0,0,0,0.1); padding:8px;" onchange="openPassbookModal(activePassbookStudentId)">
+            <div style="font-size:13px; font-weight:600; color:var(--text-muted);">현재 잔고: <span id="passbookCurrentBalance" class="pr-display" style="font-size:18px;">0</span> PR</div>
+        </div>
+        <div style="overflow-y:auto; flex:1; border:1px solid rgba(0,0,0,0.05); border-radius:12px; max-height:40vh; background:rgba(248,250,252,0.6); margin-bottom:15px;">
+            <table class="log-table">
+                <thead><tr><th>일시</th><th>내용</th><th>입금(+)</th><th>출금(-)</th></tr></thead>
+                <tbody id="passbookTableBody"></tbody>
+            </table>
+        </div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn active" style="flex:1; justify-content:center;" onclick="closeModal('passbookModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 점수 내역 모달 -->
+<div class="modal-overlay" id="scoreLogModal">
+    <div class="modal-card">
+        <div class="modal-title" id="scoreLogModalTitle">📊 점수 증감 내역</div>
+        <div style="margin-bottom:15px;">
+            <input type="month" id="scoreLogMonthFilter" class="seg-btn" style="background:#f8fafc; border:1px solid rgba(0,0,0,0.1); padding:8px;" onchange="openScoreLogModal(activeScoreLogStudentId)">
+        </div>
+        <div style="overflow-y:auto; flex:1; border:1px solid rgba(0,0,0,0.05); border-radius:12px; max-height:40vh; background:rgba(248,250,252,0.6); margin-bottom:15px;">
+            <table class="log-table">
+                <thead><tr><th>일시</th><th>구분</th><th>상세 사유</th><th>증감</th></tr></thead>
+                <tbody id="scoreLogTableBody"></tbody>
+            </table>
+        </div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn active" style="flex:1; justify-content:center;" onclick="closeModal('scoreLogModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 나머지 모달들 (월급, 경찰, 잔고수정, 구매, 초기화 등 공통 구조 적용) -->
 <div class="modal-overlay" id="buyConfirmModal">
     <div class="modal-card" style="max-width:380px; text-align:center;">
         <div class="modal-title" style="color:var(--text-main);">🛒 구매 확인</div>
-        <div style="font-size:48px; margin:10px 0;" id="buyModalEmoji">🍬</div>
-        <p style="font-size:16px; font-weight:bold; margin-bottom:8px;" id="buyModalItemName">상품명</p>
-        <p style="font-size:15px; color:var(--text-main); font-weight:bold; margin-bottom:20px;" id="buyModalPrice">0 PR</p>
-        <div style="background:rgba(243,244,246,0.8); padding:10px; border-radius:8px; font-size:12px; color:var(--text-muted); margin-bottom:20px;">정말 이 상품을 구매하시겠습니까?<br>확인 시 지갑에서 즉시 차감됩니다.</div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('buyConfirmModal')">❌ 취소</button><button class="modal-btn confirm" onclick="executeStorePurchase()">⭕ 확인 (구매)</button></div>
+        <div style="font-size:55px; margin:10px 0;" id="buyModalEmoji">🍬</div>
+        <p style="font-size:18px; font-weight:800; margin-bottom:8px;" id="buyModalItemName">상품명</p>
+        <p class="pr-display" style="margin-bottom:20px;" id="buyModalPrice">0 PR</p>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('buyConfirmModal')">취소</button>
+            <button class="seg-btn primary" style="flex:1; justify-content:center;" onclick="executeStorePurchase()">구매 확정</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="salaryModal">
+    <div class="modal-card" style="max-width: 650px;">
+        <div class="modal-title">💵 일괄 월급 지급 (공제 자동)</div>
+        <div class="glass-panel" style="padding:16px; border-radius:16px; margin-bottom:16px;">
+            <div style="font-size:13px; font-weight:bold; margin-bottom:8px; color:var(--text-main);">📊 기본 공제액 (부동산 보유자 자리임대료 자동 면제)</div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <label style="font-size:12px;">자리세 <input type="number" id="deductRent" value="0" class="seg-btn" style="width:60px; padding:6px; background:#fff; border:1px solid #e2e8f0;" onchange="recalcSalary()"></label>
+                <label style="font-size:12px;">전기 <input type="number" id="deductElec" value="0" class="seg-btn" style="width:60px; padding:6px; background:#fff; border:1px solid #e2e8f0;" onchange="recalcSalary()"></label>
+                <label style="font-size:12px;">건보 <input type="number" id="deductHealth" value="0" class="seg-btn" style="width:60px; padding:6px; background:#fff; border:1px solid #e2e8f0;" onchange="recalcSalary()"></label>
+                <label style="font-size:12px;">고용 <input type="number" id="deductEmp" value="0" class="seg-btn" style="width:60px; padding:6px; background:#fff; border:1px solid #e2e8f0;" onchange="recalcSalary()"></label>
+                <label style="font-size:12px;">급식 <input type="number" id="deductMeal" value="0" class="seg-btn" style="width:60px; padding:6px; background:#fff; border:1px solid #e2e8f0;" onchange="recalcSalary()"></label>
+            </div>
+        </div>
+        <div class="input-group"><label>지급 명목</label><input type="text" id="salaryMemo" value="정기 월급"></div>
+        <div id="salaryStudentList" style="flex:1; overflow-y:auto; border:1px solid rgba(0,0,0,0.05); border-radius:12px; padding:10px; margin-bottom:15px; background:rgba(248,250,252,0.6); max-height: 40vh;"></div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('salaryModal')">취소</button>
+            <button class="seg-btn primary" id="btnSalarySubmit" style="flex:1; justify-content:center;" onclick="submitSalaryRequest()">월급 지급 승인</button>
+        </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="policeModal">
     <div class="modal-card" style="max-width: 400px;">
-        <div class="modal-title" style="color:var(--text-main);">🚓 경찰 벌금 부과</div>
-        <div class="input-group"><label>위반 법률(벌금) 선택</label><select id="policeReasonSelect" onchange="updatePoliceModalAmount()"></select></div>
-        <div class="input-group"><label>벌금 액수 (PR)</label><input type="number" id="policeFineAmount" readonly style="background:rgba(243,244,246,0.6); cursor:not-allowed;"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('policeModal')">취소</button><button class="modal-btn confirm" id="btnPoliceSubmit" onclick="submitPoliceRequest()">벌금 부과 승인 신청</button></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="editPoliceRuleModal">
-    <div class="modal-card" style="max-width: 380px;">
-        <div class="modal-title" style="color:var(--text-main);">⚖️ 법률(벌금 규칙) 수정</div>
-        <input type="hidden" id="editPoliceRuleId">
-        <div class="input-group"><label>위반 내용</label><input type="text" id="editPoliceRuleName"></div>
-        <div class="input-group"><label>벌금 액수 (PR)</label><input type="number" id="editPoliceRuleAmt"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('editPoliceRuleModal')">취소</button><button class="modal-btn confirm" onclick="savePoliceRuleEdit()">수정 완료</button></div>
+        <div class="modal-title">🚓 경찰 벌금 부과</div>
+        <div class="input-group"><label>위반 법률 선택</label><select id="policeReasonSelect" onchange="updatePoliceModalAmount()"></select></div>
+        <div class="input-group"><label>벌금 액수 (PR)</label><input type="number" id="policeFineAmount" readonly style="background:rgba(241,245,249,0.8); cursor:not-allowed;"></div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('policeModal')">취소</button>
+            <button class="seg-btn active" id="btnPoliceSubmit" style="flex:1; justify-content:center;" onclick="submitPoliceRequest()">부과 신청</button>
+        </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="individualBalanceModal">
     <div class="modal-card" style="max-width: 380px;">
-        <div class="modal-title" style="color:var(--text-main);">💰 개별 학생 잔고 수정</div>
+        <div class="modal-title">💰 개별 학생 잔고 수정</div>
         <div style="text-align:center; font-weight:bold; margin-bottom:15px; font-size:15px;" id="indBalStudentName">학생 이름</div>
-        <div class="input-group"><label>수정 유형</label><select id="indBalType"><option value="plus">지급 (플러스 +)</option><option value="minus">차감 (마이너스 -)</option></select></div>
+        <div class="input-group"><label>유형</label><select id="indBalType"><option value="plus">지급 (+)</option><option value="minus">차감 (-)</option></select></div>
         <div class="input-group"><label>금액 (PR)</label><input type="number" id="indBalAmount" placeholder="금액 입력"></div>
-        <div class="input-group"><label>수정 사유</label><input type="text" id="indBalReason" placeholder="예: 추가 보너스, 오류 수정"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('individualBalanceModal')">취소</button><button class="modal-btn confirm" id="btnIndBalSubmit" onclick="submitIndividualBalanceEdit()">수정 신청</button></div>
+        <div class="input-group"><label>사유</label><input type="text" id="indBalReason" placeholder="예: 추가 보너스"></div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('individualBalanceModal')">취소</button>
+            <button class="seg-btn primary" id="btnIndBalSubmit" style="flex:1; justify-content:center;" onclick="submitIndividualBalanceEdit()">수정 완료</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="savingsModal">
+    <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-title" id="savingsModalTitle">🏦 선물은행 저축하기</div>
+        <div class="input-group">
+            <label>저축할 금액 (PR)</label>
+            <input type="number" id="savingsAmount">
+            <span style="font-size:12px; color:var(--text-muted); display:block; margin-top:6px;">현재 잔고: <b id="currentBalanceDisplay" style="color:var(--primary-dark);">0</b> PR</span>
+        </div>
+        <div class="input-group"><label>저축 기간</label><select id="savingsTerm"><option value="4주">4주 저축</option><option value="2주">2주 저축</option></select></div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('savingsModal')">취소</button>
+            <button class="seg-btn primary" style="flex:1; justify-content:center;" onclick="submitSavingsDeposit()">저축 완료</button>
+        </div>
     </div>
 </div>
 
@@ -561,56 +585,22 @@
         <div class="input-group"><label>현재 비밀번호</label><input type="password" id="currentPw" placeholder="현재 비밀번호"></div>
         <div class="input-group"><label>새 비밀번호</label><input type="password" id="newPw" placeholder="새 비밀번호 입력"></div>
         <div class="input-group"><label>새 비밀번호 확인</label><input type="password" id="confirmPw" placeholder="새 비밀번호 재입력"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('changePwModal')">취소</button><button class="modal-btn confirm" onclick="submitChangePw()">변경 완료</button></div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('changePwModal')">취소</button>
+            <button class="seg-btn primary" style="flex:1; justify-content:center;" onclick="submitChangePw()">변경 완료</button>
+        </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="resetModal">
-    <div class="modal-card" style="max-width: 320px; text-align:center;">
-        <div class="modal-title" style="color:var(--alert-red);">🔒 모든 데이터 초기화</div>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">모든 데이터가 삭제되며 되돌릴 수 없습니다.</p>
+    <div class="modal-card" style="max-width: 350px; text-align:center;">
+        <div class="modal-title" style="color:var(--alert-red);">🔒 데이터 초기화</div>
+        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">모든 데이터가 삭제되며 되돌릴 수 없습니다.</p>
         <div class="input-group"><input type="password" id="resetPwInput" placeholder="관리자 비밀번호" style="text-align:center;"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('resetModal')">취소</button><button class="modal-btn confirm" style="background:var(--alert-red);" onclick="executeReset()">초기화 실행</button></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="scoreModal">
-    <div class="modal-card" style="max-width: 420px;">
-        <div class="modal-title" id="modalTitle">점수 및 사유 입력</div>
-        <div class="score-options" id="modalScoreOptions"></div>
-        <div class="input-group" id="categorySelectGroup" style="display:none;"><label>📌 반영 통계청 선택</label><select id="scoreCategory"><option value="시간통계">⏱️ 시간통계청</option><option value="과제통계">📋 과제통계청</option></select></div>
-        <div class="input-group"><label>⏱️ 교시 선택</label><select id="scorePeriod"><option value="1교시">1교시</option><option value="2교시">2교시</option><option value="3교시">3교시</option><option value="4교시">4교시</option><option value="5교시">5교시</option><option value="6교시">6교시</option><option value="아침활동">아침활동</option><option value="점심시간">점심시간</option></select></div>
-        <div class="input-group"><label>📝 사유 입력</label><input type="text" id="scoreReason" placeholder="예: 시간 준수, 과제 미제출 등"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('scoreModal')">취소</button><button class="modal-btn confirm" id="submitBtn" onclick="submitScoreRequest()">확인</button></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="salaryModal">
-    <div class="modal-card" style="max-width: 650px;">
-        <div class="modal-title">💵 일괄 월급 지급 (공제 자동계산)</div>
-        <div style="background:rgba(255,255,255,0.6); padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid rgba(0,0,0,0.1);">
-            <div style="font-size:13px; font-weight:bold; margin-bottom:8px; color:var(--text-main);">📊 글로벌 공제 설정 (부동산 보유자 자리임대료 자동 면제)</div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                <label style="font-size:12px;">자리임대료 <input type="number" id="deductRent" value="0" style="width:55px; padding:4px;" onchange="recalcSalary()"></label>
-                <label style="font-size:12px;">전기요금 <input type="number" id="deductElec" value="0" style="width:55px; padding:4px;" onchange="recalcSalary()"></label>
-                <label style="font-size:12px;">건강보험료 <input type="number" id="deductHealth" value="0" style="width:55px; padding:4px;" onchange="recalcSalary()"></label>
-                <label style="font-size:12px;">고용보험료 <input type="number" id="deductEmp" value="0" style="width:55px; padding:4px;" onchange="recalcSalary()"></label>
-                <label style="font-size:12px;">급식비 <input type="number" id="deductMeal" value="0" style="width:55px; padding:4px;" onchange="recalcSalary()"></label>
-            </div>
-            <div style="font-size:11px; color:var(--alert-red); margin-top:6px;">💡 총리, 부총리 등 공무원 월급은 국세청 금고(세금)에서 지출 차감됩니다.</div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('resetModal')">취소</button>
+            <button class="seg-btn danger active" style="flex:1; justify-content:center;" onclick="executeReset()">초기화 실행</button>
         </div>
-        <div class="input-group"><label>월급 명목 / 메모</label><input type="text" id="salaryMemo" value="정기 월급"></div>
-        <div id="salaryStudentList" style="flex:1; overflow-y:auto; border:1px solid rgba(0,0,0,0.1); border-radius:8px; padding:10px; margin-bottom:15px; background:rgba(255,255,255,0.4); max-height: 40vh;"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('salaryModal')">취소</button><button class="modal-btn confirm" id="btnSalarySubmit" onclick="submitSalaryRequest()">월급 지급 승인</button></div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="savingsModal">
-    <div class="modal-card" style="max-width: 420px;">
-        <div class="modal-title" id="savingsModalTitle">🏦 선물은행 저축하기</div>
-        <div class="input-group"><label>저축할 금액 (PR)</label><input type="number" id="savingsAmount"><span style="font-size:12px; color:var(--text-muted); display:block; margin-top:4px;">현재 잔고: <b id="currentBalanceDisplay" style="color:var(--text-main);">0</b> PR</span></div>
-        <div class="input-group"><label>저축 기간</label><select id="savingsTerm"><option value="4주">4주 저축</option><option value="2주">2주 저축</option></select></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('savingsModal')">취소</button><button class="modal-btn confirm" onclick="submitSavingsDeposit()">저축 완료</button></div>
     </div>
 </div>
 
@@ -618,7 +608,22 @@
     <div class="modal-card" style="max-width: 600px;">
         <div class="modal-title" id="pendingModalTitle">🔔 승인 대기함</div>
         <div class="pending-list" id="pendingList" style="max-height: 50vh;"></div>
-        <div class="modal-btns"><button class="modal-btn cancel" onclick="closeModal('pendingModal')">닫기</button></div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn active" style="flex:1; justify-content:center;" onclick="closeModal('pendingModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="editPoliceRuleModal">
+    <div class="modal-card" style="max-width: 380px;">
+        <div class="modal-title">⚖️ 법률 수정</div>
+        <input type="hidden" id="editPoliceRuleId">
+        <div class="input-group"><label>위반 내용</label><input type="text" id="editPoliceRuleName"></div>
+        <div class="input-group"><label>벌금 (PR)</label><input type="number" id="editPoliceRuleAmt"></div>
+        <div class="segmented-container" style="display:flex;">
+            <button class="seg-btn" style="flex:1; justify-content:center;" onclick="closeModal('editPoliceRuleModal')">취소</button>
+            <button class="seg-btn active" style="flex:1; justify-content:center;" onclick="savePoliceRuleEdit()">수정 완료</button>
+        </div>
     </div>
 </div>
 
@@ -636,15 +641,9 @@
 
     const avatars = ['🐢', '🦝', '🐼', '🦊', '🦁', '🐶', '🐈', '🐱', '🐩', '🐑', '🐿️', '🐒', '🐥', '🐺', '🐻', '🐰', '🐹', '🐯'];
     
-    let students = [];
-    let storeItems = [];
-    let pendingRequests = [];
-    let approvedRequests = []; 
-    let isShowingApproved = false; 
-    let purchaseLogs = [];
-    let policeRules = [];
-    let ntsBalance = 0;
-    let ntsLogs = [];
+    let students = []; let storeItems = []; let pendingRequests = []; let approvedRequests = []; 
+    let isShowingApproved = false; let purchaseLogs = []; let policeRules = [];
+    let ntsBalance = 0; let ntsLogs = [];
 
     let currentUser = null; 
     let currentTab = 'mypage';
@@ -721,6 +720,7 @@
         });
     }
 
+    /* 트랜잭션 등 공통 헬퍼 생략 없이 모두 유지 */
     function addTransaction(batch, student, desc, amount) {
         if(amount === 0) return;
         const ref = db.collection('transactions').doc();
@@ -738,7 +738,7 @@
         const student = students.find(s => s.id === studentId);
         if(!student) return;
 
-        document.getElementById('passbookModalTitle').textContent = `📖 ${student.name}의 통장 거래 내역`;
+        document.getElementById('passbookModalTitle').textContent = `📖 ${student.name} 통장 내역`;
         document.getElementById('passbookCurrentBalance').textContent = student.balance || 0;
         const tbody = document.getElementById('passbookTableBody');
         tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted); padding:20px;">내역을 불러오는 중...</td></tr>';
@@ -762,7 +762,7 @@
                 const tr = document.createElement('tr');
                 const inAmt = tx.amount > 0 ? `+${tx.amount}` : '';
                 const outAmt = tx.amount < 0 ? `${tx.amount}` : '';
-                tr.innerHTML = `<td style="font-size:11px; color:var(--text-muted);">${tx.dateStr}</td><td style="text-align:left;">${tx.desc}</td><td class="log-in">${inAmt}</td><td class="log-out">${outAmt}</td>`;
+                tr.innerHTML = `<td style="font-size:11px; color:var(--text-muted);">${tx.dateStr}</td><td style="text-align:left;">${tx.desc}</td><td style="font-weight:600;">${inAmt}</td><td style="color:var(--text-muted);">${outAmt}</td>`;
                 tbody.appendChild(tr);
             });
         });
@@ -773,7 +773,7 @@
         const student = students.find(s => s.id === studentId);
         if(!student) return;
 
-        document.getElementById('scoreLogModalTitle').textContent = `📊 ${student.name}의 신용 점수 증감 내역`;
+        document.getElementById('scoreLogModalTitle').textContent = `📊 ${student.name} 점수 증감 내역`;
         const tbody = document.getElementById('scoreLogTableBody');
         tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted); padding:20px;">내역을 불러오는 중...</td></tr>';
         document.getElementById('scoreLogModal').style.display = 'flex';
@@ -795,8 +795,8 @@
             docs.forEach(log => {
                 const tr = document.createElement('tr');
                 const deltaStr = log.delta > 0 ? `+${log.delta}` : `${log.delta}`;
-                const colorClass = log.delta > 0 ? 'log-in' : 'log-out';
-                tr.innerHTML = `<td style="font-size:11px; color:var(--text-muted);">${log.dateStr}</td><td>${log.category}</td><td style="text-align:left;">${log.reason}</td><td class="${colorClass}">${deltaStr}</td>`;
+                const colorClass = log.delta > 0 ? 'font-weight:600;' : 'color:var(--alert-red);';
+                tr.innerHTML = `<td style="font-size:11px; color:var(--text-muted);">${log.dateStr}</td><td>${log.category}</td><td style="text-align:left;">${log.reason}</td><td style="${colorClass}">${deltaStr}</td>`;
                 tbody.appendChild(tr);
             });
         });
@@ -879,10 +879,10 @@
         if (!currentUser) return;
         const infoEl = document.getElementById('currentUserInfo');
         if (currentUser.role === 'teacher') {
-            infoEl.innerHTML = `<span class="mode-badge mode-teacher">👑 교사 관리자 모드</span>`;
+            infoEl.innerHTML = `👑 교사 관리자 모드`;
         } else {
             const student = students.find(s => s.id === currentUser.id);
-            if (student) infoEl.innerHTML = `<span class="mode-badge mode-student">👤 ${student.id}번 ${student.name}</span> <span class="badge-job">${student.job || '일반'}</span>`;
+            if (student) infoEl.innerHTML = `👤 ${student.id}번 ${student.name} <span class="badge-job" style="margin-left:6px;">${student.job || '일반'}</span>`;
         }
     }
 
@@ -897,26 +897,26 @@
 
         if (!isTeacher) { addTabButton(nav, 'mypage', '👤 내 정보 / 통장'); addTabButton(nav, 'store', '🛒 매점'); }
 
-        addTabButton(nav, 'job_mgmt', '👨‍💼 직업 & 수행도 현황');
-        addTabButton(nav, 'credit', '💳 신용도 조회');
+        addTabButton(nav, 'job_mgmt', '👨‍💼 직업/수행도');
+        addTabButton(nav, 'credit', '💳 신용등급');
 
-        if (isTeacher || job === '은행원') { addTabButton(nav, 'salary', '💵 월급/잔고 관리'); addTabButton(nav, 'savings', '🏦 저축 통장'); }
+        if (isTeacher || job === '은행원') { addTabButton(nav, 'salary', '💵 월급 관리'); addTabButton(nav, 'savings', '🏦 저축 장부'); }
         if (isTeacher || job === '시간통계청') addTabButton(nav, 'time', '⏱️ 시간통계청');
         if (isTeacher || job === '과제통계청') addTabButton(nav, 'task', '📋 과제통계청');
         if (isTeacher || job === '경찰') addTabButton(nav, 'police', '🚓 경찰청');
         addTabButton(nav, 'nts', '🏛️ 국세청');
         if (isTeacher || job === '도매상') addTabButton(nav, 'store_admin', '📦 매점 관리');
-        if (isTeacher) addTabButton(nav, 'student_mgmt', '👨‍🎓 학생 관리', false, 'tab-btn-student');
+        if (isTeacher) addTabButton(nav, 'student_mgmt', '👨‍🎓 학생 관리');
 
-        const tabs = nav.querySelectorAll('.tab-btn');
+        const tabs = nav.querySelectorAll('.seg-btn');
         let tabExists = false;
         tabs.forEach(t => { if (t.getAttribute('data-tab') === currentTab) { t.classList.add('active'); tabExists = true; } });
         if (!tabExists && tabs.length > 0) switchTab(tabs[0].getAttribute('data-tab'));
     }
 
-    function addTabButton(container, tabKey, label, isActive = false, extraClass = '') {
+    function addTabButton(container, tabKey, label) {
         const btn = document.createElement('button');
-        btn.className = `tab-btn ${extraClass} ${isActive ? 'active' : ''}`;
+        btn.className = `seg-btn`;
         btn.setAttribute('data-tab', tabKey);
         btn.textContent = label;
         btn.onclick = () => switchTab(tabKey);
@@ -925,7 +925,7 @@
 
     function switchTab(tab) {
         currentTab = tab;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
+        document.querySelectorAll('.nav-tabs .seg-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
 
         document.getElementById('creditRefTable').style.display = (tab === 'savings') ? 'block' : 'none';
         document.getElementById('studentMgmtBox').style.display = (tab === 'student_mgmt' && currentUser.role === 'teacher') ? 'block' : 'none';
@@ -970,13 +970,15 @@
             card.className = 'student-card glass-panel';
             card.innerHTML = `
                 <div class="card-top"><span style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.id}번</span><span class="badge ${info.badgeClass}">${info.grade}</span></div>
-                <div class="card-middle"><div class="avatar">${s.avatar}</div><div style="text-align:right;"><div style="font-size:11px; color:var(--text-muted);">총 신용점수</div><div class="score-display">${creditScore}점</div></div></div>
+                <div class="card-middle"><div class="avatar">${s.avatar}</div><div style="text-align:right;"><div class="stat-title">총 신용점수</div><div class="score-display">${creditScore}점</div></div></div>
                 <div class="info-box">
                     <div class="info-box-row"><span>이름/직업:</span><span><b>${s.name}</b> (${s.job || '일반'})</span></div>
                     <div class="info-box-row"><span>시간/과제 점수:</span><span>⏱️ ${s.timeScore || 0} | 📋 ${s.taskScore || 0}</span></div>
                     <div class="info-box-row"><span>적용 세금율:</span><span style="color:var(--text-main); font-weight:900;">${info.tax}</span></div>
                 </div>
-                <div class="card-bottom-actions"><button class="action-btn btn-score-log" style="width:100%; padding:6px 0;" onclick="openScoreLogModal(${s.id})">📊 점수 증감 내역 보기</button></div>
+                <div class="segmented-container" style="margin-top:10px; display:flex;">
+                    <button class="seg-btn" style="flex:1; justify-content:center; background:#fff;" onclick="openScoreLogModal(${s.id})">📊 점수 증감 내역 보기</button>
+                </div>
             `;
             grid.appendChild(card);
         });
@@ -1020,15 +1022,15 @@
             }
 
             let jobSelectHtml = canManageJob ? `
-                <input type="text" list="jobList" value="${s.job || '일반'}" onchange="updateStudentJob(${s.id}, this.value)" style="width:110px; padding:6px; font-size:12px; border-radius:6px; border:1px solid rgba(0,0,0,0.1); text-align:center; background:rgba(255,255,255,0.6);">
+                <input type="text" list="jobList" value="${s.job || '일반'}" onchange="updateStudentJob(${s.id}, this.value)" style="width:110px; padding:6px; font-size:12px; border-radius:8px; border:1px solid rgba(0,0,0,0.1); text-align:center; background:rgba(255,255,255,0.7);">
             ` : `<span class="badge-job">${s.job || '일반학생'}</span>`;
 
             let salaryHtml = canManageSalary ? `
-                <input type="number" value="${baseSal}" onchange="updateStudentBaseSalary(${s.id}, this.value)" style="width:60px; padding:4px; font-size:12px; border-radius:6px; border:1px solid rgba(0,0,0,0.1); text-align:right; background:rgba(255,255,255,0.6);">
+                <input type="number" value="${baseSal}" onchange="updateStudentBaseSalary(${s.id}, this.value)" style="width:60px; padding:6px; font-size:12px; border-radius:8px; border:1px solid rgba(0,0,0,0.1); text-align:right; background:rgba(255,255,255,0.7);">
             ` : `<span>${baseSal}</span>`;
 
             let managerHtml = canManageJurisdiction ? `
-                <select onchange="updateStudentManager(${s.id}, this.value)" style="padding:4px; font-size:11px; border-radius:4px; border:1px solid rgba(0,0,0,0.1); background:rgba(255,255,255,0.6);">
+                <select onchange="updateStudentManager(${s.id}, this.value)" style="padding:6px; font-size:12px; border-radius:8px; border:1px solid rgba(0,0,0,0.1); background:rgba(255,255,255,0.7);">
                     <option value="Teacher" ${manager === 'Teacher' ? 'selected' : ''}>직할</option>
                     <option value="PM" ${manager === 'PM' ? 'selected' : ''}>총리관할</option>
                     <option value="DPM" ${manager === 'DPM' ? 'selected' : ''}>부총리관할</option>
@@ -1082,63 +1084,65 @@
         view.innerHTML = `
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
                 <div class="glass-panel" style="padding: 24px; grid-column: 1 / -1;">
-                    <div class="profile-header" style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                        <div style="font-size: 55px; background: rgba(255,255,255,0.8); width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.5); flex-shrink: 0;">
+                    <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                        <div style="font-size: 55px; background: rgba(255,255,255,0.8); width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.6); flex-shrink: 0;">
                             ${student.avatar}
                         </div>
-                        <div class="profile-header-info" style="flex: 1; min-width: 200px;">
-                            <h2 style="font-size: 26px; margin-bottom: 8px; font-weight: 800; word-break: keep-all; color:var(--text-main);">${student.id}번 ${student.name}</h2>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-start;">
-                                <span style="background: rgba(255,255,255,0.7); color: var(--text-main); padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: bold; border: 1px solid rgba(0,0,0,0.2);">👨‍💼 직업: ${student.job || '일반학생'}</span>
-                                ${student.hasRealEstate ? '<span style="background: rgba(254, 243, 199, 0.8); color: #92400e; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: bold; border: 1px solid rgba(253, 230, 138, 0.9);">🏠 부동산 소유</span>' : ''}
+                        <div style="flex: 1; min-width: 200px;">
+                            <h2 style="font-size: 26px; margin-bottom: 10px; font-weight: 800; color:var(--text-main);">${student.id}번 ${student.name}</h2>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <span class="badge-job">👨‍💼 ${student.job || '일반학생'}</span>
+                                ${student.hasRealEstate ? '<span class="badge-job" style="color:#92400e; background:#fef3c7; border-color:#fde68a;">🏠 부동산 소유</span>' : ''}
                             </div>
                         </div>
-                        <div style="width: 100%; max-width: 160px; display: flex; justify-content: center;">
-                            <button class="btn-control" style="background:rgba(255,255,255,0.7); color:var(--text-main); padding:10px 16px; width: 100%; border-radius: 12px; font-weight: bold;" onclick="openChangePwModal()">🔑 비밀번호 변경</button>
+                        <div class="segmented-container" style="padding:4px; background:rgba(255,255,255,0.6);">
+                            <button class="seg-btn" style="padding:12px 20px;" onclick="openChangePwModal()">🔑 비밀번호 변경</button>
                         </div>
                     </div>
 
-                    <div class="profile-stats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px;">
-                        <div style="background: rgba(255,255,255,0.5); padding: 18px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.6);">
-                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight:bold;">나의 신용 등급</div>
-                            <div style="font-size: 22px; font-weight: 900; color: var(--text-main);">${info.grade}</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px;">
+                        <div style="background: rgba(255,255,255,0.6); padding: 18px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.8);">
+                            <div class="stat-title">나의 신용 등급</div>
+                            <div class="score-display" style="font-weight: 800;">${info.grade}</div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.5); padding: 18px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.6);">
-                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight:bold;">총 신용 점수</div>
-                            <div style="font-size: 24px; font-weight: 400; color: var(--text-main); letter-spacing: -0.5px;">${creditScore}점</div>
+                        <div style="background: rgba(255,255,255,0.6); padding: 18px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.8);">
+                            <div class="stat-title">총 신용 점수</div>
+                            <div class="score-display">${creditScore}점</div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.5); padding: 18px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.6);">
-                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight:bold;">적용 세금(이자율)</div>
-                            <div style="font-size: 20px; font-weight: 900; color: var(--primary-gold); margin-top: 4px;">세금 ${info.tax}</div>
+                        <div style="background: rgba(255,255,255,0.6); padding: 18px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.8);">
+                            <div class="stat-title">적용 세금(이자율)</div>
+                            <div class="pr-display" style="color:var(--primary-gold); font-weight:600; margin-top: 4px;">세금 ${info.tax}</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="glass-panel" style="padding:20px;">
+                <div class="glass-panel" style="padding:24px;">
                     <h3 style="font-size:16px; margin-bottom:15px; color:var(--text-main);">💰 자산 현황</h3>
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span>💵 지갑 잔고:</span><strong style="font-size:20px; color:var(--primary-gold);">${student.balance || 0} PR</strong>
+                        <span class="stat-title" style="font-size:14px;">💵 지갑 잔고:</span><strong class="pr-display">${student.balance || 0} PR</strong>
                     </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                        <span>🏦 저축 금액:</span><strong style="font-size:18px; color:var(--text-main);">${student.savings || 0} PR (${student.savingsTerm || '4주'})</strong>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                        <span class="stat-title" style="font-size:14px;">🏦 저축 금액:</span><strong class="score-display" style="color:var(--text-main); font-size:22px;">${student.savings || 0} PR <span style="font-size:14px;">(${student.savingsTerm || '4주'})</span></strong>
                     </div>
-                    <button class="btn-control btn-passbook" style="width:100%; padding:10px; font-size:14px;" onclick="openPassbookModal(${student.id})">📖 내 통장 (용돈기입장) 보기</button>
+                    <div class="segmented-container" style="display:flex;">
+                        <button class="seg-btn primary" style="flex:1; justify-content:center;" onclick="openPassbookModal(${student.id})">📖 내 통장 (용돈기입장) 보기</button>
+                    </div>
                 </div>
 
-                <div class="glass-panel" style="padding:20px;">
+                <div class="glass-panel" style="padding:24px;">
                     <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">📋 2주 직업 수행도 현황</h3>
                     <div style="font-size:13px; margin-bottom:8px;">경고(△): <b>${calc.countTri}개</b> / 미인정(X): <b style="color:var(--alert-red);">${calc.countX}개</b> (기본급: ${baseSal} PR)</div>
-                    <div style="font-size:14px; font-weight:bold; color:${calc.penaltyPercent > 0 ? 'var(--alert-red)' : '#059669'}; margin-bottom:12px;">
+                    <div style="font-size:15px; font-weight:bold; color:${calc.penaltyPercent > 0 ? 'var(--alert-red)' : '#059669'}; margin-bottom:15px;">
                         월급 차감율: -${calc.penaltyPercent}% (예상수령: ${calc.finalSalary} PR)
                     </div>
-                    <div class="info-box" style="font-size:11px;">💡 세모(△) 2개는 X 1개와 동일. X 1개당 월급의 1/10 차감.</div>
+                    <div class="info-box" style="font-size:12px;">💡 세모(△) 2개는 X 1개와 동일. X 1개당 월급의 1/10 차감.</div>
                 </div>
 
-                <div class="glass-panel" style="padding:20px; grid-column: 1 / -1;">
+                <div class="glass-panel" style="padding:24px; grid-column: 1 / -1;">
                     <h3 style="font-size:16px; margin-bottom:12px; color:var(--text-main);">🔔 받은 알림함 (${notis.length}건)</h3>
-                    <div style="max-height:200px; overflow-y:auto;">
+                    <div style="max-height:200px; overflow-y:auto; border-radius:12px; background:rgba(255,255,255,0.4); padding:10px;">
                         ${notis.length === 0 ? '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">도착한 알림이 없습니다.</div>' : ''}
-                        ${notis.map(msg => `<div class="noti-item">${msg}</div>`).join('')}
+                        ${notis.map(msg => `<div style="background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.05); border-radius: 8px; padding: 12px; margin-bottom: 8px; font-size: 13px; color: var(--text-main);">${msg}</div>`).join('')}
                     </div>
                 </div>
             </div>
@@ -1169,7 +1173,7 @@
         }
         filteredLogs.forEach(log => {
             const div = document.createElement('div');
-            div.style.cssText = 'padding:10px; border-bottom:1px solid rgba(0,0,0,0.05); font-size:13px; color:var(--text-main);';
+            div.style.cssText = 'padding:12px; border-bottom:1px solid rgba(0,0,0,0.05); font-size:13px; color:var(--text-main);';
             div.innerHTML = log; container.appendChild(div);
         });
     }
@@ -1193,10 +1197,13 @@
         if (policeRules.length === 0) { list.innerHTML = `<div style="padding:15px; text-align:center; color:var(--text-muted); font-size:13px;">등록된 법률(벌금 규칙)이 없습니다.</div>`; return; }
         policeRules.forEach(rule => {
             const div = document.createElement('div');
-            div.className = 'police-rule-item';
+            div.style.cssText = 'display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 13px; align-items: center;';
             div.innerHTML = `
                 <div><span style="font-weight:bold; color:var(--text-main);">${rule.reason}</span> <span style="color:var(--alert-red);">(-${rule.amount} PR)</span></div>
-                <div style="display:flex; gap:4px;"><button class="action-btn btn-edit" onclick="openEditPoliceRuleModal(${rule.id}, '${rule.reason}', ${rule.amount})">수정</button><button class="action-btn btn-cancel" onclick="deletePoliceRule(${rule.id})">삭제</button></div>
+                <div class="segmented-container" style="padding:2px; background:transparent; box-shadow:none; border:none; gap:2px;">
+                    <button class="seg-btn" style="padding:6px 12px; font-size:12px;" onclick="openEditPoliceRuleModal(${rule.id}, '${rule.reason}', ${rule.amount})">수정</button>
+                    <button class="seg-btn danger" style="padding:6px 12px; font-size:12px;" onclick="deletePoliceRule(${rule.id})">삭제</button>
+                </div>
             `;
             list.appendChild(div);
         });
@@ -1233,7 +1240,7 @@
         activePoliceStudentId = studentId;
         const sel = document.getElementById('policeReasonSelect');
         const isTeacher = currentUser.role === 'teacher';
-        document.getElementById('btnPoliceSubmit').textContent = isTeacher ? '벌금 즉시 부과' : '벌금 부과 승인 신청';
+        document.getElementById('btnPoliceSubmit').textContent = isTeacher ? '벌금 즉시 부과' : '벌금 부과 신청';
 
         sel.innerHTML = '<option value="">-- 법률 위반 선택 --</option>';
         policeRules.forEach(r => { sel.innerHTML += `<option value="${r.reason}" data-amt="${r.amount}">${r.reason} (-${r.amount}PR)</option>`; });
@@ -1326,10 +1333,12 @@
                 <div>
                     <div class="store-emoji">${item.emoji || '🍬'}</div>
                     <div style="font-weight:bold; font-size:16px; margin-bottom:4px; color:var(--text-main);">${item.name}</div>
-                    <div style="color:var(--primary-gold); font-weight:bold; font-size:15px; margin-bottom:6px;">${item.price} PR</div>
+                    <div style="color:var(--primary); font-weight:bold; font-size:16px; margin-bottom:6px;">${item.price} PR</div>
                     <div style="font-size:12px; color:${isSoldOut ? 'var(--alert-red)' : '#059669'}; margin-bottom:12px;">${isSoldOut ? '❌ 품절' : `재고: ${item.stock}개`}</div>
                 </div>
-                <button class="action-btn btn-plus" style="width:100%; padding:8px 0;" ${isSoldOut || myBal < item.price ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''} onclick="openBuyConfirmModal('${item.docId}', '${item.name}', ${item.price}, ${item.stock}, '${item.emoji || '🍬'}')">🛒 구매하기</button>
+                <div class="segmented-container" style="padding:0; background:transparent; border:none; box-shadow:none;">
+                    <button class="seg-btn primary" style="width:100%; justify-content:center; padding:10px;" ${isSoldOut || myBal < item.price ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''} onclick="openBuyConfirmModal('${item.docId}', '${item.name}', ${item.price}, ${item.stock}, '${item.emoji || '🍬'}')">🛒 구매하기</button>
+                </div>
             `;
             grid.appendChild(card);
         });
@@ -1371,12 +1380,19 @@
             
             card.innerHTML = `
                 ${badgeHtml}
-                <div><div class="store-emoji">${item.emoji || '🍬'}</div><div style="font-weight:bold; font-size:15px; margin-bottom:4px; color:var(--text-main);">${item.name}</div><div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">가격: <b>${item.price}</b> PR</div><div style="font-size:14px; font-weight:bold; color:var(--text-main); margin-bottom:10px;">현재 재고: ${item.stock}개</div></div>
-                <div style="display:flex; gap:4px; margin-bottom:8px; position:relative; z-index:20;">
-                    <input type="number" id="stockDelta_${item.docId}" placeholder="수량" style="width:60px; padding:4px; border:1px solid rgba(0,0,0,0.1); border-radius:4px; font-size:12px; background:rgba(255,255,255,0.7);">
-                    <button class="action-btn btn-plus" style="flex:1;" onclick="updateItemStock('${item.docId}', ${item.stock})">적용</button>
+                <div>
+                    <div class="store-emoji">${item.emoji || '🍬'}</div>
+                    <div style="font-weight:bold; font-size:15px; margin-bottom:4px; color:var(--text-main);">${item.name}</div>
+                    <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">가격: <b style="color:var(--primary);">${item.price}</b> PR</div>
+                    <div style="font-size:14px; font-weight:bold; color:var(--text-main); margin-bottom:10px;">현재 재고: ${item.stock}개</div>
                 </div>
-                <button class="action-btn btn-cancel" style="width:100%; position:relative; z-index:20;" onclick="deleteStoreItem('${item.docId}', '${item.name}')">상품 삭제</button>
+                <div class="segmented-container" style="padding:4px; background:transparent; border:none; box-shadow:none; gap:4px; margin-bottom:6px;">
+                    <input type="number" id="stockDelta_${item.docId}" placeholder="수량" class="seg-btn" style="width:70px; padding:8px; border:1px solid rgba(0,0,0,0.1); background:rgba(255,255,255,0.7);">
+                    <button class="seg-btn active" style="flex:1; justify-content:center;" onclick="updateItemStock('${item.docId}', ${item.stock})">적용</button>
+                </div>
+                <div class="segmented-container" style="padding:0; background:transparent; border:none; box-shadow:none;">
+                    <button class="seg-btn danger" style="width:100%; justify-content:center; padding:8px;" onclick="deleteStoreItem('${item.docId}', '${item.name}')">상품 삭제</button>
+                </div>
             `;
             grid.appendChild(card);
         });
@@ -1417,12 +1433,12 @@
         
         filteredPurchases.forEach(log => {
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 4px; border-bottom:1px solid rgba(0,0,0,0.05); font-size:13px; flex-wrap:wrap; gap:5px; color:var(--text-main);';
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid rgba(0,0,0,0.05); font-size:13px; flex-wrap:wrap; gap:5px; color:var(--text-main);';
             row.innerHTML = `
                 <div style="flex:1;"><strong>${log.studentId}번 ${log.studentName}</strong> - <span style="font-weight:bold;">${log.itemName}</span> 구매 <span style="font-size:11px; color:var(--text-muted); margin-left:6px;">(${log.timestamp})</span></div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-weight:bold; color:var(--primary-gold);">${log.price} PR</span>
-                    <button class="action-btn btn-cancel" style="padding:4px 6px;" onclick="deletePurchaseLog('${log.docId}')">삭제</button>
+                <div class="segmented-container" style="padding:2px; background:transparent; box-shadow:none; border:none;">
+                    <span class="pr-display" style="font-size:14px; margin-right:10px;">${log.price} PR</span>
+                    <button class="seg-btn danger" style="padding:6px 12px; font-size:12px;" onclick="deletePurchaseLog('${log.docId}')">삭제</button>
                 </div>
             `;
             container.appendChild(row);
@@ -1445,6 +1461,37 @@
             id, name, avatar, job, baseSalary: 100, hasRealEstate, manager: 'Teacher', password: '0000', timeScore: 0, taskScore: 0, balance: 0, savings: 0, savingsTerm: '4주', savingsStartDate: '', notifications: [], jobPerformance: Array(10).fill('O')
         }).then(() => {
             alert(`[${id}번 ${name}] 등록 완료.`); document.getElementById('newStudentId').value = ''; document.getElementById('newStudentName').value = ''; document.getElementById('newStudentHasRealEstate').checked = false; document.getElementById('newStudentJob').value = '';
+        });
+    }
+
+    // 🔥 학생 일괄 등록 함수 
+    function addStudentsBatch() {
+        const input = document.getElementById('batchStudentNames').value;
+        if(!input.trim()) return alert("학생 이름을 입력해주세요.");
+        
+        // 쉼표나 줄바꿈으로 분리 후 빈칸 제거
+        const names = input.split(/[\n,]+/).map(n => n.trim()).filter(n => n);
+        if(names.length === 0) return alert("유효한 이름이 없습니다.");
+
+        const batch = db.batch();
+        let currentMaxId = students.reduce((max, s) => Math.max(max, s.id), 0);
+
+        names.forEach((name, idx) => {
+            const newId = currentMaxId + 1 + idx;
+            const avatar = avatars[(newId - 1) % avatars.length];
+            const ref = db.collection('students').doc(String(newId));
+            batch.set(ref, {
+                id: newId, name: name, avatar: avatar, job: '일반', baseSalary: 100, hasRealEstate: false, manager: 'Teacher',
+                password: '0000', timeScore: 0, taskScore: 0, balance: 0, savings: 0, savingsTerm: '4주', savingsStartDate: '', notifications: [], jobPerformance: Array(10).fill('O')
+            });
+        });
+
+        batch.commit().then(() => {
+            alert(`🎉 총 ${names.length}명의 학생이 성공적으로 일괄 등록되었습니다.`);
+            document.getElementById('batchStudentNames').value = '';
+        }).catch(err => {
+            console.error(err);
+            alert("등록 중 오류가 발생했습니다.");
         });
     }
 
@@ -1476,28 +1523,28 @@
                 card.innerHTML = `
                     <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.id}번</span> <span style="font-size:16px; font-weight:bold;">${s.name}</span></div>
                     <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><span class="badge-job">${s.job || '일반'}</span></div></div>
-                    <div style="font-size:12px; margin:4px 0; display:flex; align-items:center; justify-content:space-between;">
-                        <span>부동산 소유:</span><input type="checkbox" ${s.hasRealEstate ? 'checked' : ''} onclick="event.stopPropagation(); toggleRealEstate(${s.id}, ${s.hasRealEstate});">
+                    <div style="font-size:12px; margin:8px 0; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.5); padding:6px; border-radius:8px;">
+                        <span>🏠 부동산 소유:</span><input type="checkbox" ${s.hasRealEstate ? 'checked' : ''} onclick="event.stopPropagation(); toggleRealEstate(${s.id}, ${s.hasRealEstate});">
                     </div>
-                    <div class="card-bottom-actions" style="flex-direction:column; gap:4px;">
-                        <button class="action-btn btn-passbook" style="width:100%; padding:6px 0;" onclick="event.stopPropagation(); openPassbookModal(${s.id});">📖 통장 조회</button>
-                        <button class="action-btn btn-edit" style="width:100%; padding:6px 0;" onclick="event.stopPropagation(); editStudentName(${s.id}, '${s.name}');">✏️ 이름 수정</button>
-                        <button class="action-btn" style="background:rgba(255,255,255,0.7); color:var(--text-main); border:1px solid rgba(0,0,0,0.2); width:100%; padding:6px 0;" onclick="event.stopPropagation(); resetStudentPw(${s.id}, '${s.name}');">🔑 비밀번호 초기화 (0000)</button>
-                        <button class="action-btn btn-cancel" style="width:100%; padding:6px 0;" onclick="event.stopPropagation(); deleteStudent(${s.id}, '${s.name}');">🗑️ 학생 삭제 (전학)</button>
+                    <div class="segmented-container" style="flex-direction:column; gap:4px; background:transparent; border:none; box-shadow:none; padding:0;">
+                        <button class="seg-btn" style="width:100%; justify-content:center; background:#fff;" onclick="event.stopPropagation(); openPassbookModal(${s.id});">📖 통장 조회</button>
+                        <button class="seg-btn" style="width:100%; justify-content:center; background:#fff;" onclick="event.stopPropagation(); editStudentName(${s.id}, '${s.name}');">✏️ 이름 수정</button>
+                        <button class="seg-btn" style="width:100%; justify-content:center; background:#fff;" onclick="event.stopPropagation(); resetStudentPw(${s.id}, '${s.name}');">🔑 비밀번호 초기화 (0000)</button>
+                        <button class="seg-btn danger" style="width:100%; justify-content:center;" onclick="event.stopPropagation(); deleteStudent(${s.id}, '${s.name}');">🗑️ 학생 삭제</button>
                     </div>
                 `;
             } else if (currentTab === 'salary') {
                 const calc = calculateSalaryPenalty(s, baseSal);
                 card.innerHTML = `
                     <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.id}</span> <span style="font-size:16px; font-weight:bold;">${s.name}</span> ${s.hasRealEstate ? '<span class="badge grade-5">🏠</span>' : ''}</div>
-                    <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><div style="font-size:11px; color:var(--text-muted);">지갑 잔고</div><div class="pr-display">${balance} PR</div></div></div>
+                    <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><div class="stat-title">지갑 잔고</div><div class="pr-display">${balance} PR</div></div></div>
                     <div class="info-box">
                         <div class="info-box-row"><span>직업/기본급:</span><span style="text-align:right;"><b>${s.job || '일반'}</b><br>(${baseSal}PR)</span></div>
                         <div class="info-box-row"><span>예상 수령:</span><span style="color:${calc.penaltyPercent > 0 ? 'var(--alert-red)' : '#059669'};"><b>${calc.finalSalary} (-${calc.penaltyPercent}%)</b></span></div>
                     </div>
-                    <div class="card-bottom-actions">
-                        <button class="action-btn btn-passbook" style="width:100%; margin-bottom:4px;" onclick="event.stopPropagation(); openPassbookModal(${s.id});">📖 통장 내역 보기</button>
-                        <button class="action-btn btn-edit" style="width:100%;" onclick="event.stopPropagation(); openIndividualBalanceModal(${s.id});">✏️ 개별 잔고(월급) 수정</button>
+                    <div class="segmented-container" style="flex-direction:column; gap:4px; padding:0; background:transparent; border:none; box-shadow:none; margin-top:8px;">
+                        <button class="seg-btn" style="width:100%; justify-content:center; background:#fff;" onclick="event.stopPropagation(); openPassbookModal(${s.id});">📖 통장 내역 보기</button>
+                        <button class="seg-btn" style="width:100%; justify-content:center; background:#fff;" onclick="event.stopPropagation(); openIndividualBalanceModal(${s.id});">✏️ 개별 잔고(월급) 수정</button>
                     </div>
                 `;
             } else if (currentTab === 'savings') {
@@ -1506,29 +1553,31 @@
                 const expectedInterest = Math.floor(savings * (rate / 100));
                 card.innerHTML = `
                     <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.id}</span> <span style="font-size:15px; font-weight:bold;">${s.name} <span class="badge ${info.badgeClass}">${info.grade}</span></span></div>
-                    <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><div style="font-size:11px; color:var(--text-muted);">저축 금액 (${term})</div><div class="pr-display" style="color:var(--text-main);">${savings} PR</div></div></div>
+                    <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><div class="stat-title">저축 금액 (${term})</div><div class="score-display" style="color:var(--text-main); font-size:24px;">${savings} PR</div></div></div>
                     <div class="info-box">
                         <div class="info-box-row"><span>적용 이자율:</span><span><b>${rate}%</b></span></div>
                         <div class="info-box-row"><span>만기 예상 이자:</span><span style="color:var(--primary-gold);"><b>+${expectedInterest} PR</b></span></div>
                     </div>
-                    <div class="card-bottom-actions">
-                        ${savings > 0 ? `<button class="action-btn btn-cancel" onclick="event.stopPropagation(); cancelSavings(${s.id});">중도해지</button>` : `<button class="action-btn btn-plus" style="width:100%;" onclick="event.stopPropagation(); openSavingsModal(${s.id});">💰 저축하기</button>`}
+                    <div class="segmented-container" style="padding:0; background:transparent; border:none; box-shadow:none; margin-top:10px;">
+                        ${savings > 0 ? `<button class="seg-btn danger" style="width:100%; justify-content:center;" onclick="event.stopPropagation(); cancelSavings(${s.id});">중도해지</button>` : `<button class="seg-btn primary" style="width:100%; justify-content:center;" onclick="event.stopPropagation(); openSavingsModal(${s.id});">💰 저축하기</button>`}
                     </div>
                 `;
             } else if (currentTab === 'police') {
                 card.innerHTML = `
                     <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.id}</span> <span style="font-size:17px; font-weight:bold;">${s.name}</span></div>
                     <div class="card-middle"><div class="avatar">${s.avatar}</div> <div style="text-align:right;"><span class="pr-display">${balance} PR</span></div></div>
-                    <div class="card-bottom-actions"><button class="action-btn btn-police" style="width:100%; padding:8px 0;" onclick="event.stopPropagation(); openPoliceModal(${s.id});">🚓 벌금 부과 신청</button></div>
+                    <div class="segmented-container" style="padding:0; background:transparent; border:none; box-shadow:none; margin-top:15px;">
+                        <button class="seg-btn active" style="width:100%; justify-content:center;" onclick="event.stopPropagation(); openPoliceModal(${s.id});">🚓 벌금 부과 신청</button>
+                    </div>
                 `;
             } else {
                 const score = currentTab === 'time' ? (s.timeScore || 0) : (s.taskScore || 0);
                 card.innerHTML = `
                     <div class="card-top"><input type="checkbox" ${s.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect(${s.id});"> <span style="font-size:13px; font-weight:bold; color:var(--text-muted);">${s.id}</span> <span style="font-size:17px; font-weight:bold;">${s.name}</span></div>
-                    <div class="card-middle"><div class="avatar">${s.avatar}</div> <div class="score-display">${score > 0 ? '+' + score : score}</div></div>
-                    <div class="card-bottom-actions">
-                        <button class="action-btn btn-minus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'minus');">-</button>
-                        <button class="action-btn btn-plus" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'plus');">+</button>
+                    <div class="card-middle"><div class="avatar">${s.avatar}</div> <div class="score-display" style="font-size:36px;">${score > 0 ? '+' + score : score}</div></div>
+                    <div class="segmented-container" style="margin-top:15px; display:flex;">
+                        <button class="seg-btn danger" style="flex:1; justify-content:center;" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'minus');">- 차감</button>
+                        <button class="seg-btn primary" style="flex:1; justify-content:center;" onclick="event.stopPropagation(); openSingleModal(${s.id}, 'plus');">+ 부여</button>
                     </div>
                 `;
             }
@@ -1611,9 +1660,10 @@
         container.innerHTML = '';
         [1, 2, 3, 5, 10].forEach((pts, idx) => {
             const btn = document.createElement('button');
-            btn.className = `score-opt-btn ${idx === 0 ? 'selected' : ''}`;
+            btn.className = `seg-btn ${idx === 0 ? 'active' : ''}`;
+            btn.style.flex = "1"; btn.style.justifyContent = "center";
             btn.textContent = `${currentActionType === 'plus' ? '+' : '-'}${pts}점`;
-            btn.onclick = () => { document.querySelectorAll('.score-opt-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); selectedPoints = pts; };
+            btn.onclick = () => { document.querySelectorAll('#modalScoreOptions .seg-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedPoints = pts; };
             container.appendChild(btn);
         });
         document.getElementById('scoreModal').style.display = 'flex';
@@ -1649,7 +1699,7 @@
         document.getElementById('deductHealth').value = 0; document.getElementById('deductEmp').value = 0; document.getElementById('deductMeal').value = 0;
         
         const isTeacher = currentUser.role === 'teacher';
-        document.getElementById('btnSalarySubmit').textContent = isTeacher ? '월급 즉시 일괄 지급' : '월급 지급 승인 신청';
+        document.getElementById('btnSalarySubmit').textContent = isTeacher ? '즉시 일괄 지급' : '지급 승인 신청';
 
         renderSalaryModalList(); document.getElementById('salaryModal').style.display = 'flex';
     }
@@ -1662,24 +1712,24 @@
             const row = document.createElement('div');
             row.className = 'salary-row';
             row.setAttribute('data-id', s.id);
-            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 4px; border-bottom:1px solid rgba(0,0,0,0.05); flex-wrap:wrap; gap:8px;';
+            row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:12px 6px; border-bottom:1px solid rgba(0,0,0,0.05); flex-wrap:wrap; gap:8px;';
             
             const isPublicServant = (s.job === '총리' || s.job === '부총리');
-            const psBadge = isPublicServant ? '<span style="color:var(--text-main); font-size:11px; font-weight:bold; background:rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.2); padding:2px 6px; border-radius:4px; margin-left:4px;">🏛️ 공무원(세금지급)</span>' : '';
+            const psBadge = isPublicServant ? '<span style="color:var(--primary-dark); font-size:11px; font-weight:bold; background:rgba(14, 165, 233, 0.1); padding:2px 6px; border-radius:4px; margin-left:4px;">🏛️ 공무원(세금지급)</span>' : '';
 
             row.innerHTML = `
-                <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                    <span style="font-size:20px;">${s.avatar}</span>
+                <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                    <span style="font-size:24px;">${s.avatar}</span>
                     <div>
-                        <strong style="font-size:14px; color:var(--text-main);">${s.id}. ${s.name}</strong> ${s.hasRealEstate ? '<span class="badge grade-5">🏠부동산보유</span>' : ''} ${psBadge}<br>
+                        <strong style="font-size:14px; color:var(--text-main);">${s.id}. ${s.name}</strong> ${s.hasRealEstate ? '<span class="badge grade-5">🏠보유</span>' : ''} ${psBadge}<br>
                         <span class="perf-display" style="font-size:11px; font-weight:bold;"></span>
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:11px; color:var(--alert-red);">소득세: <span class="tax-display">0</span> | 공제: <span class="fixed-deduct-display">0</span></div>
-                    <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
-                        <input type="number" class="salary-input-item" data-id="${s.id}" min="0" style="width:80px; padding:4px; border:1px solid rgba(0,0,0,0.1); border-radius:6px; text-align:right; font-size:14px; font-weight:bold; background:rgba(255,255,255,0.6);">
-                        <span style="font-size:12px; font-weight:bold; color:var(--primary-gold);">PR</span>
+                    <div style="font-size:11px; color:var(--alert-red); margin-bottom:4px;">소득세: <span class="tax-display">0</span> | 공제: <span class="fixed-deduct-display">0</span></div>
+                    <div class="segmented-container" style="padding:2px; background:#fff; display:inline-flex;">
+                        <input type="number" class="salary-input-item seg-btn" data-id="${s.id}" min="0" style="width:80px; padding:6px; border:none; text-align:right; font-size:14px; font-weight:bold; background:transparent;">
+                        <span style="font-size:12px; font-weight:bold; color:var(--primary); margin:0 8px;">PR</span>
                     </div>
                 </div>
             `;
@@ -1788,7 +1838,7 @@
         activeSavingsStudentId = studentId;
         const student = students.find(s => s.id === studentId);
         if (!student) return;
-        document.getElementById('savingsModalTitle').textContent = `🏦 ${student.name}의 선물은행 저축`;
+        document.getElementById('savingsModalTitle').textContent = `🏦 ${student.name} 통장`;
         document.getElementById('currentBalanceDisplay').textContent = student.balance || 0;
         document.getElementById('savingsAmount').value = student.balance || 0;
         document.getElementById('savingsModal').style.display = 'flex';
@@ -1841,24 +1891,24 @@
             if (req.type === 'salary') {
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--primary-gold);">[월급 신청]</span><br><span style="color:var(--primary-gold); font-weight:bold;">실수령 +${req.amount} PR</span><span style="color:var(--alert-red); font-size:11px;"> (소득세 ${req.taxAmount}PR)</span><br><span style="color:var(--text-muted); font-size:11px;">${req.reason}</span></div>
-                    <div style="display:flex; gap:4px;"><button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button><button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button></div>
+                    <div class="segmented-container" style="padding:2px; background:transparent; border:none; box-shadow:none;"><button class="seg-btn active" onclick="approveRequest('${req.id}')">승인</button><button class="seg-btn danger" onclick="rejectRequest('${req.id}')">거절</button></div>
                 `;
             } else if (req.type === 'police_fine') {
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--text-main);">[경찰 벌금]</span><br><span style="color:var(--alert-red); font-weight:bold;">-${req.amount} PR</span><span style="color:var(--text-muted);"> (${req.reason})</span></div>
-                    <div style="display:flex; gap:4px;"><button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button><button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button></div>
+                    <div class="segmented-container" style="padding:2px; background:transparent; border:none; box-shadow:none;"><button class="seg-btn active" onclick="approveRequest('${req.id}')">승인</button><button class="seg-btn danger" onclick="rejectRequest('${req.id}')">거절</button></div>
                 `;
             } else if (req.type === 'balance_edit') {
                 const color = req.amount > 0 ? 'var(--text-main)' : 'var(--alert-red)';
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--primary-gold);">[개별 잔고 수정]</span><br><span style="color:${color}; font-weight:bold;">${req.amount > 0 ? '+' : ''}${req.amount} PR</span><span style="color:var(--text-muted);"> (${req.reason})</span></div>
-                    <div style="display:flex; gap:4px;"><button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button><button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button></div>
+                    <div class="segmented-container" style="padding:2px; background:transparent; border:none; box-shadow:none;"><button class="seg-btn active" onclick="approveRequest('${req.id}')">승인</button><button class="seg-btn danger" onclick="rejectRequest('${req.id}')">거절</button></div>
                 `;
             } else {
                 const color = req.score > 0 ? 'var(--text-main)' : 'var(--alert-red)';
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--text-muted);">[${req.category} | ${req.period}]</span><br><span style="color:${color}; font-weight:bold;">${req.score > 0 ? '+' : ''}${req.score}점</span><span style="color:var(--text-muted);"> (${req.reason})</span></div>
-                    <div style="display:flex; gap:4px;"><button class="btn-approve" onclick="approveRequest('${req.id}')">승인</button><button class="btn-reject" onclick="rejectRequest('${req.id}')">거절</button></div>
+                    <div class="segmented-container" style="padding:2px; background:transparent; border:none; box-shadow:none;"><button class="seg-btn active" onclick="approveRequest('${req.id}')">승인</button><button class="seg-btn danger" onclick="rejectRequest('${req.id}')">거절</button></div>
                 `;
             }
             container.appendChild(item);
@@ -1876,22 +1926,22 @@
             if (req.type === 'salary') {
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--primary-gold);">[월급 승인완료]</span><br><span style="color:var(--primary-gold); font-weight:bold;">실수령 +${req.amount} PR</span> <span style="color:var(--text-muted); font-size:11px;">(${req.reason})</span></div>
-                    <button class="btn-reject" onclick="revokeRequest('${req.id}')">취소 (되돌리기)</button>
+                    <button class="seg-btn danger" style="padding:6px 12px; font-size:12px;" onclick="revokeRequest('${req.id}')">취소 (환불)</button>
                 `;
             } else if (req.type === 'police_fine') {
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--text-main);">[벌금 부과완료]</span><br><span style="color:var(--alert-red); font-weight:bold;">-${req.amount} PR</span> <span style="color:var(--text-muted); font-size:11px;">(${req.reason})</span></div>
-                    <button class="btn-reject" onclick="revokeRequest('${req.id}')">취소 (환불)</button>
+                    <button class="seg-btn danger" style="padding:6px 12px; font-size:12px;" onclick="revokeRequest('${req.id}')">취소 (환불)</button>
                 `;
             } else if (req.type === 'balance_edit') {
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--primary-gold);">[잔고 수정완료]</span><br><span style="font-weight:bold;">${req.amount > 0 ? '+' : ''}${req.amount} PR</span> <span style="color:var(--text-muted); font-size:11px;">(${req.reason})</span></div>
-                    <button class="btn-reject" onclick="revokeRequest('${req.id}')">취소 (되돌리기)</button>
+                    <button class="seg-btn danger" style="padding:6px 12px; font-size:12px;" onclick="revokeRequest('${req.id}')">취소 (원복)</button>
                 `;
             } else {
                 item.innerHTML = `
                     <div><strong>${req.studentName}</strong> <span style="color:var(--text-muted);">[점수 승인완료]</span><br><span style="font-weight:bold;">${req.score > 0 ? '+' : ''}${req.score}점</span> <span style="color:var(--text-muted); font-size:11px;">(${req.category} / ${req.reason})</span></div>
-                    <button class="btn-reject" onclick="revokeRequest('${req.id}')">취소 (차감)</button>
+                    <button class="seg-btn danger" style="padding:6px 12px; font-size:12px;" onclick="revokeRequest('${req.id}')">취소 (차감)</button>
                 `;
             }
             container.appendChild(item);
