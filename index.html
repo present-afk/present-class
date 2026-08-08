@@ -121,7 +121,8 @@
             max-width: 650px; width: 95%; animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        .splash-icon-img { width: 160px; height: auto; max-height: 180px; margin-bottom: 25px; animation: float 3.5s ease-in-out infinite; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); object-fit: contain; }
+        /* 간격을 줄이기 위해 margin-bottom 감소 */
+        .splash-icon-img { width: 160px; height: auto; max-height: 180px; margin-bottom: 10px; animation: float 3.5s ease-in-out infinite; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); object-fit: contain; }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 
         /* 헤더 스타일 */
@@ -145,7 +146,14 @@
         .card-top-left { display: flex; align-items: center; gap: 8px; pointer-events: none; } 
         
         .card-middle { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; pointer-events: none; }
-        .avatar { font-size: 36px; background: rgba(255,255,255,0.9); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); }
+        
+        /* 아바타 영역에 사진이 들어올 수 있으므로 overflow:hidden 추가 */
+        .avatar { 
+            font-size: 36px; background: rgba(255,255,255,0.9); width: 50px; height: 50px; 
+            display: flex; align-items: center; justify-content: center; border-radius: 50%; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden; 
+        }
         
         .stat-title { font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 2px; }
         .score-display { font-size: 28px; font-weight: 900; color: var(--navy-main) !important; letter-spacing: -1px; line-height: 1.1; }
@@ -201,7 +209,7 @@
         .input-group { margin-bottom: 16px; width: 100%; }
         .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted);}
         
-        /* 🎨 Select 드롭다운 커스텀 디자인 추가 */
+        /* 🎨 드롭다운 이중표기 버그 수정 및 디자인 개선 */
         select {
             appearance: none;
             -webkit-appearance: none;
@@ -218,14 +226,6 @@
             background-color: #ffffff;
             color: var(--text-main);
             font-weight: 600;
-            padding: 12px;
-        }
-
-        /* 드롭다운에서 항목을 선택/오버할 때 파란색 버튼 톤 적용 */
-        select option:checked {
-            background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
-            background-color: #0284c7 !important;
-            color: #ffffff !important;
         }
 
         .input-group select, .input-group input, .input-group textarea { 
@@ -281,9 +281,9 @@
 <!-- ✈️ 스플래시(첫 화면) -->
 <div id="splashScreen">
     <div class="splash-card">
-        <img src="무제3_20220226133154.png" alt="호랑이 캐릭터" class="splash-icon-img">
+        <!-- 간격 좁히기 적용 -->
+        <img src="무제3_20220226133154.png" alt="호랑이 캐릭터" class="splash-icon-img" style="margin-bottom: 10px;">
         
-        <!-- PRESENT 글씨와 타이틀 간격 축소 -->
         <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 2px;">
             <svg viewBox="0 0 100 100" width="55" height="55" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                 <path d="M15,40 L85,40 L80,90 L20,90 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
@@ -296,7 +296,6 @@
             <div class="logo-present" style="font-size: 55px; letter-spacing: -1.5px; margin-bottom:-4px;">PRESENT</div>
         </div>
         
-        <!-- PRESENT 바로 밑에 바싹 붙게 디자인 -->
         <p style="color: var(--text-muted); font-size:16px; font-weight:700; margin-bottom:35px; letter-spacing:-0.5px;">행복한 우리 반의 똑똑한 경제 시스템</p>
         
         <button class="seg-btn primary" style="width:100%; font-size: 18px; padding: 18px; border-radius: 20px; justify-content:center; background:linear-gradient(135deg, #0ea5e9, #4f46e5); border:none; box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);" onclick="openLoginModal()">✈️ 탑승수속 (시작하기)</button>
@@ -734,7 +733,7 @@
     let targetPurchaseItem = null;
     let passbookUnsubscribe = null, scoreLogUnsubscribe = null;
 
-    // 🔥 커스텀 모달 팝업 시스템 (Alert, Confirm, Prompt 대체)
+    // 🔥 커스텀 모달 팝업 시스템
     let cdConfirmCallback = null; let cdCancelCallback = null;
     function showCustomAlert(message) { setupCustomDialog('alert', '알림', message); }
     function showCustomConfirm(message, onConfirm, onCancel = null) { setupCustomDialog('confirm', '확인', message, onConfirm, onCancel); }
@@ -789,10 +788,88 @@
         });
     }
 
+    // 🔥 프로필(아바타/사진) 렌더링 로직 (Base64 처리 포함)
     function getEffectiveAvatar(student) {
         const creditScore = 31 + (student.timeScore || 0) + (student.taskScore || 0);
-        if (creditScore >= 51 && student.avatar) { return student.avatar; }
-        return '🐢';
+        let avatarVal = '🐢';
+        if (creditScore >= 51 && student.avatar) { 
+            avatarVal = student.avatar; 
+        }
+        
+        // Base64 사진 데이터인 경우 <img> 태그로 변환하여 출력
+        if (avatarVal.startsWith('data:image')) {
+            return `<img src="${avatarVal}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        } else {
+            return avatarVal; // 일반 이모지
+        }
+    }
+
+    // 마이페이지: 프로필 이모지 변경 (10 PR)
+    function changeAvatarEmoji() {
+        const student = students.find(s => s.id === currentUser.id);
+        if (!student) return;
+        if ((Number(student.balance) || 0) < 10) return showCustomAlert("❌ 지갑 잔고가 부족합니다. (10 PR 필요)");
+        
+        showCustomPrompt("새로운 캐릭터(이모지)를 입력하세요 (비용: 10 PR):", student.avatar !== '🐢' && !student.avatar.startsWith('data:') ? student.avatar : '', (newEmoji) => {
+            if (newEmoji && newEmoji.trim() !== '') {
+                const batch = db.batch();
+                const sRef = db.collection('students').doc(String(student.id));
+                batch.update(sRef, { 
+                    avatar: newEmoji.trim(),
+                    balance: firebase.firestore.FieldValue.increment(-10)
+                });
+                addTransaction(batch, student, '프로필 이모지 변경', -10);
+                batch.commit().then(() => showCustomAlert('프로필 캐릭터가 성공적으로 변경되었습니다!'));
+            }
+        });
+    }
+
+    // 마이페이지: 프로필 사진 업로드 및 리사이징 (10 PR)
+    function handleProfilePhotoUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const student = students.find(s => s.id === currentUser.id);
+        if (!student) return;
+        if ((Number(student.balance) || 0) < 10) return showCustomAlert("❌ 지갑 잔고가 부족합니다. (10 PR 필요)");
+        
+        showCustomConfirm("프로필 사진을 등록하시겠습니까? (비용: 10 PR)", () => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Canvas를 이용해 이미지 리사이징 (최대 150px) - DB 용량 확보
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 150;
+                    let width = img.width; let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                    } else {
+                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                    }
+                    
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Base64 텍스트로 변환
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    const batch = db.batch();
+                    const sRef = db.collection('students').doc(String(student.id));
+                    batch.update(sRef, { 
+                        avatar: dataUrl,
+                        balance: firebase.firestore.FieldValue.increment(-10)
+                    });
+                    addTransaction(batch, student, '프로필 사진 등록', -10);
+                    batch.commit().then(() => showCustomAlert('사진이 성공적으로 등록되었습니다!'));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        event.target.value = ''; // 입력창 초기화
     }
 
     function initFirestoreListeners() {
@@ -808,7 +885,7 @@
                     if (currentTab === 'job_mgmt') renderJobMgmtView();
                     else if (currentTab === 'mypage') renderMyPage();
                     else if (currentTab === 'credit') renderCreditView();
-                    else renderGrid(); // 경찰청 및 다른 탭에서 학생 정보 즉시 재렌더링
+                    else renderGrid(); 
                 }
             }
         });
@@ -1101,7 +1178,6 @@
         else if (tab === 'nts') renderNTS();
         else if (tab === 'police') renderPoliceRules();
         
-        // 어떤 탭이든 grid가 보여야 한다면 즉시 렌더링
         if (['salary','savings','time','task','student_mgmt','police'].includes(tab)) {
             renderGrid();
         }
@@ -1279,11 +1355,38 @@
         const baseSal = parseInt(student.baseSalary) || 100;
         const calc = calculateSalaryPenalty(student, baseSal);
 
+        // 🔥 학생 프로필 (캐릭터/사진) 자체 관리 권한 분기 로직
+        let avatarControls = '';
+        if (creditScore >= 71) { // 3등급 이상
+            avatarControls = `
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                    <button class="seg-btn" style="flex:1; background:#fff; border:1px solid #cbd5e1; justify-content:center;" onclick="changeAvatarEmoji()">😀 이모지 변경 (-10 PR)</button>
+                    <label class="seg-btn btn-blue-gradient" style="flex:1; justify-content:center; cursor:pointer; margin:0;">
+                        📸 사진 등록 (-10 PR)
+                        <input type="file" style="display:none;" accept="image/*" onchange="handleProfilePhotoUpload(event)">
+                    </label>
+                </div>
+            `;
+        } else if (creditScore >= 51) { // 5등급 이상 4등급 이하
+            avatarControls = `
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                    <button class="seg-btn" style="flex:1; background:#fff; border:1px solid #cbd5e1; justify-content:center;" onclick="changeAvatarEmoji()">😀 이모지 변경 (-10 PR)</button>
+                    <button class="seg-btn" style="flex:1; justify-content:center; background:#f1f5f9; color:#94a3b8; cursor:not-allowed;" disabled>📸 사진 등록 (3등급 🔒)</button>
+                </div>
+            `;
+        } else { // 6등급 이하
+            avatarControls = `
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                    <button class="seg-btn" style="flex:1; justify-content:center; background:#f1f5f9; color:#94a3b8; cursor:not-allowed;" disabled>😀 이모지 변경 (5등급 🔒)</button>
+                </div>
+            `;
+        }
+
         view.innerHTML = `
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
                 <div class="glass-panel" style="padding: 24px; grid-column: 1 / -1;">
                     <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                        <div style="font-size: 55px; background: rgba(255,255,255,0.8); width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.6); flex-shrink: 0;">
+                        <div style="font-size: 55px; background: rgba(255,255,255,0.8); width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.6); flex-shrink: 0; overflow:hidden;">
                             ${getEffectiveAvatar(student)}
                         </div>
                         <div style="flex: 1; min-width: 200px;">
@@ -1292,6 +1395,8 @@
                                 <span class="badge-job">👨‍💼 ${student.job || '일반학생'}</span>
                                 ${student.hasRealEstate ? '<span class="badge-job" style="color:#92400e; background:#fef3c7; border-color:#fde68a;">🏠 부동산 소유</span>' : ''}
                             </div>
+                            <!-- 학생 권한 프로필 설정 박스 렌더링 -->
+                            ${avatarControls}
                         </div>
                         <div class="segmented-container" style="padding:4px; background:rgba(255,255,255,0.6);">
                             <button class="seg-btn" style="padding:12px 20px;" onclick="openChangePwModal()">🔑 비밀번호 변경</button>
@@ -1675,7 +1780,6 @@
         });
     }
 
-    // 도매상(학생)이 판매 내역 삭제 시 교사 승인 요청 프로세스
     function requestDeletePurchaseLog(docId, itemName, studentId) {
         if (currentUser.role === 'teacher') {
             showCustomConfirm(`정말 [${itemName}] 판매 내역을 삭제하시겠습니까?`, () => {
@@ -1768,20 +1872,6 @@
         });
     }
 
-    function openAvatarChangePrompt(studentId) {
-        const student = students.find(s => s.id === studentId);
-        if(!student) return;
-        const creditScore = 31 + (student.timeScore || 0) + (student.taskScore || 0);
-        if (creditScore < 51) { return showCustomAlert(`❌ 신용도 5등급(51점) 이상부터 캐릭터 변경이 가능합니다.\n(현재 ${student.name} 학생 점수: ${creditScore}점)`); }
-        
-        const currentAvatar = student.avatar !== '🐢' ? student.avatar : '';
-        showCustomPrompt(`${student.name} 학생이 원하는 동물/캐릭터 이모지를 입력하세요:\n(현재 캐릭터: ${student.avatar || '🐢'})`, currentAvatar, (newAvatar) => {
-            if (newAvatar && newAvatar.trim() !== '') {
-                db.collection('students').doc(String(studentId)).update({ avatar: newAvatar.trim() }).then(() => showCustomAlert('캐릭터가 성공적으로 변경되었습니다.'));
-            }
-        });
-    }
-
     function toggleRealEstate(id, currentVal) { db.collection('students').doc(String(id)).update({ hasRealEstate: !currentVal }); }
 
     function renderGrid() {
@@ -1815,6 +1905,7 @@
             };
 
             if (currentTab === 'student_mgmt') {
+                // 교사 전용 관리탭에서 '캐릭터 변경' 버튼 삭제
                 card.innerHTML = `
                     ${renderCardTop(s)}
                     <div class="card-middle"><div class="avatar">${getEffectiveAvatar(s)}</div> <div style="text-align:right;"><span class="badge-job">${s.job || '일반'}</span></div></div>
@@ -1822,7 +1913,6 @@
                         <span>🏠 부동산 소유:</span><input type="checkbox" ${s.hasRealEstate ? 'checked' : ''} onclick="event.stopPropagation(); toggleRealEstate(${s.id}, ${s.hasRealEstate});">
                     </div>
                     <div class="segmented-container" style="flex-direction:column; gap:4px; background:transparent; border:none; box-shadow:none; padding:0;">
-                        <button class="seg-btn btn-left-align" style="width:100%; background:#fff;" onclick="event.stopPropagation(); openAvatarChangePrompt(${s.id});">🎭 캐릭터 변경 ${canChangeAvatar ? '' : '<span style="font-size:10px; color:var(--alert-red); margin-left:4px;">(5등급 🔒)</span>'}</button>
                         <button class="seg-btn btn-left-align" style="width:100%; background:#fff;" onclick="event.stopPropagation(); editStudentName(${s.id}, '${s.name}');">✏️ 이름 수정</button>
                         <button class="seg-btn btn-left-align" style="width:100%; background:#fff;" onclick="event.stopPropagation(); resetStudentPw(${s.id}, '${s.name}');">🔑 비번 초기화(0000)</button>
                         <button class="seg-btn btn-left-align danger" style="width:100%; background:#ffe4e6;" onclick="event.stopPropagation(); deleteStudent(${s.id}, '${s.name}');">🗑️ 학생 삭제</button>
@@ -1862,7 +1952,7 @@
                 card.innerHTML = `
                     ${renderCardTop(s)}
                     <div class="card-middle" style="justify-content: center; flex-direction: column; gap: 8px; padding: 5px 0;">
-                        <div class="avatar" style="width: 65px; height: 65px; font-size: 36px;">${getEffectiveAvatar(s)}</div> 
+                        <div class="avatar" style="width: 65px; height: 65px; font-size: 36px; overflow:hidden;">${getEffectiveAvatar(s)}</div> 
                         <div class="score-display" style="font-size:32px;">${score > 0 ? '+' + score : score}점</div>
                     </div>
                 `;
@@ -1870,7 +1960,7 @@
                 card.innerHTML = `
                     ${renderCardTop(s)}
                     <div class="card-middle" style="justify-content: center; flex-direction: column; gap: 8px; padding: 5px 0;">
-                        <div class="avatar" style="width: 65px; height: 65px; font-size: 36px;">${getEffectiveAvatar(s)}</div> 
+                        <div class="avatar" style="width: 65px; height: 65px; font-size: 36px; overflow:hidden;">${getEffectiveAvatar(s)}</div> 
                         <div style="font-size:14px; color:var(--text-muted); font-weight:bold;">현재 잔고</div>
                         <div class="pr-display" style="font-size:28px; color:var(--alert-red) !important;">${balance} PR</div>
                     </div>
@@ -1908,7 +1998,7 @@
                 currentUser = { role: 'teacher', id: null };
                 localStorage.setItem('giftland_user', JSON.stringify(currentUser));
                 localStorage.setItem('giftland_tab', 'salary');
-                showCustomAlert("👑 교사 관리자로 접속되었습니다."); closeModal('loginModal'); document.getElementById('teacherPw').value = '';
+                showCustomAlert("👑 교사 관리자로 선물나라에 입국하셨습니다!"); closeModal('loginModal'); document.getElementById('teacherPw').value = '';
                 document.getElementById('splashScreen').style.display = 'none'; document.getElementById('mainAppContainer').style.display = 'block';
                 updateUserDisplay(); renderNavTabs(); switchTab('salary');
             } else { showCustomAlert("❌ 교사 비밀번호가 올바르지 않습니다."); }
@@ -1921,7 +2011,7 @@
                 currentUser = { role: 'student', id: sid };
                 localStorage.setItem('giftland_user', JSON.stringify(currentUser));
                 localStorage.setItem('giftland_tab', 'mypage');
-                showCustomAlert(`${sid}번 학생 본인 모드로 접속되었습니다.`); closeModal('loginModal'); document.getElementById('studentPw').value = '';
+                showCustomAlert("🎉 선물나라 입국을 환영합니다!"); closeModal('loginModal'); document.getElementById('studentPw').value = '';
                 document.getElementById('splashScreen').style.display = 'none'; document.getElementById('mainAppContainer').style.display = 'block';
                 updateUserDisplay(); renderNavTabs(); switchTab('mypage');
             } else { showCustomAlert("❌ 학생 비밀번호가 올바르지 않습니다."); }
@@ -2017,7 +2107,7 @@
 
             row.innerHTML = `
                 <div style="display:flex; align-items:center; gap:10px; flex:1;">
-                    <span style="font-size:24px;">${getEffectiveAvatar(s)}</span>
+                    <span class="avatar" style="width:36px; height:36px; font-size:20px; border:none; box-shadow:none; margin-right:8px;">${getEffectiveAvatar(s)}</span>
                     <div>
                         <strong style="font-size:14px; color:var(--text-main);">${s.id}. ${s.name}</strong> ${s.hasRealEstate ? '<span class="badge grade-5">🏠보유</span>' : ''} ${psBadge}<br>
                         <span class="perf-display" style="font-size:11px; font-weight:bold;"></span>
