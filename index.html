@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -197,8 +197,37 @@
         .pending-list { overflow-y: auto; max-height: 400px; margin-bottom: 15px; }
         .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.08); font-size: 13px; gap: 10px; }
         
+        /* Select & Input 공통 스타일 */
         .input-group { margin-bottom: 16px; width: 100%; }
         .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted);}
+        
+        /* 🎨 Select 드롭다운 커스텀 디자인 추가 */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 36px !important;
+            cursor: pointer;
+        }
+        
+        select option {
+            background-color: #ffffff;
+            color: var(--text-main);
+            font-weight: 600;
+            padding: 12px;
+        }
+
+        /* 드롭다운에서 항목을 선택/오버할 때 파란색 버튼 톤 적용 */
+        select option:checked {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+            background-color: #0284c7 !important;
+            color: #ffffff !important;
+        }
+
         .input-group select, .input-group input, .input-group textarea { 
             width: 100%; padding: 14px 16px; border: 1.5px solid #cbd5e1; border-radius: 14px; font-size: 15px; 
             background: rgba(248, 250, 252, 0.9); color: var(--text-main); font-weight: 600; transition: all 0.3s;
@@ -236,9 +265,11 @@
 
 <!-- 팝업 시스템 (Alert, Confirm, Prompt 대체 커스텀 다이얼로그) -->
 <div class="modal-overlay" id="customDialogModal" style="z-index: 9999;">
-    <div class="modal-card" style="max-width: 320px; text-align: center; padding: 30px 25px;">
+    <!-- max-width 대폭 확대하여 줄바꿈 방지 -->
+    <div class="modal-card" style="max-width: 480px; text-align: center; padding: 30px 25px;">
         <div class="modal-title" id="cdTitle" style="font-size: 20px; margin-bottom: 15px; font-weight:900;">알림</div>
-        <div id="cdMessage" style="font-size: 15px; color: var(--text-muted); margin-bottom: 25px; word-break: keep-all; line-height: 1.5; font-weight:600;">메시지</div>
+        <!-- white-space: nowrap 추가하여 한줄로 나오게 강제 적용 -->
+        <div id="cdMessage" style="font-size: 15px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; font-weight:600; white-space: nowrap;">메시지</div>
         <input type="text" id="cdInput" style="display:none; width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:1px solid #cbd5e1; font-size:15px; text-align:center;" />
         <div class="segmented-container" style="display:flex; padding:0; background:none; box-shadow:none; border:none; gap:10px;">
             <button id="cdCancelBtn" class="seg-btn" style="flex:1; background:#f1f5f9; justify-content:center;">취소</button>
@@ -250,11 +281,10 @@
 <!-- ✈️ 스플래시(첫 화면) -->
 <div id="splashScreen">
     <div class="splash-card">
-        <!-- 호랑이 캐릭터 이미지 (선생님 요청) -->
         <img src="무제3_20220226133154.png" alt="호랑이 캐릭터" class="splash-icon-img">
         
-        <!-- 화이트 선물상자와 PRESENT 로고 -->
-        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px;">
+        <!-- PRESENT 글씨와 타이틀 간격 축소 -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 2px;">
             <svg viewBox="0 0 100 100" width="55" height="55" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
                 <path d="M15,40 L85,40 L80,90 L20,90 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
                 <rect x="10" y="25" width="80" height="15" rx="3" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
@@ -266,7 +296,8 @@
             <div class="logo-present" style="font-size: 55px; letter-spacing: -1.5px; margin-bottom:-4px;">PRESENT</div>
         </div>
         
-        <p style="color: var(--text-muted); font-size:16px; font-weight:600; margin-bottom:35px;">행복한 우리 반의 똑똑한 경제 시스템</p>
+        <!-- PRESENT 바로 밑에 바싹 붙게 디자인 -->
+        <p style="color: var(--text-muted); font-size:16px; font-weight:700; margin-bottom:35px; letter-spacing:-0.5px;">행복한 우리 반의 똑똑한 경제 시스템</p>
         
         <button class="seg-btn primary" style="width:100%; font-size: 18px; padding: 18px; border-radius: 20px; justify-content:center; background:linear-gradient(135deg, #0ea5e9, #4f46e5); border:none; box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);" onclick="openLoginModal()">✈️ 탑승수속 (시작하기)</button>
     </div>
@@ -288,17 +319,20 @@
             <div class="logo-present" style="font-size:36px; margin-bottom:-2px;">PRESENT</div>
         </div>
         
-        <!-- 우측: 유저 인포 및 심플한 승인 대기 링크 -->
-        <div class="header-right" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-            <div class="segmented-container user-bar">
+        <!-- 우측: 유저 인포 및 승인 대기 링크 -->
+        <div class="header-right" style="display: flex; flex-direction: column; align-items: flex-end;">
+            <!-- user-bar 내부 왼쪽으로 승인대기 이동 -->
+            <div class="segmented-container user-bar" style="display:flex; align-items:center; gap:4px;">
+                
+                <!-- 심플 텍스트 스타일 대기/승인 링크 -->
+                <div id="globalPendingContainer" style="display:none; align-items: center; gap: 10px; margin-right: 8px; padding-right: 12px; border-right: 1px solid rgba(0,0,0,0.1);">
+                    <span class="simple-link" onclick="openPendingModal(false)">승인대기( <span id="pendingCount" style="color:var(--alert-red);">0</span> )</span>
+                    <span style="color: #cbd5e1; font-weight:300;">ㅣ</span>
+                    <span class="simple-link" onclick="openPendingModal(true)">최근 승인</span>
+                </div>
+
                 <span id="currentUserInfo" class="seg-btn active" style="pointer-events: none;">👤 로그인 필요</span>
                 <button class="seg-btn" onclick="logout()">🚪 로그아웃 / 계정변경</button>
-            </div>
-            <!-- 심플 텍스트 스타일 대기/승인 링크 -->
-            <div id="globalPendingContainer" style="display:none; align-items: center; gap: 10px; margin-right: 6px;">
-                <span class="simple-link" onclick="openPendingModal(false)">승인대기( <span id="pendingCount" style="color:var(--alert-red);">0</span> )</span>
-                <span style="color: #cbd5e1; font-weight:300;">ㅣ</span>
-                <span class="simple-link" onclick="openPendingModal(true)">최근 승인</span>
             </div>
         </div>
     </header>
@@ -359,7 +393,6 @@
             <div style="display:flex; gap:6px; flex-wrap: wrap;">
                 <button class="seg-btn" onclick="selectAll()">전체 선택</button>
                 <button class="seg-btn" onclick="deselectAll()">선택 해제</button>
-                <!-- 로켓 버튼 스타일 적용 -->
                 <button id="btnSalaryModal" class="seg-btn btn-blue-gradient" style="display:none; padding: 10px 24px; font-size: 15px;" onclick="openSalaryModal()">🚀 일괄 월급(자동)</button>
                 <button id="btnScoreMinus" class="seg-btn action-minus" style="display:none; padding: 10px 24px; font-size: 15px;" onclick="openBatchModal('minus')">전체 -</button>
                 <button id="btnScorePlus" class="seg-btn action-plus" style="display:none; padding: 10px 24px; font-size: 15px;" onclick="openBatchModal('plus')">전체 +</button>
@@ -475,22 +508,22 @@
         <div class="modal-title" style="font-size:24px; font-weight:900; margin-bottom:30px;">✈️ 여권 심사 (로그인)</div>
         <div class="input-group">
             <label style="font-size:14px; font-weight:800; color:var(--navy-main);">접속 권한 선택</label>
-            <select id="userRoleSelect" onchange="toggleLoginInputs()" style="padding:16px; border-radius:12px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+            <select id="userRoleSelect" onchange="toggleLoginInputs()">
                 <option value="student">👤 학생 로그인 (본인 모드)</option>
                 <option value="teacher">👑 교사 관리자 (전체 권한)</option>
             </select>
         </div>
         <div class="input-group" id="studentSelectGroup">
             <label style="font-size:14px; font-weight:800; color:var(--navy-main);">학생 선택</label>
-            <select id="loginStudentId" style="padding:16px; border-radius:12px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);"></select>
+            <select id="loginStudentId"></select>
         </div>
         <div class="input-group" id="studentPwGroup">
             <label style="font-size:14px; font-weight:800; color:var(--navy-main);">학생 비밀번호</label>
-            <input type="password" id="studentPw" placeholder="비밀번호 입력 (초기: 0000)" style="padding:16px; border-radius:12px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+            <input type="password" id="studentPw" placeholder="비밀번호 입력 (초기: 0000)">
         </div>
         <div class="input-group" id="teacherPwGroup" style="display:none;">
             <label style="font-size:14px; font-weight:800; color:var(--navy-main);">교사 비밀번호</label>
-            <input type="password" id="teacherPw" placeholder="비밀번호" style="padding:16px; border-radius:12px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+            <input type="password" id="teacherPw" placeholder="비밀번호">
         </div>
         
         <div class="segmented-container" style="margin-top: 25px; width:100%; display:flex; background:transparent; border:none; box-shadow:none; padding:0; gap:12px;">
